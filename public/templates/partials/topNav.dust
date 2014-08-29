@@ -1,0 +1,35 @@
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Apps for PayPal Here</a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li {@eq key=active value="sell"}class="active"{/eq}><a href="/sell">Sell</a></li>
+                <li {@eq key=active value="reports"}class="active"{/eq}><a href="/reports">Reports</a></li>
+                <li {@eq key=active value="products"}class="active"{/eq}><a href="/products">Products</a></li>
+                <li {@eq key=active value="locations"}class="active"{/eq}><a href="/locations">Locations</a></li>
+                <li {@eq key=active value="apps"}class="active"{/eq}><a href="/apps">Apps</a></li>
+                <li><a href="javascript:FreshWidget.show()">Support</a></li>
+            </ul>
+
+            {@eq key=user.environment value="sandbox"}
+                <div style="position:absolute; top: -3px; left: 10px; z-index: -1; color: rgba(150,10,10,0.25); font-size: 40px;">
+                    <b>SANDBOX</b>
+                </div>
+            {/eq}
+
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/settings">{user.email}</a></li>
+                <li><a href="/oauth/logout">Log Out</a></li>
+            </ul>
+
+        </div><!--/.nav-collapse -->
+    </div>
+</div>

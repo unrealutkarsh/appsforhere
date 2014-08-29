@@ -20,10 +20,10 @@ var mongo = require('./lib/mongo'),
     Queue = require('./lib/queue'),
     Liwp = require('node-liwp'),
     options = {
-        onconfig: function (config, next) {
+        onconfig: function appsforhereConfiguration(config, next) {
             configureMongo(config);
             configurePassport(config);
-            Queue.init(mongo.connection());
+            Queue.init(mongo.db);
 
             next(null, config);
 
@@ -31,21 +31,23 @@ var mongo = require('./lib/mongo'),
     },
     port = process.env.PORT || 8000;
 
+app.on('middleware:after:session', function addPassportToSession(eventargs) {
+    app.use(passport.initialize());
+    app.use(passport.session());
+});
 
 app.use(kraken(options));
 
 app.listen(port, function (err) {
-    console.log('[%s] Listening on http://localhost:%d', app.settings.env, port);
+    logger.info('[%s] Listening on http://localhost:%d', app.settings.env, port);
 });
-
-require('./lib/domainUtil').for(app);
 
 function configureMongo(config) {
     mongo.config(config.get('mongoUrl'));
     app.use(session({
         secret: config.get('sessionSecret'),
         store: new MongoStore({
-            db: mongo.connection()
+            mongoose_connection: mongo.db
         }),
         resave: true,
         saveUninitialized: true
@@ -56,10 +58,10 @@ function configurePassport(config) {
     passport.use(new PayPalStrategy({
             clientID: process.env.PAYPAL_APP_ID,
             clientSecret: process.env.PAYPAL_APP_SECRET,
-            callbackURL: 'https://appsforhereweb.ebaystratus.com/oauth/return',
+            callbackURL: process.env.PAYPAL_RETURN_URL || 'https://appsforhereweb.ebaystratus.com/oauth/return',
             passReqToCallback: true
         },
-        function (req, accessToken, refreshToken, profile, done) {
+        function savePassportUserToMongo(req, accessToken, refreshToken, profile, done) {
             PayPalUser.encryptRefreshToken(refreshToken, req.res, function (error, enc_token) {
                 if (error) {
                     done(error);
@@ -83,7 +85,7 @@ function configurePassport(config) {
 
     passport.use(new PayPalStrategy({
             name: 'sandbox',
-            callbackURL: 'https://appsforhereweb.ebaystratus.com/oauth/return',
+            callbackURL: process.env.PAYPAL_RETURN_URL || 'https://appsforhereweb.ebaystratus.com/oauth/return',
             clientID: 'AeoOpBB2XJWwORPT8Q7NpPQgr8eStz39tt8IsM6wRaxiRg50hdMTSgNk7rFg',
             clientSecret: 'EDZTDBAH7SoQsPZxVAJ4n7SvVfMwWGziwLpJsvKj8Ghe8Wxm1Hg70Tt2pXP7',
             authorizationURL: 'https://www.sandbox.paypal.com/webapps/auth/protocol/openidconnect/v1/authorize',
@@ -96,13 +98,13 @@ function configurePassport(config) {
             }),
             passReqToCallback: true
         },
-        function (req, accessToken, refreshToken, profile, done) {
+        function saveSandboxPassportUserToMongo(req, accessToken, refreshToken, profile, done) {
             PayPalUser.encryptRefreshToken(refreshToken, req.res, function (error, enc_token) {
                 if (error) {
                     done(error);
                     return;
                 }
-                PayPalUser.findOrCreate({ profileId: 'sandbox-'+profile.id },
+                PayPalUser.findOrCreate({ profileId: 'sandbox-' + profile.id },
                     {
                         access_token: accessToken,
                         encrypted_refresh_token: enc_token,
@@ -118,7 +120,7 @@ function configurePassport(config) {
             });
         }));
 
-    passport.serializeUser(function (user, done) {
+    passport.serializeUser(function serializePassportUser(user, done) {
         if (user._isDelegatedUser) {
             done(null, 'delegated_' + user.id);
         } else {
@@ -126,7 +128,7 @@ function configurePassport(config) {
         }
     });
 
-    passport.deserializeUser(function (id, done) {
+    passport.deserializeUser(function deserializePassportUser(id, done) {
         if (id.indexOf('delegated_') == 0) {
             PayPalDelegatedUser.findOne({_id: id.substring('delegated_'.length)}, function (err, user) {
                 done(null, user);

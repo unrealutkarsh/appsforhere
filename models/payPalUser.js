@@ -1,21 +1,10 @@
 'use strict';
 
 var mongoose = require('mongoose'),
+    appUtils = require('appUtils'),
     findOrCreate = require('mongoose-findorcreate'),
     crypto = require('../lib/crypto'),
-    uuid = require('node-uuid'),
-    Liwp = require('node-liwp');
-
-var hereapis = {
-    live: new Liwp({
-        appId: process.env.PAYPAL_APP_ID,
-        secret: process.env.PAYPAL_APP_SECRET
-    }),
-    sandbox: new Liwp({
-        appId: 'AeoOpBB2XJWwORPT8Q7NpPQgr8eStz39tt8IsM6wRaxiRg50hdMTSgNk7rFg',
-        secret: 'EDZTDBAH7SoQsPZxVAJ4n7SvVfMwWGziwLpJsvKj8Ghe8Wxm1Hg70Tt2pXP7'
-    })
-};
+    uuid = require('node-uuid');
 
 var paypalUserModel = function () {
 
@@ -52,25 +41,11 @@ var paypalUserModel = function () {
         }
     };
     paypalUserSchema.methods.hereApiUrl = function (method, api) {
-        if (!this.environment || this.environment === 'live') {
-            if (api === 'payments') {
-                return 'https://api.paypal.com/v1/payments/' + method;
-            }
-            return 'https://api.paypal.com/retail/merchant/v1/' + method;
-        } else if (this.environment === 'sandbox') {
-            if (api === 'payments') {
-                return 'https://api.sandbox.paypal.com/v1/payments/' + method;
-            }
-            return 'https://api.sandbox.paypal.com/retail/merchant/v1/' + method;
-        }
+        return appUtils.hereApiUrl(this.environment, method, api);
     };
 
     paypalUserSchema.methods.hereApi = function () {
-        if (!this.environment || this.environment === 'live') {
-            return hereapis.live;
-        } else if (this.environment === 'sandbox') {
-            return hereapis.sandbox;
-        }
+        return appUtils.hereApi(this.environment, method, api);
     };
 
     paypalUserSchema.plugin(findOrCreate);

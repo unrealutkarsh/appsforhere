@@ -1,0 +1,75 @@
+{>"layouts/master" /}
+
+{<body}
+
+    {>"partials/topNav"/}
+
+    <div class="container-fluid" id="marquee">
+        <div class="row-fluid">
+            <div class="col-sm-6">
+                <div class="jumbotron">
+                    <h1>Reports</h1>
+
+                    <p>View sales reports by period, by product or by employee. See changes over time
+                        and better understand your business.</p>
+
+                    <p><a class="btn btn-primary btn-large" href="/reports">View My Sales Reports</a></p>
+                </div>
+            </div>
+
+            <div class="col-sm-6">
+                <div class="jumbotron">
+                    <h1>Products</h1>
+
+                    <p>View and edit your PayPal Here product listings. You can also import
+                        products in bulk from a spreadsheet.<br/><br/></p>
+
+                    <p><a class="btn btn-primary btn-large" href="/products">View My Products</a></p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row-fluid">
+            <div class="col-sm-6">
+                <div class="jumbotron">
+                    <h1>Locations</h1>
+
+                    <p>View and manage PayPal Here locations, which allow customers to checkin
+                        and pay at your store using the PayPal Consumer application.</p>
+
+                    <p><a class="btn btn-primary btn-large" href="/locations">View My Locations</a></p>
+                </div>
+            </div>
+
+            <div class="col-sm-6">
+                <div class="jumbotron">
+                    <h1>Apps</h1>
+
+                    <p>View and manage PayPal Checkin Apps, which allow customers to interact
+                        with your store using the PayPal Mobile App to do things like order ahead and donate.</p>
+
+                    <p><a class="btn btn-primary btn-large" href="/apps">View My Apps</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{/body}
+
+{<head}
+    <style type="text/css">
+        #marquee {
+            margin-top: 100px;
+        }
+
+        #marquee > div > div {
+            height: 400px;
+        }
+
+        #marquee > div > div >div {
+            vertical-align: middle;
+            height: 90%;
+        }
+    </style>
+{/head}

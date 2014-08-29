@@ -19,11 +19,15 @@ The server also requires the following environment variables:
 
 * PAYPAL_APP_ID - The OAuth appId for PayPal, which needs certain scopes enabled (see the code)
 * PAYPAL_APP_SECRET - The app secret for the PAYPAL_APP_ID
-* PAYCODE_APP_ID - OAuth appId for the paycode controller
-* PAYCODE_APP_SECRET - OAuth app secret for the paycode controller
-* PAYCODE_REFRESH_TOKEN - The refresh token issued by PAYCODE_APP_ID to an account capable of doing the paycode dance
+* PAYPAL_RETURN_URL - The return URL for the app identified by PAYPAL_APP_ID
 * PPS_USERNAME - The old-style three factor PayPal auth username for classic API calls
 * PPS_PASSWORD - The old-style three factor PayPal auth password for classic API calls
 * PPS_SIGNATURE - The old-style three factor PayPal auth signature for classic API calls
 * MAILGUN_KEY - The MailGun API key for email notifications
 * TWILIO_AUTH, TWILIO_SID and TWILIO_NUM - The Twilio API authentication and phone number information
+
+** ALSO NOTE **
+The PayPal OAuth scopes for many of the APIs used here must be manually enabled for your application (i.e. they are
+not self-service). Hopefully this will change in the near future, but until then just private message me and I will try
+to help if you don't already have access. The sandbox credentials are embedded in the source and you can mess with
+your hosts file to make the returnUrl work.

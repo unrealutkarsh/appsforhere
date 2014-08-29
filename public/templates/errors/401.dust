@@ -1,0 +1,10 @@
+{>"layouts/master" /}
+
+{<body}
+    <br/>
+    <div class="container theme-showcase" role="main">
+        <p class="bg-danger" style="padding:15px;">
+            You do not have permission to access this page.
+        </p>
+    </div>
+{/body}

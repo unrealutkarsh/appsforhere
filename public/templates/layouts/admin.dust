@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en" class="fuelux">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Enhanced services for PayPal Here Merchants">
+    <meta name="author" content="PayPal">
+
+    <title>{+title /}</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="/components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- FuelUX -->
+    <link href="/fuelux/css/fuelux.min.css" rel="stylesheet" type="text/css">
+
+    <!-- Custom styles for this template -->
+    <link href="/css/app.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    {+head /}
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Apps for PayPal Here <b>ADMIN</b></a>
+        </div>
+        <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li {@eq key=active value="users"}class="active"{/eq}><a href="/apps">Users</a></li>
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li><a href="/settings">{user.email}</a></li>
+                <li><a href="/oauth/logout">Log Out</a></li>
+            </ul>
+
+        </div><!--/.nav-collapse -->
+    </div>
+</div>
+
+    {+body /}
+
+    {+bodyElements /}
+
+<script src="/components/jquery/dist/jquery.min.js"></script>
+<script src="/components/bootstrap/dist/js/bootstrap.min.js"></script>
+<script src="/fuelux/js/fuelux.js" type="text/javascript"></script>
+<script src="/js/jquery-dateFormat.min.js" type="text/javascript"></script>
+<script src="/components/accounting/accounting.min.js" type="text/javascript"></script>
+<script src="/components/underscore/underscore.js" type="text/javascript"></script>
+<script src="/components/bootbox/bootbox.js" type="text/javascript"></script>
+    {+scripts /}
+<script type="text/javascript" src="https://s3.amazonaws.com/assets.freshdesk.com/widget/freshwidget.js"></script>
+<script type="text/javascript">
+    FreshWidget.init("", {"queryString": "&widgetType=popup", "backgroundImage": "https://s3.amazonaws.com/assets.freshdesk.com/widget/help-button.png", "widgetType": "popup", "buttonType": "image", "buttonText": "Support", "buttonColor": "white", "buttonBg": "#3B3B3B", "alignment": "3", "offset": "10px", "formHeight": "500px", "url": "https://appsforhere.freshdesk.com"} );
+</script>
+</body>
+</html>
