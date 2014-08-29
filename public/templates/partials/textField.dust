@@ -1,0 +1,7 @@
+<div class="form-group" id="{id}_formgroup">
+    <label for="{id}" class="{@ne key="{layout}" value="vertical"}col-sm-3 {/ne}control-label">{label}</label>
+
+    <div{@ne key="{layout}" value="vertical"} class="col-sm-9"{/ne} id="{id}_div">
+        <input class="form-control" id="{id}" name="{id}" placeholder="{placeholder}" {?value}value="{value|j}"{/value} {?type}type="{type}"{/type}/>
+    </div>
+</div>

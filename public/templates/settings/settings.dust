@@ -1,0 +1,46 @@
+{>"layouts/loggedin"/}
+
+{<body}
+
+    <div id="wrapper">
+        <div class="container-fluid">
+            <div class="row-fluid">
+
+                <div id="sidebar" class="sidebar-nav col-md-2">
+                    <ul class="nav nav-list">
+                        <li class="active"><a id="delegates" href="#">Delegates</a></li>
+                    </ul>
+                </div>
+
+                <div id="main" class="col-md-10">
+                    {>"settings/partials/delegateRepeater"/}
+                </div>
+            </div>
+        </div>
+    </div>
+
+{/body}
+
+{<head}
+    <link href="/components/selectize/dist/css/selectize.bootstrap3.css" rel="stylesheet">
+    <link href="/components/bootstrapValidator/dist/css/bootstrapValidator.min.css" rel="stylesheet">
+{/head}
+
+{<bodyElements}
+    {>"settings/partials/delegateModal"/}
+    {>"settings/partials/delegationUrlModal"/}
+    {>"partials/progressModal"/}
+{/bodyElements}
+
+{<scripts}
+    <script type="text/javascript" src="/components/jquery-sortable/source/js/jquery-sortable-min.js"></script>
+    <script type="text/javascript" src="/components/bignumber.js/bignumber.min.js"></script>
+    <script type="text/javascript" src="/components/selectize/dist/js/standalone/selectize.min.js"></script>
+    <script type="text/javascript" src="/components/bootstrapValidator/dist/js/bootstrapValidator.js"></script>
+    <script type="text/javascript" src="/js/common-addons.js"></script>
+    <script type="text/javascript" src="/js/settings/settings.js"></script>
+    <script type="text/javascript">
+        var _csrf = '{_csrf}';
+    </script>
+{/scripts}
+

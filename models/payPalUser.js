@@ -45,7 +45,7 @@ var paypalUserModel = function () {
     };
 
     paypalUserSchema.methods.hereApi = function () {
-        return appUtils.hereApi(this.environment, method, api);
+        return appUtils.hereApi(this.environment);
     };
 
     paypalUserSchema.plugin(findOrCreate);

@@ -54,9 +54,9 @@ module.exports = function (router) {
         .all(appUtils.apiAuth)
         .all(appUtils.hasRoles(['NoDelegatesCanUseThis']))
         .get(function (req, res) {
-            PayPalDelegatedUser.find({profileId: req.user.profileId}, function (docs) {
+            PayPalDelegatedUser.find({profileId: req.user.profileId}, req.$eat(function mongoDelegateResult(docs) {
                 var ret = {delegates: []};
-                docs.forEach(function (d) {
+                docs.forEach(function delegateTranslation(d) {
                     ret.delegates.push({
                         id: d.id,
                         name: d.name,
@@ -66,9 +66,9 @@ module.exports = function (router) {
                     });
                 });
                 res.json(ret);
-            });
+            }));
         })
-        .post(function (req, res) {
+        .post(function (req, res, next) {
             PayPalUser.decryptRefreshToken(req, function (decryptError, raw_token) {
                 if (decryptError) {
                     req.logout();
@@ -124,7 +124,7 @@ module.exports = function (router) {
                 uuid: req.params.uuid
             });
         })
-        .post(function (req, res) {
+        .post(function (req, res, next) {
             PayPalDelegatedUser.findById(req.params.id, req.$eat(function (user) {
                 if (!user) {
                     logger.error('Delegate login attempted for unknown delegate %s', req.params.id);

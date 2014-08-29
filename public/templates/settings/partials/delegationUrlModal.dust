@@ -1,0 +1,26 @@
+<div id="delegationUrlModal" class="modal fade" aria-hidden="true" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="progressTitle">Delegation Link</h4>
+            </div>
+            <div class="modal-body">
+                <div style="padding:10px;">
+                    <div class="alert alert-success">
+                        <p>
+                            The delegate has been succesfully created. You can send the link below to them via
+                            email or SMS, and you should communicate the password separately (i.e. through some OTHER
+                            channel than the one you sent the link).
+                        </p>
+                    </div>
+                </div>
+                <textarea id="delegateUrl" class="form-control" rows="3"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+

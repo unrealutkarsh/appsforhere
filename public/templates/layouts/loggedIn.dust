@@ -28,7 +28,7 @@
 
 <body>
 
-    {>"topNav"/}
+    {>"partials/topNav"/}
 
     {+body /}
 

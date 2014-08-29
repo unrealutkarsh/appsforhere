@@ -1,0 +1,23 @@
+<div id="progressModal" class="modal fade" aria-hidden="true" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="progressTitle">Progress</h4>
+            </div>
+            <div class="modal-body">
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0"
+                         aria-valuemax="100" id="progressBar">
+                        <span class="sr-only">0% Complete</span>
+                    </div>
+                </div>
+            </div>
+            <div style="padding:10px;">
+                <div class="alert alert-danger fade in" aria-hidden="true" id="progressAlert" style="display:none;">
+                    <div id="progressError">&nbsp;</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
