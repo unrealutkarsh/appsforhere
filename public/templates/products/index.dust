@@ -1,0 +1,33 @@
+{>"layouts/loggedin" active="products"/}
+
+{<body}
+    <div id="wrapper">
+        <div class="container-fluid">
+            <div class="row-fluid">
+                {>"products/partials/leftNav"/}
+                <div id="main" class="col-md-10">
+                    {>"products/partials/productRepeater"/}
+                </div>
+            </div>
+        </div>
+    </div>
+
+{/body}
+
+{<bodyElements}
+    {>"products/partials/allModals"/}
+{/bodyElements}
+
+{<head}
+    <link href="/components/selectize/dist/css/selectize.bootstrap3.css" rel="stylesheet">
+    <link href="/components/bootstrapValidator/dist/css/bootstrapValidator.min.css" rel="stylesheet">
+{/head}
+
+{<scripts}
+    <script type="text/javascript">
+        var _csrf = '{_csrf}';
+        var selectedModel = '{?modelId}{modelId}{:else}_{/modelId}';
+        var selectedModelName = '{?modelName}{modelName}{:else}Default{/modelName}'
+    </script>
+    {>"products/partials/allScripts"/}
+{/scripts}

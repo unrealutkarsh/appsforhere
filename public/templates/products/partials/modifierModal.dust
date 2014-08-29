@@ -1,0 +1,51 @@
+<div id="modifierModal" class="modal fade" aria-hidden="true" role="dialog" tabindex="-1">
+    <form role="form" class="form-horizontal" id="modifierForm">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Edit Item Modifier</h4>
+                </div>
+                <div class="modal-body">
+                    <p class="bg-info" style="padding:15px;">Please note: modifiers are only supported on iPad versions of the app currently. iPhone support will be available in the coming weeks.</p>
+
+                    {>"partials/textField" id="modName" label="Modifier Name" placeholder="e.g. Toppings"/}
+
+                    <div class="form-group">
+                        <div class="col-sm-offset-3 col-sm-9">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" id="modRequireOne"> Require one and only one selection
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="repeater" id="modifierGrid">
+
+                        <div class="repeater-header">
+                            <div class="repeater-header-left">
+                                <button class="btn btn-info" type="button" id="addModifierValue">Add modifier value...</button>
+                            </div>
+                        </div>
+
+                        <div class="repeater-viewport">
+                            <div class="repeater-canvas"></div>
+                            <div class="loader repeater-loader"></div>
+                        </div>
+
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger pull-left" id="deleteModifier">Delete Modifier</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </form>
+</div><!-- /.modal -->

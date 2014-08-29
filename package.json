@@ -28,7 +28,11 @@
     "mongoose-findorcreate": "^0.1.2",
     "httpunch": "^1.1.0",
     "twilio": "^1.7.0",
-    "mongodb-queue": "^0.9.1"
+    "mongodb-queue": "^0.9.1",
+    "async": "^0.9.0",
+    "csv": "^0.4.0",
+    "xlsx": "^0.7.10",
+    "vargs": "^0.1.0"
   },
   "devDependencies": {
     "mocha": "^1.18.0",

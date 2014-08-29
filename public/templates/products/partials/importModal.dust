@@ -1,0 +1,72 @@
+<div id="importModal" class="modal fade" aria-hidden="true" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Import Items</h4>
+            </div>
+            <div class="modal-body">
+                <div id="xlsInfo">
+                    <p>You can upload a spreadsheet (XLS) file with your products and overwrite
+                        any existing products in your model. XLS files can be created with Excel or Google
+                        Docs or a variety of other tools. We highly recommend you download our <a
+                                href="/sample/SampleProducts.xls">sample XLS</a>
+                        and use that as a template</p>
+
+                    <form id="uploadXlsForm" enctype="multipart/form-data" method="POST" action="/products/import">
+                        <div class="modal-footer">
+                    <span class="file-input btn btn-primary btn-file">Browse for XLS&hellip; <input type="file"
+                                                                                                    id="xlsupload"
+                                                                                                    name="xlsupload"/>
+                    </span>
+                        </div>
+                    </form>
+                </div>
+                <div id="csvInfo">
+                    <p>You can upload a comma-separated value (CSV) file with your products and overwrite
+                        any existing products in your model. CSV files can be created with Excel or Google
+                        Docs or a variety of other tools. The first row in the CSV should have field names, which
+                        can be:</p>
+                    <ul>
+                        <li><b>Name</b> - the name of the item</li>
+                        <li><b>Id</b> - optional - currently must be numeric. Usually you don't need to specify this.
+                        </li>
+                        <li><b>Variation</b> - If (and only if) the name is blank, the Variation field can be specified
+                            to
+                            create a variation of the previously named item. For rows with a variation value, only the
+                            price, id and
+                            SKU fields are relevant. The id does not have to be numeric in this case.
+                        </li>
+                        <li><b>Price</b> - The price in your account's currency (without any currency symbol).</li>
+                        <li><b>Description</b> - optional - more detail to be displayed with the item.</li>
+                        <li><b>TaxRateName</b> - optional, unless TaxRate is passed - the name of the tax rate for this
+                            item.
+                        </li>
+                        <li><b>TaxRate</b> - optional - the tax rate, as a decimal number (e.g. .10 is 10% tax)</li>
+                        <li><b>PhotoUrl</b> - optional - a link to an image of the item. MUST BE AN HTTPS URL.</li>
+                        <li><b>SKU</b> - optional - the barcode/SKU for the item</li>
+                        <li><b>Category</b> - optional - a single category for the item (you can have this column
+                            multiple times if you need multiple categories per item).
+                        </li>
+                        <li><b>Modifier</b> - optional - the name of a single modifier group for the item (you can have
+                            this column
+                            multiple times if you need multiple modifiers per item). Note that if you upload an excel
+                            spreadsheet (xls) you can include these modifiers on a sheet titled 'Modifiers'
+                        </li>
+                    </ul>
+                    <form id="uploadForm" enctype="multipart/form-data" method="POST" action="/products/import">
+                        <div class="modal-footer">
+                    <span class="file-input btn btn-primary btn-file">Browse for CSV&hellip; <input type="file"
+                                                                                                    id="csvupload"
+                                                                                                    name="csvupload"/>
+                    </span>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->

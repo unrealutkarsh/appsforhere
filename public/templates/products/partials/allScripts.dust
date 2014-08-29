@@ -1,0 +1,12 @@
+<script type="text/javascript" src="/components/jquery-sortable/source/js/jquery-sortable-min.js"></script>
+<script type="text/javascript" src="/components/bignumber.js/bignumber.min.js"></script>
+<script type="text/javascript" src="/components/selectize/dist/js/standalone/selectize.min.js"></script>
+<script type="text/javascript" src="/components/bootstrapValidator/dist/js/bootstrapValidator.min.js"></script>
+<script type="text/javascript" src="/js/product/products.js"></script>
+<script type="text/javascript" src="/js/common-addons.js"></script>
+<script type="text/javascript" src="/js/product/model.js"></script>
+<script type="text/javascript" src="/js/product/modifiers.js"></script>
+<script type="text/javascript" src="/js/product/productGrid.js"></script>
+<script type="text/javascript" src="/js/product/productModal.js"></script>
+<script type="text/javascript" src="/js/product/tax.js"></script>
+<script type="text/javascript" src="/js/product/variants.js"></script>

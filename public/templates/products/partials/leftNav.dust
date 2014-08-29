@@ -1,0 +1,31 @@
+<div id="sidebar" class="sidebar-nav col-md-2">
+    <div id="sidebarContent" style="display:none;">
+        <span class="help-block pull-right"><a href="#" data-toggle="popover" data-trigger="hover"
+                                               data-placement="bottom" data-title="Choose a Product Catalog"
+                                               data-content="You can have multiple named catalogs in your account.<br/><br/>Select an existing one or press delete and enter a new name to create a blank one."
+                                               ><span class="glyphicon glyphicon-question-sign"></span></a></span>
+        <b>Product Catalog Name:</b><br/>
+        <input type="text" class="form-control" id="catalogName"/>
+        <hr/>
+        <ul class="nav nav-list">
+            <li class="nav-header">Tax Rates
+                <ul class="nav nav-list" id="taxRateRepeater">
+                    <li><a id="taxAdd" href="#">Add New Tax Rate...</a></li>
+                </ul>
+            </li>
+
+            <li class="nav-header">Modifiers
+                <ul class="nav nav-list" id="optionRepeater">
+                    <li><a id="modifierAdd" href="#">Add New Modifier...</a></li>
+                </ul>
+            </li>
+        </ul>
+        <hr/>
+        <div>
+            <div class="pull-right"><a href="#" id="csvUploadButton">CSV</a> | <a href="#" id="xlsUploadButton">XLS</a></div>
+            <div><label>Import From</label></div>
+            <div class="pull-right"><a href="/products/{?modelId}{modelId}{:else}_{/modelId}/xls">XLS</a></div>
+            <div><label>Download As</label></div>
+        </div>
+    </div>
+</div>

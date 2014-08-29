@@ -1,0 +1,85 @@
+<div id="itemModal" class="modal fade" aria-hidden="true" role="dialog" tabindex="-1">
+    <form role="form" class="form-horizontal" enctype="multipart/form-data" action="/products/image" id="itemForm">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Edit Product</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="itemImage" class="col-sm-3 control-label">Item Image</label>
+
+                        <div class="col-sm-3">
+                            <img src="/media/image_default_138.png" width="120" height="120" id="itemImage"
+                                 class="img-thumbnail"/>
+                        </div>
+
+                        <div class="col-sm-6" style="padding-top: 2px; height:120px; text-align: center;">
+
+                            <div class="file-input btn btn-block btn-primary btn-file">Upload Image&hellip;
+                                <input type="file" id="imageupload" name="imageupload"/>
+                            </div>
+
+                            <div style="padding: 15px;"><i>- OR -</i></div>
+                            <input id="itemImageUrl" class="form-control input-sm"
+                                   placeholder="Paste a secure image URL"/>
+
+                        </div>
+                    </div>
+                    {>"partials/textField" id="itemName" label="Item Name" placeholder="Enter a name for the item"/}
+                    {>"partials/textField" id="itemDesc" label="Description" placeholder="Enter a description (optional)"/}
+                    <div class="form-group">
+                        <label for="itemPrice" class="col-sm-3 control-label">Unit Price</label>
+
+                        <div class="col-sm-4">
+                            <input class="form-control" id="itemPrice" name="itemPrice"/>
+                        </div>
+
+                        <label for="itemTax" class="col-sm-2 control-label">Tax Rate</label>
+
+                        <div class="col-sm-3">
+                            <select class="form-control" id="itemTax">
+                            </select>
+                        </div>
+                    </div>
+
+                    {>"partials/textField" id="itemCats" label="Categories" placeholder="Enter one or more categories for this item"/}
+                    {>"partials/textField" id="itemBarcode" label="Barcode" placeholder="Enter the item barcode or SKU"/}
+
+                    {>"partials/textField" id="itemVariations" label="Variations" placeholder="e.g. Small, Medium, Large"/}
+                    {>"partials/textField" id="itemModifiers" label="Modifiers" placeholder="e.g. Toppings, Options"/}
+
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" id="itemPriceVaries"> The price of this item varies, I will enter
+                                    the price each time
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="col-sm-offset-2 col-sm-10">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" id="itemFractional"> I sell fractional quantities of this item
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger pull-left" id="deleteItem">Delete Item</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </form>
+</div>

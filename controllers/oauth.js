@@ -52,7 +52,7 @@ module.exports = function (router) {
 
     router.route('/delegates')
         .all(appUtils.apiAuth)
-        .all(appUtils.hasRoles(['NoDelegatesCanUseThis']))
+        .all(appUtils.hasRoles('NoDelegatesCanUseThis'))
         .get(function (req, res) {
             PayPalDelegatedUser.find({profileId: req.user.profileId}, req.$eat(function mongoDelegateResult(docs) {
                 var ret = {delegates: []};
@@ -97,7 +97,7 @@ module.exports = function (router) {
 
     router.route('/delegates/:id')
         .all(appUtils.apiAuth)
-        .all(appUtils.hasRoles(['NoDelegatesCanUseThis']))
+        .all(appUtils.hasRoles('NoDelegatesCanUseThis'))
         .get(function (req, res) {
             PayPalDelegatedUser.findOneAndRemove({_id: req.params.id, profileId: req.user.profileId}, req.$eat(function (doc) {
                 if (doc) {
