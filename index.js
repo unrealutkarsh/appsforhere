@@ -26,7 +26,6 @@ var mongo = require('./lib/mongo'),
             Queue.init(mongo.db);
 
             next(null, config);
-
         }
     },
     port = process.env.PORT || 8000;

@@ -20,6 +20,18 @@ module.exports = function copyto(grunt) {
 	                'public/templates/**/*'
 	            ]
 	        }
-	    }
-	};
+	    },
+        package: {
+            files: [{
+                cwd: '.',
+                src: ['**/*'],
+                dest: '.package/'
+            }],
+            options: {
+                ignore: [
+                    './start.sh'
+                ]
+            }
+        }
+    };
 };

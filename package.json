@@ -13,7 +13,7 @@
     "kraken-devtools": "^1.0.0",
     "engine-munger": "^0.2.0",
     "express": "^4.3.0",
-    "dustjs-linkedin": "^2.4.0",
+    "dustjs-linkedin": "^2.3.0",
     "adaro": "^0.1.5",
     "dustjs-helpers": "^1.2.0",
     "localizr": "^0.1.0",
@@ -32,7 +32,10 @@
     "async": "^0.9.0",
     "csv": "^0.4.0",
     "xlsx": "^0.7.10",
-    "vargs": "^0.1.0"
+    "vargs": "^0.1.0",
+    "node-paypal-invoice": "0.0.14",
+    "accounting": "^0.4.1",
+    "bignumber.js": "^1.4.1"
   },
   "devDependencies": {
     "mocha": "^1.18.0",

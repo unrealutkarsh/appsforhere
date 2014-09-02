@@ -11,8 +11,7 @@
                         <label for="itemImage" class="col-sm-3 control-label">Item Image</label>
 
                         <div class="col-sm-3">
-                            <img src="/media/image_default_138.png" width="120" height="120" id="itemImage"
-                                 class="img-thumbnail"/>
+                            <img src="/media/image_default_138.png" width="120" height="120" id="itemImage" class="img-thumbnail"/>
                         </div>
 
                         <div class="col-sm-6" style="padding-top: 2px; height:120px; text-align: center;">
@@ -22,9 +21,7 @@
                             </div>
 
                             <div style="padding: 15px;"><i>- OR -</i></div>
-                            <input id="itemImageUrl" class="form-control input-sm"
-                                   placeholder="Paste a secure image URL"/>
-
+                            <input id="itemImageUrl" class="form-control input-sm" placeholder="Paste a secure image URL"/>
                         </div>
                     </div>
                     {>"partials/textField" id="itemName" label="Item Name" placeholder="Enter a name for the item"/}

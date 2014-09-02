@@ -8,6 +8,7 @@ module.exports = function clean(grunt) {
 	// Options
 	return {
 	    tmp: 'tmp',
-	    build: '.build/templates'
+	    build: '.build/templates',
+        package: ['.package/*','!.package/.git']
 	};
 };
