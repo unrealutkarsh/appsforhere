@@ -1,5 +1,6 @@
-/.build/*   # Build folder
-/public/*	# ignore all public resources
-/.*			# any hidden (dot) files
-*.md	    # Markdown files
-*.css	    # CSS files
+.build/*    # Build folder
+.package/*  # Package folder for deployment
+public/*    # ignore all public resources
+.*          # any hidden (dot) files
+*.md        # Markdown files
+*.css       # CSS files
