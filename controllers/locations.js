@@ -1,5 +1,7 @@
 'use strict';
 var appUtils = require('appUtils');
+var httpunch = require('httpunch');
+var FormData = require('form-data');
 var Product = require('../models/products');
 var imgHelper = require('../lib/products/img-canvas-helper');
 var fs = require('fs');

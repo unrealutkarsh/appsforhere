@@ -35,7 +35,8 @@
     "vargs": "^0.1.0",
     "node-paypal-invoice": "0.0.14",
     "accounting": "^0.4.1",
-    "bignumber.js": "^1.4.1"
+    "bignumber.js": "^1.4.1",
+    "form-data": "^0.1.4"
   },
   "devDependencies": {
     "mocha": "^1.18.0",
