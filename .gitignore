@@ -3,4 +3,4 @@ node_modules/**
 .idea/**
 start.sh
 public/components/**
-
+.package

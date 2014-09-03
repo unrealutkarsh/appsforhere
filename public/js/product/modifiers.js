@@ -244,7 +244,6 @@ function setupModifiers() {
     $('#modifierForm').bootstrapValidator({
         live: 'enabled',
         submitButtons: "button.btn-primary",
-        submitHandler: saveModifierToLocalModel,
         feedbackIcons: {
             valid: 'glyphicon glyphicon-ok',
             invalid: 'glyphicon glyphicon-remove',
@@ -262,6 +261,9 @@ function setupModifiers() {
                 }
             }
         }
+    }).on('success.form.bv', function(e) {
+        e.preventDefault();
+        saveModifierToLocalModel();
     });
     $('#modifierGrid').on('click', 'table>tbody>tr', function () {
         var $this = $(this);
@@ -279,7 +281,6 @@ function setupModifiers() {
 
     $('#modValueForm').bootstrapValidator({
         live: 'enabled',
-        submitHandler: saveModifierValueToLocalModel,
         feedbackIcons: {
             valid: 'glyphicon glyphicon-ok',
             invalid: 'glyphicon glyphicon-remove',
@@ -304,6 +305,9 @@ function setupModifiers() {
                 }
             }
         }
+    }).on('success.form.bv', function(e) {
+        e.preventDefault();
+        saveModifierValueToLocalModel();
     });
 
 }

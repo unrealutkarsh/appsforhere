@@ -267,7 +267,6 @@ $(document).ready(function () {
     var bv = $('#delegateForm').bootstrapValidator({
         live: 'enabled',
         excluded: [],
-        submitHandler: saveDelegate,
         feedbackIcons: {
             valid: 'glyphicon glyphicon-ok',
             invalid: 'glyphicon glyphicon-remove',
@@ -298,6 +297,9 @@ $(document).ready(function () {
                 }
             }
         }
+    }).on('success.form.bv', function(e) {
+        e.preventDefault();
+        saveDelegate();
     });
     wireValidatedSelectize('delegateFeatures', bv);
 });

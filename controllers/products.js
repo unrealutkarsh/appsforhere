@@ -17,11 +17,11 @@ module.exports = function (router) {
 
     router.use(appUtils.domain);
 
-    router.get('/', appUtils.auth, appUtils.hasRoles('ViewProducts'), function (req, res) {
+    router.get('/', appUtils.auth, appUtils.hasRoles(appUtils.ROLES.ViewProducts), function (req, res) {
         res.render('products/index');
     });
 
-    router.get('/:modelId', appUtils.auth, appUtils.hasRoles('ViewProducts'), function (req, res) {
+    router.get('/:modelId', appUtils.auth, appUtils.hasRoles(appUtils.ROLES.ViewProducts), function (req, res) {
         if (req.params.modelId === '_') {
             res.render('products');
         } else {
@@ -31,7 +31,7 @@ module.exports = function (router) {
         }
     });
 
-    router.get('/:modelId/xls', appUtils.auth, appUtils.hasRoles('ViewProducts'), function (req, res) {
+    router.get('/:modelId/xls', appUtils.auth, appUtils.hasRoles(appUtils.ROLES.ViewProducts), function (req, res) {
         if (req.params.modelId === '_') {
             req.user.hereApi().get({
                 tokens: req.user,
@@ -73,7 +73,7 @@ module.exports = function (router) {
         }
     });
 
-    router.get('/api/catalogs', appUtils.auth, appUtils.hasRoles('ViewProducts'), function (req, res) {
+    router.get('/api/catalogs', appUtils.auth, appUtils.hasRoles(appUtils.ROLES.ViewProducts), function (req, res) {
         Product.ProductModel.find({merchantId: req.user._id}).select('name').exec(req.$eat(function (docs) {
             var rz = {catalogs: [
                 {text: 'PayPal Here', value: '-'}
@@ -87,7 +87,7 @@ module.exports = function (router) {
         }));
     });
 
-    router.get('/api/catalogs/:id/tags', appUtils.auth, appUtils.hasRoles('ViewProducts'), function (req, res) {
+    router.get('/api/catalogs/:id/tags', appUtils.auth, appUtils.hasRoles(appUtils.ROLES.ViewProducts), function (req, res) {
         if (req.params.id === '-') {
             Product.getHereApiModel(req, function (err, model) {
                 res.json({tags: model.tags});
@@ -99,7 +99,7 @@ module.exports = function (router) {
         }
     });
 
-    router.post('/import', appUtils.apiAuth, appUtils.hasRoles('EditProducts'), function (req, res, next) {
+    router.post('/import', appUtils.apiAuth, appUtils.hasRoles(appUtils.ROLES.EditProducts), function (req, res, next) {
         if (req.files.csvupload) {
             fs.readFile(req.files.csvupload.path, req.$eat(function (data) {
                 csv.parse(data.toString(), req.$eat(function (rows) {
@@ -116,7 +116,7 @@ module.exports = function (router) {
         }
     });
 
-    router.get('/new/:modelName', appUtils.auth, appUtils.hasRoles('EditProducts'), function (req, res) {
+    router.get('/new/:modelName', appUtils.auth, appUtils.hasRoles(appUtils.ROLES.EditProducts), function (req, res) {
         if (req.params.modelName === 'PayPal Here') {
             res.redirect('/products');
             return;
@@ -130,7 +130,7 @@ module.exports = function (router) {
         }));
     });
 
-    router.post('/publish', appUtils.auth, appUtils.hasRoles('EditProducts'), function (req, res) {
+    router.post('/publish', appUtils.auth, appUtils.hasRoles(appUtils.ROLES.EditProducts), function (req, res) {
         var model = JSON.parse(req.body.model);
         putModel(req, model, function (err) {
             res.json({
@@ -140,7 +140,7 @@ module.exports = function (router) {
         });
     });
 
-    router.post('/save', appUtils.auth, appUtils.hasRoles('EditProducts'), function (req, res, next) {
+    router.post('/save', appUtils.auth, appUtils.hasRoles(appUtils.ROLES.EditProducts), function (req, res, next) {
         if (!req.body.name) {
             res.json({success: false, message: 'Missing catalog name'}, 500);
             return;
@@ -157,7 +157,7 @@ module.exports = function (router) {
         }));
     });
 
-    router.post('/image', appUtils.auth, appUtils.hasRoles('EditProducts'), function (req, res, next) {
+    router.post('/image', appUtils.auth, appUtils.hasRoles(appUtils.ROLES.EditProducts), function (req, res, next) {
         fs.readFile(req.files.imageupload.path, req.$eat(function (data) {
             imgHelper.resize(data, 200, 200, req.$eat(function (thumb) {
                 thumb.toBuffer(req.$eat(function (thumbBuffer) {

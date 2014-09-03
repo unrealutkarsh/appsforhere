@@ -150,7 +150,6 @@ function setupItemModal() {
         });
     $('#itemForm').bootstrapValidator({
         live: 'enabled',
-        submitHandler: saveItemToLocalModel,
         feedbackIcons: {
             valid: 'glyphicon glyphicon-ok',
             invalid: 'glyphicon glyphicon-remove',
@@ -172,5 +171,8 @@ function setupItemModal() {
                 }
             }
         }
+    }).on('success.form.bv', function(e) {
+        e.preventDefault();
+        saveItemToLocalModel();
     });
 }

@@ -6,7 +6,7 @@ module.exports = function (router) {
 
     router.use(appUtils.domain);
 
-    router.get(function (req, res) {
+    router.get('/:imageId', function (req, res) {
         Product.Image.findById(req.params.imageId, req.$eat(function (doc) {
             if (!doc) {
                 res.status(404);

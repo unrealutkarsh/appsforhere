@@ -1,0 +1,302 @@
+{>"layouts/loggedin" active="locations"/}
+
+{<body}
+    <div id="wrapper">
+        <div class="container-fluid">
+            <div class="row-fluid">
+                <div id="main" class="col-md-12">
+                    <div class="repeater" id="locationGrid">
+
+                        <div class="repeater-header">
+                            <div class="repeater-header-left">
+                                <button class="btn btn-info" id="addLocation">Add location...</button>
+                            </div>
+                            <div class="repeater-header-right">
+                                <div class="repeater-search">
+                                    <div class="search input-group">
+                                        <input type="search" class="form-control" placeholder="Search"/>
+                                                                <span class="input-group-btn">
+                                                                        <button class="btn btn-default" type="button">
+                                                                            <span class="glyphicon glyphicon-search"></span>
+                                                                            <span class="sr-only">Search</span>
+                                                                        </button>
+                                                                </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="repeater-viewport">
+                            <div class="repeater-canvas"></div>
+                            <div class="loader repeater-loader"></div>
+                        </div>
+
+                        <div class="repeater-footer">
+                            <div class="repeater-footer-left">
+                                <div class="repeater-itemization">
+                                    <div class="btn-group selectlist" data-resize="auto">
+                                        <button type="button" class="btn btn-default dropdown-toggle"
+                                                data-toggle="dropdown">
+                                            <span class="selected-label">&nbsp;</span>
+                                            <span class="caret"></span>
+                                            <span class="sr-only">Toggle Dropdown</span>
+                                        </button>
+                                        <ul class="dropdown-menu" role="menu">
+                                            <li data-value="10"><a href="#">10</a></li>
+                                            <li data-value="15" data-selected="true"><a href="#">15</a></li>
+                                            <li data-value="25"><a href="#">25</a></li>
+                                            <li data-value="50"><a href="#">50</a></li>
+                                            <li data-value="100"><a href="#">100</a></li>
+                                        </ul>
+                                        <input class="hidden hidden-field" name="itemsPerPage" readonly="readonly"
+                                               aria-hidden="true" type="text"/>
+                                    </div>
+                                    <span>Per Page</span>
+                                </div>
+                            </div>
+                            <div class="repeater-footer-right">
+                                <div class="repeater-pagination">
+                                    <button type="button" class="btn btn-default btn-sm repeater-prev"><span
+                                            class="glyphicon glyphicon-chevron-left"></span></button>
+                                    <span>Page</span>
+
+                                    <div class="repeater-primaryPaging active">
+                                        <div class="input-group input-append">
+                                            <input type="text" class="form-control">
+                                        </div>
+                                    </div>
+                                    <input type="text" class="form-control repeater-secondaryPaging">
+                                    <button type="button" class="btn btn-default btn-sm repeater-next"><span
+                                            class="glyphicon glyphicon-chevron-right"></span></button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{/body}
+
+{<bodyElements}
+    <div id="googleModal" class="modal fade" aria-hidden="true" role="dialog" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <form id="locationDetailForm">
+                <div class="modal-content">
+                    <div class="modal-body">
+
+                        <input id="pac-input" class="controls" type="text"
+                               placeholder="Enter a location">
+
+                        <div id="type-selector" class="controls">
+                            <input type="radio" name="type" id="changetype-all" checked="checked">
+                            <label for="changetype-all">All</label>
+
+                            <input type="radio" name="type" id="changetype-establishment">
+                            <label for="changetype-establishment">Establishments</label>
+
+                            <input type="radio" name="type" id="changetype-geocode">
+                            <label for="changetype-geocode">Geocodes</label>
+                        </div>
+                        <div id="map-canvas"></div>
+
+                        <div class="form-group">
+                            <div class="col-sm-2">
+                                <input class="form-control" id="locCountry" name="locCountry" placeholder="Country"/>
+                            </div>
+                            <div class="col-sm-5">
+                                <input class="form-control" id="locAddress1" name="locAddress1"
+                                       placeholder="Address Line One"/>
+                            </div>
+                            <div class="col-sm-5">
+                                <input class="form-control" id="locAddress2" name="locAddress2"
+                                       placeholder="Address Line Two"/>
+                            </div>
+                        </div>
+                        <br/>
+                        <br/>
+
+                        <div class="form-group">
+                            <div class="col-sm-4">
+                                <input class="form-control" id="locCity" name="locCity" placeholder="City"/>
+                            </div>
+                            <div class="col-sm-3">
+                                <input class="form-control" id="locState" name="locState" placeholder="State"/>
+                            </div>
+                            <div class="col-sm-2">
+                                <input class="form-control" id="locZip" name="locZip" placeholder="Zip"/>
+                            </div>
+                            <div class="col-sm-3">
+                                <input class="form-control" id="locGps" name="locGps" placeholder="Coordinates"/>
+                            </div>
+                        </div>
+                        <br/>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="locationModal" class="modal fade" aria-hidden="true" role="dialog" tabindex="-1">
+        <form role="form" class="form-horizontal" enctype="multipart/form-data" action="/products/image"
+              id="locationForm">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 class="modal-title">Edit Location</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="locationImage" class="col-sm-3 control-label">Logo</label>
+
+                            <div class="col-sm-3">
+                                <img src="/media/image_default_138.png" width="120" height="120" id="locationImage"
+                                     class="img-thumbnail"/>
+                            </div>
+
+                            <div class="col-sm-6" style="padding-top: 2px; height:120px; text-align: center;">
+
+                                <div class="file-input btn btn-block btn-default btn-file">Upload an Image&hellip;
+                                    <input type="file" id="imageupload" name="imageupload"/>
+                                </div>
+
+                                <div style="padding: 15px;"><i>- OR -</i></div>
+                                <input id="locationUrl" class="form-control input-sm"
+                                       placeholder="Paste a logo URL"/>
+
+                            </div>
+                        </div>
+                        {>"partials/textField" id="locationInternalName" label="Internal Name" placeholder="Enter a unique name for the location (for your use)"/}
+                        {>"partials/textField" id="locationName" label="Location Name" placeholder="Enter a name for the location (for customers)"/}
+
+                        <div class="form-group text-center">
+                            <div class="col-sm-12">
+                                <label>This location is&nbsp;</label>
+
+                                <div class="btn-group" id="locationType">
+                                    <button type="button" class="btn btn-primary dropdown-toggle"
+                                            data-toggle="dropdown">
+                                        <span class="value">At a Fixed Address</span> <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="#" id="locationMobile">Mobile</a></li>
+                                        <li><a href="#" id="locationFixed">At a Fixed Address</a></li>
+                                    </ul>
+                                </div>
+                                <label>&nbsp; and currently &nbsp;</label>
+
+                                <div class="btn-group" id="locationAvailability">
+                                    <button type="button" class="btn btn-success dropdown-toggle"
+                                            data-toggle="dropdown">
+                                        <span class="value">Closed</span> <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="#" id="locationOpen">Open</a></li>
+                                        <li><a href="#" id="locationClosed">Closed</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="locationTips" class="col-sm-3 control-label">Tips</label>
+
+                            <div class="col-sm-9">
+                                <div class="checkbox">
+                                    <label>
+                                        <input type="checkbox" id="locationTips"> Allow tips at this location
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">Location</label>
+
+                            <div class="col-sm-9">
+                                <span id="locationLocation"></span>
+                                <button type="button" class="btn btn-link" id="locationUpdate">Update</button>
+                            </div>
+                        </div>
+
+                        {>"partials/textField" id="locationPhone" label="Phone Number" placeholder="Enter a phone number for this location"/}
+
+                        <div class="form-group">
+                            <div class="col-sm-offset-1"><a data-toggle="collapse" href="#advancedOptions">
+                                <span class="glyphicon glyphicon-chevron-down"></span> Advanced Location Options
+                            </a></div>
+                        </div>
+                        <div id="advancedOptions" class="collapse">
+                            {>"partials/textField" id="locationMessage" label="Message" placeholder="Enter an optional message to be displayed to customers"/}
+
+                            <div class="form-group">
+                                <label for="locationFormFactor" class="col-sm-3 control-label">Payment Type</label>
+
+                                <div class="col-sm-3">
+                                    <div class="btn-group" id="locationFormFactor">
+                                        <button type="button" class="btn btn-default dropdown-toggle"
+                                                data-toggle="dropdown">
+                                            <span class="value">Face or PayCode</span> <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu" role="menu">
+                                            <li><a href="#" id="locationByFace">Pay By Face</a></li>
+                                            <li><a href="#" id="locationPayCode">With PayCode</a></li>
+                                            <!--
+                                            <li><a href="#" id="locationFFBoth">Face or PayCode</a></li>
+                                            -->
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <label for="locationTabDuration" class="col-sm-3 control-label" style="width:20%;">Tab Duration</label>
+
+                                <div class="col-sm-3" style="width:30%;">
+                                    <input type="number" class="form-control input-sm" id="locationTabDuration" placeholder="In minutes (15-360)"/>
+                                </div>
+                            </div>
+
+                            {>"partials/textField" id="locationTabUrl" label="Extension App" placeholder="Optional post-checkin application URL"/}
+                            {>"partials/textField" id="locationButton" label="Button" placeholder="Choose the button (only when extension app is not empty)"/}
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger pull-left" id="deleteLocation">Delete Location
+                        </button>
+                        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </div>
+                <!-- /.modal-content -->
+            </div>
+            <!-- /.modal-dialog -->
+        </form>
+    </div>
+    {>"partials/progressModal"/}
+
+{/bodyElements}
+
+{<head}
+    <link href="/components/selectize/dist/css/selectize.bootstrap3.css" rel="stylesheet">
+    <link href="/components/bootstrapValidator/dist/css/bootstrapValidator.min.css" rel="stylesheet">
+{/head}
+
+{<scripts}
+    <script type="text/javascript" src="components/jquery-sortable/source/js/jquery-sortable-min.js"></script>
+    <script type="text/javascript" src="/components/bignumber.js/bignumber.min.js"></script>
+    <script type="text/javascript" src="/components/selectize/dist/js/standalone/selectize.js"></script>
+    <script type="text/javascript" src="/components/bootstrapValidator/dist/js/bootstrapValidator.min.js"></script>
+    <script type="text/javascript" src="/js/common-addons.js"></script>
+    <script type="text/javascript" src="/js/locations/locations.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places"></script>
+    <script type="text/javascript">
+        var _csrf = '{_csrf}';
+    </script>
+{/scripts}

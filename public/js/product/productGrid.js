@@ -280,10 +280,6 @@ function setupProductGrid() {
 
     $('#modelNameForm').bootstrapValidator({
         live: 'enabled',
-        submitHandler: function () {
-            $('#modelNameModal').modal('hide');
-            publishModel($('#modelName').val());
-        },
         feedbackIcons: {
             valid: 'glyphicon glyphicon-ok',
             invalid: 'glyphicon glyphicon-remove',
@@ -306,5 +302,9 @@ function setupProductGrid() {
                 }
             }
         }
+    }).on('success.form.bv', function(e) {
+        e.preventDefault();
+        $('#modelNameModal').modal('hide');
+        publishModel($('#modelName').val());
     });
 }

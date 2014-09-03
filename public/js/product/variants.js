@@ -68,7 +68,6 @@ function setupVariants() {
     $("#variantPrice").money_field({});
     $('#variantForm').bootstrapValidator({
         live: 'enabled',
-        submitHandler: saveVariantToLocalModel,
         feedbackIcons: {
             valid: 'glyphicon glyphicon-ok',
             invalid: 'glyphicon glyphicon-remove',
@@ -86,5 +85,8 @@ function setupVariants() {
                 }
             }
         }
+    }).on('success.form.bv', function(e) {
+        e.preventDefault();
+        saveVariantToLocalModel();
     });
 }

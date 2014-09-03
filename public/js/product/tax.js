@@ -89,7 +89,6 @@ function setupTax() {
 
     $('#taxForm').bootstrapValidator({
         live: 'enabled',
-        submitHandler: saveTaxToLocalModel,
         feedbackIcons: {
             valid: 'glyphicon glyphicon-ok',
             invalid: 'glyphicon glyphicon-remove',
@@ -114,5 +113,8 @@ function setupTax() {
                 }
             }
         }
+    }).on('success.form.bv', function(e) {
+        e.preventDefault();
+        saveTaxToLocalModel();
     });
 }
