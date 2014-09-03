@@ -31,9 +31,23 @@
     },
     
     "mongoUrl": "mongodb://localhost/pph-loyalty",
-    "sessionSecret": "THIS_IS_A_DEVELOPMENT_SERVER_SECRET",
 
     "middleware": {
+        "session": {
+            "module": {
+                "name": "path:./lib/krakenMongoSession",
+                "arguments": [{
+                    "secret": "paypalhere4eva",
+                    "cookie": {
+                        "path": "/",
+                        "httpOnly": true,
+                        "maxAge": null
+                    },
+                    "resave": true,
+                    "saveUninitialized": true
+                }]
+            }
+        },
 
         "static": {
             "module": {

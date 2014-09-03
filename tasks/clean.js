@@ -9,6 +9,6 @@ module.exports = function clean(grunt) {
 	return {
 	    tmp: 'tmp',
 	    build: '.build/templates',
-        package: ['.package/*','!.package/.git']
+        package: ['.package/*','!.package/.git','!.package/process.json']
 	};
 };

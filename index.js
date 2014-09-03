@@ -11,19 +11,17 @@ var mongo = require('./lib/mongo'),
     kraken = require('kraken-js'),
     express = require('express'),
     app = require('express')(),
-    session = require('express-session'),
     passport = require('passport'),
-    PayPalStrategy = require('./lib/paypalStrategy'),
+    PayPalStrategy = require('./lib/payPalStrategy'),
     PayPalUser = require('./models/payPalUser'),
     PayPalDelegatedUser = require('./models/payPalDelegatedUser'),
-    MongoStore = require('connect-mongo')(session),
     Queue = require('./lib/queue'),
     Liwp = require('node-liwp'),
     options = {
         onconfig: function appsforhereConfiguration(config, next) {
             configureMongo(config);
             configurePassport(config);
-            Queue.init(mongo.db);
+            configureQueue();
 
             next(null, config);
         }
@@ -41,16 +39,18 @@ app.listen(port, function (err) {
     logger.info('[%s] Listening on http://localhost:%d', app.settings.env, port);
 });
 
+function configureQueue() {
+    var queueOptions = {
+        process: true
+    };
+    if (process.env.NO_QUEUE_PROCESSING) {
+        queueOptions.process = false;
+    }
+    Queue.init(mongo.db, queueOptions);
+}
+
 function configureMongo(config) {
     mongo.config(config.get('mongoUrl'));
-    app.use(session({
-        secret: config.get('sessionSecret'),
-        store: new MongoStore({
-            mongoose_connection: mongo.db
-        }),
-        resave: true,
-        saveUninitialized: true
-    }));
 }
 
 function configurePassport(config) {

@@ -7,8 +7,8 @@ pretty much anywhere.
 ** PLEASE NOTE **
 For improved performance, these modules should be installed globally to ensure native modules where appropriate:
 
-* Node module [mongoose](http://mongoosejs.com/) ~3.8.11
-* connect-mongo ~0.4.0
+* Node module [mongoose](http://mongoosejs.com/) ^3.8.15
+* connect-mongo ^0.4.0
 * [canvas](https://github.com/LearnBoost/node-canvas)
 * [pm2](https://github.com/unitech/pm2)
 
@@ -19,10 +19,8 @@ The server also requires the following environment variables:
 
 * PAYPAL_APP_ID - The OAuth appId for PayPal, which needs certain scopes enabled (see the code)
 * PAYPAL_APP_SECRET - The app secret for the PAYPAL_APP_ID
-* PAYPAL_RETURN_URL - The return URL for the app identified by PAYPAL_APP_ID
-* PPS_USERNAME - The old-style three factor PayPal auth username for classic API calls
-* PPS_PASSWORD - The old-style three factor PayPal auth password for classic API calls
-* PPS_SIGNATURE - The old-style three factor PayPal auth signature for classic API calls
+* PAYPAL_RETURN_URL - The return URL for the app identified by PAYPAL_APP_ID (e.g. https://www.mysite.com/oauth/return)
+* NEWRELIC_APP, NEWRELIC_KEY - the app name and key for New Relic monitoring
 * MAILGUN_KEY - The MailGun API key for email notifications
 * TWILIO_AUTH, TWILIO_SID and TWILIO_NUM - The Twilio API authentication and phone number information
 
