@@ -1,4 +1,4 @@
-{>"layouts/loggedin" active="products"/}
+{>"layouts/loggedIn" active="products"/}
 
 {<body}
     <div id="wrapper">

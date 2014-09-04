@@ -1,4 +1,4 @@
-{>"layouts/loggedin" active="locations"/}
+{>"layouts/loggedIn" active="locations"/}
 
 {<body}
     <div id="wrapper">
