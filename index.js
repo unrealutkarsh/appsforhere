@@ -1,11 +1,13 @@
 'use strict';
 var logger = require('pine')();
+/* NewRelic is disabled until this is fixed: https://github.com/krakenjs/kraken-js/issues/285
 if (process.env.NODE_ENV === 'production') {
     logger.info("Starting newrelic agent.");
     require('newrelic');
 } else {
     logger.info("newrelic inactive (%s).", process.env.NODE_ENV || 'no NODE_ENV set');
 }
+*/
 
 var mongo = require('./lib/mongo'),
     kraken = require('kraken-js'),
