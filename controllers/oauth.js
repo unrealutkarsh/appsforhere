@@ -6,6 +6,8 @@ var PayPalUser = require('../models/payPalUser');
 var PayPalDelegatedUser = require('../models/payPalDelegatedUser');
 var appUtils = require('appUtils');
 
+var appScopes = 'openid https://uri.paypal.com/services/paypalhere email https://uri.paypal.com/services/paypalattributes profile';
+
 module.exports = function (router) {
 
     router.use(appUtils.domain);
@@ -13,14 +15,14 @@ module.exports = function (router) {
     router.get('/login', function (req, res, next) {
         req.session.environment = 'live';
         passport.authenticate('paypal', {
-            scope: 'https://uri.paypal.com/services/paypalhere email profile address openid https://uri.paypal.com/services/paypalattributes'
+            scope: appScopes
         })(req, res, next);
     });
 
     router.get('/login-sandbox', function (req, res, next) {
         req.session.environment = 'sandbox';
         passport.authenticate('sandbox', {
-            scope: 'https://uri.paypal.com/services/paypalhere email profile address openid https://uri.paypal.com/services/paypalattributes'
+            scope: appScopes
         })(req, res, next);
     });
 
