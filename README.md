@@ -27,5 +27,12 @@ The server also requires the following environment variables:
 ** ALSO NOTE **
 The PayPal OAuth scopes for many of the APIs used here must be manually enabled for your application (i.e. they are
 not self-service). Hopefully this will change in the near future, but until then just private message me and I will try
-to help if you don't already have access. The sandbox credentials are embedded in the source and you can mess with
+to help if you don't already have access. Your app needs the following scopes:
+
+* email
+* profile
+* https://uri.paypal.com/services/paypalhere 
+* https://uri.paypal.com/services/paypalattributes
+ 
+The sandbox credentials are embedded in the source and you can mess with
 your hosts file to make the returnUrl work.

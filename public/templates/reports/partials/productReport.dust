@@ -1,0 +1,69 @@
+<div class="repeater" id="productGrid">
+
+    <div class="repeater-header">
+        <div class="repeater-header-right">
+            <div class="repeater-search">
+                <div class="search input-group">
+                    <input type="search" class="form-control" placeholder="Search"/>
+                                                                <span class="input-group-btn">
+                                                                        <button class="btn btn-default" type="button">
+                                                                            <span class="glyphicon glyphicon-search"></span>
+                                                                            <span class="sr-only">Search</span>
+                                                                        </button>
+                                                                </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="repeater-viewport">
+        <div class="repeater-canvas"></div>
+        <div class="loader repeater-loader"></div>
+    </div>
+
+    <div class="repeater-footer">
+        <div class="repeater-footer-left">
+            <div class="repeater-itemization">
+                <div class="btn-group selectlist" data-resize="auto">
+                    <button type="button" class="btn btn-default dropdown-toggle"
+                            data-toggle="dropdown">
+                        <span class="selected-label">&nbsp;</span>
+                        <span class="caret"></span>
+                        <span class="sr-only">Toggle Dropdown</span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li data-value="10"><a href="#">10</a></li>
+                        <li data-value="15" data-selected="true"><a href="#">15</a></li>
+                        <li data-value="25"><a href="#">25</a></li>
+                        <li data-value="50"><a href="#">50</a></li>
+                        <li data-value="100"><a href="#">100</a></li>
+                    </ul>
+                    <input class="hidden hidden-field" name="itemsPerPage" readonly="readonly"
+                           aria-hidden="true" type="text"/>
+                </div>
+                <span>Per Page</span>
+            </div>
+        </div>
+        <div class="repeater-footer-right">
+            <div class="repeater-pagination">
+                <button type="button" class="btn btn-default btn-sm repeater-prev">
+                    <span class="glyphicon glyphicon-chevron-left"></span></button>
+                <span>Page</span>
+
+                <div class="repeater-primaryPaging active">
+                    <div class="input-group input-append">
+                        <input type="text" class="form-control">
+                    </div>
+                </div>
+                <input type="text" class="form-control repeater-secondaryPaging">
+                <button type="button" class="btn btn-default btn-sm repeater-next">
+                    <span class="glyphicon glyphicon-chevron-right"></span></button>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="text-right">
+    <a id="productExport">Export to CSV</a>
+</div>
+<br/><br/>
