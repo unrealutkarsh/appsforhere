@@ -11,6 +11,7 @@ For improved performance, these modules should be installed globally to ensure n
 * connect-mongo ^0.4.0
 * [canvas](https://github.com/LearnBoost/node-canvas)
 * [pm2](https://github.com/unitech/pm2)
+* socket.io ^1.1.0
 
 And then you must set the NODE_DIR environment variable to your global module directory. We do this to enable git deploy
 with the same package.json.
@@ -36,3 +37,14 @@ to help if you don't already have access. Your app needs the following scopes:
  
 The sandbox credentials are embedded in the source and you can mess with
 your hosts file to make the returnUrl work.
+
+## Useful Components
+
+Appsforhere uses the following components which might be useful to look at if you're doing the same types of interactions:
+
+* passport - for integrating PayPal Access/Login With PayPal with Kraken/Express
+* Twilio - for SMS awesomesauce
+* Mailgun - for such SMTP
+* mongodb-queue - to manage queuing mail and sms jobs
+* socket.io - to stream server farm logs to the admin page. This is a bit tricky to get right with Kraken, so check index.js
+* d3.js - if you copy my d3 code that would make it like 4th hand

@@ -1,18 +1,21 @@
 'use strict';
 var logger = require('pine')();
 /* NewRelic is disabled until this is fixed: https://github.com/krakenjs/kraken-js/issues/285
-if (process.env.NODE_ENV === 'production') {
-    logger.info("Starting newrelic agent.");
-    require('newrelic');
-} else {
-    logger.info("newrelic inactive (%s).", process.env.NODE_ENV || 'no NODE_ENV set');
-}
-*/
+ if (process.env.NODE_ENV === 'production') {
+ logger.info("Starting newrelic agent.");
+ require('newrelic');
+ } else {
+ logger.info("newrelic inactive (%s).", process.env.NODE_ENV || 'no NODE_ENV set');
+ }
+ */
 
 var mongo = require('./lib/mongo'),
     kraken = require('kraken-js'),
     express = require('express'),
     app = require('express')(),
+    // These two lines are required to get Socket.io to work properly
+    server = require('http').Server(app),
+    io = require('socket.io')(server),
     passport = require('passport'),
     PayPalStrategy = require('./lib/payPalStrategy'),
     PayPalUser = require('./models/payPalUser'),
@@ -21,6 +24,7 @@ var mongo = require('./lib/mongo'),
     Liwp = require('node-liwp'),
     options = {
         onconfig: function appsforhereConfiguration(config, next) {
+            configureLogging(config);
             configureMongo(config);
             configurePassport(config);
             configureQueue();
@@ -37,8 +41,10 @@ app.on('middleware:after:session', function addPassportToSession(eventargs) {
 
 app.use(kraken(options));
 
-app.listen(port, function (err) {
+// The kraken generator uses app.listen, but we need server.listen to make socket.io work
+server.listen(port, function (err) {
     logger.info('[%s] Listening on http://localhost:%d', app.settings.env, port);
+    require('./lib/streamingControllers')(io);
 });
 
 function configureQueue() {
@@ -49,6 +55,12 @@ function configureQueue() {
         queueOptions.process = false;
     }
     Queue.init(mongo.db, queueOptions);
+}
+
+function configureLogging(config) {
+    var MongoDB = require('winston-mongodb').MongoDB;
+    // only way to set the default logger config is via the private pine impl
+    logger._impl.add(MongoDB, config.get('winston-mongodb'));
 }
 
 function configureMongo(config) {

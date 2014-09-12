@@ -41,7 +41,8 @@
         </div>
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav">
-                <li {@eq key=active value="users"}class="active"{/eq}><a href="/apps">Users</a></li>
+                <li {@eq key=active value="users"}class="active"{/eq}><a href="/admin/users">Users</a></li>
+                <li {@eq key=active value="logs"}class="active"{/eq}><a href="/admin/logs">Logs</a></li>
             </ul>
 
             <ul class="nav navbar-nav navbar-right">
@@ -65,9 +66,5 @@
 <script src="/components/underscore/underscore.js" type="text/javascript"></script>
 <script src="/components/bootbox/bootbox.js" type="text/javascript"></script>
     {+scripts /}
-<script type="text/javascript" src="https://s3.amazonaws.com/assets.freshdesk.com/widget/freshwidget.js"></script>
-<script type="text/javascript">
-    FreshWidget.init("", {"queryString": "&widgetType=popup", "backgroundImage": "https://s3.amazonaws.com/assets.freshdesk.com/widget/help-button.png", "widgetType": "popup", "buttonType": "image", "buttonText": "Support", "buttonColor": "white", "buttonBg": "#3B3B3B", "alignment": "3", "offset": "10px", "formHeight": "500px", "url": "https://appsforhere.freshdesk.com"} );
-</script>
 </body>
 </html>
