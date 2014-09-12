@@ -18,7 +18,7 @@ module.exports = function (router) {
             res.render('errors/401');
             return;
         }
-        res.render('admin/index');
+        res.render('admin/logs');
     });
 
 };

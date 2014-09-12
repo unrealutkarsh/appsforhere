@@ -44,7 +44,6 @@ app.use(kraken(options));
 // The kraken generator uses app.listen, but we need server.listen to make socket.io work
 server.listen(port, function (err) {
     logger.info('[%s] Listening on http://localhost:%d', app.settings.env, port);
-    require('./lib/streamingControllers')(io);
 });
 
 function configureQueue() {
@@ -65,6 +64,10 @@ function configureLogging(config) {
 
 function configureMongo(config) {
     mongo.config(config.get('mongoUrl'));
+    mongo.connection.once('connected', function () {
+        // This infra needs a mongo connection for session data, so wait...
+        require('./lib/streamingControllers')(io);
+    });
 }
 
 function configurePassport(config) {

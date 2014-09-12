@@ -34,8 +34,12 @@
     <script type="text/javascript" src="/components/selectize/dist/js/standalone/selectize.min.js"></script>
     <script type="text/javascript" src="/components/bootstrapValidator/dist/js/bootstrapValidator.js"></script>
     <script type="text/javascript" src="/js/common-addons.js"></script>
+    <script type="text/javascript" src="/components/socket.io-client/socket.io.js"></script>
+    <script type="text/javascript" src="/js/admin/admin.js"></script>
     <script type="text/javascript">
         var _csrf = '{_csrf}';
+
+        setupLogPage();
     </script>
 {/scripts}
 
