@@ -32,7 +32,8 @@ var mongo = require('./lib/mongo'),
             next(null, config);
         }
     },
-    port = process.env.PORT || 8000;
+    port = process.env.PORT || 8000,
+    mongoReady = false;
 
 app.on('middleware:after:session', function addPassportToSession(eventargs) {
     app.use(passport.initialize());
@@ -41,10 +42,16 @@ app.on('middleware:after:session', function addPassportToSession(eventargs) {
 
 app.use(kraken(options));
 
+if (mongoReady) {
+    listen();
+}
+
+function listen() {
 // The kraken generator uses app.listen, but we need server.listen to make socket.io work
-server.listen(port, function (err) {
-    logger.info('[%s] Listening on http://localhost:%d', app.settings.env, port);
-});
+    server.listen(port, function (err) {
+        logger.info('[%s] Listening on http://localhost:%d', app.settings.env, port);
+    });
+}
 
 function configureQueue() {
     var queueOptions = {
@@ -66,7 +73,11 @@ function configureMongo(config) {
     mongo.config(config.get('mongoUrl'));
     mongo.connection.once('connected', function () {
         // This infra needs a mongo connection for session data, so wait...
-        require('./lib/streamingControllers')(io);
+        require('./lib/controllers.io')(io);
+        if (!mongoReady) {
+            mongoReady = true;
+            listen();
+        }
     });
 }
 
