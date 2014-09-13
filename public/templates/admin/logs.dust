@@ -6,7 +6,7 @@
         <div class="container-fluid">
             <div class="row-fluid text-center" style="margin-bottom: 10px;">
 
-                <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-check"></span>&nbsp;Auto-Scroll</button>
+                <button type="button" class="btn btn-default" id="autoScroll"><span class="glyphicon glyphicon-check"></span>&nbsp;Auto-Scroll</button>
                 &nbsp;&nbsp;
                 <button type="button" class="btn btn-primary" id="clear">Clear Logs</button>
 
@@ -26,9 +26,11 @@
     <link href="/components/bootstrapValidator/dist/css/bootstrapValidator.min.css" rel="stylesheet">
     <style type="text/css">
         ul.logs {
-            min-height: 300px;
-            width: 95%;
-            margin: auto;
+            position: absolute;
+            top: 110px;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
             background: #333;
             color: #FFF;
             font-family: 'Lucida Console', Monaco, monospace;
@@ -96,7 +98,7 @@
     <script type="text/javascript">
         var _csrf = '{_csrf}';
 
-        setupLogPage();
+        $(setupLogPage);
     </script>
 {/scripts}
 

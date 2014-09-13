@@ -1,8 +1,13 @@
 function setupLogPage() {
+    var socket = io(), ctr = 0, autoScroll = true, logsElement = $('#logs');
     $('#clear').on('click', function () {
-       $('#logs').empty();
+       logsElement.empty();
     });
-    var socket = io(), ctr = 0;
+    $('#autoScroll').on('click', function () {
+       autoScroll = !autoScroll;
+        $('#autoScroll>span').toggleClass('glyphicon-check').toggleClass('glyphicon-unchecked');
+        logsElement.scrollTop(logsElement[0].scrollHeight);
+    });
     socket.on('connect', function () {
         socket.emit('joinLogs', {on: true});
     });
@@ -19,7 +24,10 @@ function setupLogPage() {
             li.append('<span class="host"></span>').text(d.hostname);
         }
         li.append('<span class="message"></span>').text(d.message);
-        $('#logs').append(li);
+        logsElement.append(li);
+        if (autoScroll) {
+            elt.scrollTop(logsElement[0].scrollHeight);
+        }
     });
 
     var outQ = [];
