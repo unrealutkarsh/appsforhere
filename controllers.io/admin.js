@@ -50,7 +50,7 @@ function setupLogStreaming(io) {
             // If we logged here... that'd be ironic.
         }
     }).on('error', function (e) {
-        console.log('winston streaming error.',e);
+        console.log('winston streaming error.', e.message);
         ioServer = null;
         setupLogStreaming(io);
     });

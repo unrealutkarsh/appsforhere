@@ -26,7 +26,7 @@ function setupLogPage() {
         li.append('<span class="message"></span>').text(d.message);
         logsElement.append(li);
         if (autoScroll) {
-            elt.scrollTop(logsElement[0].scrollHeight);
+            logsElement.scrollTop(logsElement[0].scrollHeight);
         }
     });
 
