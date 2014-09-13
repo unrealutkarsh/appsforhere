@@ -58,6 +58,11 @@ function setupLogStreaming(io) {
             }, 1000);
         }).on('close', function () {
             console.log('winston stream closed.');
+            ioServer = null;
+            // Prevent hammering the server
+            setTimeout(function () {
+                setupLogStreaming(io);
+            }, 1000);
         });
     ioServer = io;
 }
