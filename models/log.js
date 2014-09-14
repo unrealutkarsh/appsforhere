@@ -18,4 +18,4 @@ var logModel = function () {
 };
 
 // In case you somehow require this twice when it thinks they're separate modules.
-module.exports = mongoose.models.node_logs || new logModel();
+module.exports = mongoose.models.nodelogs || new logModel();

@@ -13,7 +13,7 @@ var mongo = require('./lib/mongo'),
     kraken = require('kraken-js'),
     express = require('express'),
     app = require('express')(),
-    // These two lines are required to get Socket.io to work properly
+// These two lines are required to get Socket.io to work properly
     server = require('http').Server(app),
     io = require('socket.io')(server),
     passport = require('passport'),
@@ -47,11 +47,26 @@ if (mongoReady) {
 }
 
 function listen() {
-// The kraken generator uses app.listen, but we need server.listen to make socket.io work
+    // The kraken generator uses app.listen, but we need server.listen to make socket.io work
     server.listen(port, function (err) {
         logger.info('[%s] Listening on http://localhost:%d', app.settings.env, port);
     });
 }
+
+/**
+ * Gracefully shutdown when pm2 shuts down by closing the server. Since we'll take less time
+ * than socket.io shutdown, they're in charge of process.exit(0)
+ */
+process.on('message', function (msg) {
+    if (msg == 'shutdown') {
+        console.log('Shutting down kraken');
+        try {
+            server.close();
+        } catch (x) {
+            console.log('Kraken shutdown failed', x.message);
+        }
+    }
+});
 
 function configureQueue() {
     var queueOptions = {
@@ -73,6 +88,15 @@ function configureMongo(config) {
     mongo.config(config.get('mongoUrl'));
     mongo.connection.once('connected', function () {
         // This infra needs a mongo connection for session data, so wait...
+        var mubsub = require('mubsub')(config.get('mongoUrl'));
+        io.adapter(require('socket.io-adapter-mongo')({
+            client: mubsub
+        }));
+        // There's a problem with socket.io-adapter-mongo in that it doesn't catch channel errors
+        // and that brings down the server. They can happen in 'normal operation' for temporary network issues
+        mubsub.channels['socket.io'].on('error', function (e) {
+            logger.warn('Mubsub error: %s\n%s', e.message, e.stack);
+        });
         require('./lib/controllers.io')(io);
         if (!mongoReady) {
             mongoReady = true;
