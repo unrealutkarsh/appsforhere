@@ -35,6 +35,9 @@ var mongo = require('./lib/mongo'),
     port = process.env.PORT || 8000,
     mongoReady = false;
 
+/**
+ * Setup Pasport authentication right after the core session store is setup
+ */
 app.on('middleware:after:session', function addPassportToSession(eventargs) {
     app.use(passport.initialize());
     app.use(passport.session());
@@ -42,6 +45,9 @@ app.on('middleware:after:session', function addPassportToSession(eventargs) {
 
 app.use(kraken(options));
 
+/**
+ * Don't listen until the initial mongo connection is ready
+ */
 if (mongoReady) {
     listen();
 }
@@ -68,6 +74,9 @@ process.on('message', function (msg) {
     }
 });
 
+/**
+ * The queue monitor will look for delayed jobs and execute them
+ */
 function configureQueue() {
     var queueOptions = {
         process: true
@@ -78,17 +87,28 @@ function configureQueue() {
     Queue.init(mongo.db, queueOptions);
 }
 
+/**
+ * Setup winston to use MongoDB
+ * @param config from Kraken/confit
+ */
 function configureLogging(config) {
     var MongoDB = require('winston-mongodb').MongoDB;
     // only way to set the default logger config is via the private pine impl
     logger._impl.add(MongoDB, config.get('winston-mongodb'));
 }
 
+/**
+ * Set the mongodb/mongoose connection and use it for the socket.io server
+ * once it's connected
+ * @param config from Kraken/confit
+ */
 function configureMongo(config) {
     mongo.config(config.get('mongoUrl'));
     mongo.connection.once('connected', function () {
         // This infra needs a mongo connection for session data, so wait...
-        var mubsub = require('mubsub')(config.get('mongoUrl'));
+        var mubsub = require('mubsub')(config.get('mongoUrl'), {
+            auto_reconnect: true
+        });
         io.adapter(require('socket.io-adapter-mongo')({
             client: mubsub
         }));
@@ -105,6 +125,10 @@ function configureMongo(config) {
     });
 }
 
+/**
+ * Configure the passport strategies for live and for sandbox
+ * @param config from Kraken/confit
+ */
 function configurePassport(config) {
     passport.use(new PayPalStrategy({
             clientID: process.env.PAYPAL_APP_ID,

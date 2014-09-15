@@ -227,7 +227,7 @@ var productModel = function () {
 
         return {
             ProductModel: mongoose.model('ProductModel', modelSchema),
-            Image: mongoose.model('Image', imageSchema),
+            Image: mongoose.model('Image', imageSchema)
         };
     }
     ;

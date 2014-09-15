@@ -1,13 +1,16 @@
 'use strict';
 var appUtils = require('appUtils');
-var Product = require('../models/products');
+var Image = require('../models/image');
 
 module.exports = function (router) {
 
     router.use(appUtils.domain);
 
+    /**
+     * Fetch an image from MongoDB given it's document id
+     */
     router.get('/:imageId', function (req, res) {
-        Product.Image.findById(req.params.imageId, req.$eat(function (doc) {
+        Image.findById(req.params.imageId, req.$eat(function (doc) {
             if (!doc) {
                 res.status(404);
                 res.render('errors/404');

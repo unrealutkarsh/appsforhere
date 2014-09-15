@@ -19,7 +19,9 @@ var logDate = new Date();
 var basedir = path.join(__dirname, '../config');
 
 confit(basedir).create(function (err, config) {
-    var mubsub = new require('mubsub')(config.get('mongoUrl'));
+    var mubsub = new require('mubsub')(config.get('mongoUrl'),{
+        auto_reconnect: true
+    });
     io.adapter(require('socket.io-adapter-mongo')({
         client: mubsub
     }));

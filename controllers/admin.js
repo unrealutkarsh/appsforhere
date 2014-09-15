@@ -5,20 +5,21 @@ module.exports = function (router) {
 
     router.use(appUtils.domain);
 
-    router.get('/', appUtils.auth, function (req, res) {
-        if (!req.user.groups || req.user.groups.indexOf('admin') < 0) {
+    router.use(function (req, res, next) {
+        if (!req.user || !req.user.groups || req.user.groups.indexOf('admin') < 0) {
             res.render('errors/401');
             return;
         }
-        res.render('admin/index');
+        next();
     });
 
-    router.get('/logs', appUtils.auth, function (req, res) {
-        if (!req.user.groups || req.user.groups.indexOf('admin') < 0) {
-            res.render('errors/401');
-            return;
-        }
-        res.render('admin/logs');
-    });
+    /**
+     * Simple render for the admin base page
+     */
+    router.get('/', appUtils.auth, appUtils.render('admin/index'));
+    /**
+     * Simple render for the log viewer page
+     */
+    router.get('/logs', appUtils.auth, appUtils.render('admin/logs'));
 
 };

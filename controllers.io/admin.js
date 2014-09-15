@@ -4,6 +4,9 @@ var logger = require('pine')(),
     appUtils = require('appUtils');
 
 module.exports = function (io, socket) {
+    /**
+     * The joinLogs command puts the socket in the room that receives all server log messages
+     */
     socket.on('joinLogs', function (d) {
         var req = socket.request;
         if (!req.user.groups || req.user.groups.indexOf('admin') < 0) {
