@@ -2,16 +2,15 @@
 
 var logger = require('pine')();
 var appUtils = require('appUtils');
-var Product = require('../models/products');
+var ProductModel = require('../models/products');
+var ImageModel = require('../models/image');
 var httpunch = require('httpunch');
 var async = require('async');
 var fs = require('fs');
 var csv = require('csv');
 var ModelParser = require('../lib/products/modelParser');
 var ObjectId = require('mongoose').Types.ObjectId;
-var Canvas = require('canvas'),
-    Image = Canvas.Image,
-    imgHelper = require('../lib/products/img-canvas-helper');
+var imgHelper = require('../lib/products/img-canvas-helper');
 
 module.exports = function (router) {
 
@@ -57,11 +56,11 @@ module.exports = function (router) {
 
     router.get('/api/model/:id', appUtils.auth, appUtils.hasRoles('ViewProducts'), function (req, res, next) {
         if (req.params.id && req.params.id !== '_') {
-            Product.ProductModel.findOne({merchantId: req.user._id, _id: new ObjectId(req.params.id)}, req.$eat(function (doc) {
+            ProductModel.findOne({merchantId: req.user._id, _id: new ObjectId(req.params.id)}, req.$eat(function (doc) {
                 if (!doc) {
                     res.send({success: false}, 404);
                 } else {
-                    Product.ProductModel.find({merchantId: req.user._id}).select('name').exec(req.$eat(function (docs) {
+                    ProductModel.find({merchantId: req.user._id}).select('name').exec(req.$eat(function (docs) {
                         var json = doc.toHereApiModel();
                         json._savedModels = makeSavedModels(docs);
                         res.send(json);
@@ -74,7 +73,7 @@ module.exports = function (router) {
     });
 
     router.get('/api/catalogs', appUtils.auth, appUtils.hasRoles(appUtils.ROLES.ViewProducts), function (req, res) {
-        Product.ProductModel.find({merchantId: req.user._id}).select('name').exec(req.$eat(function (docs) {
+        ProductModel.find({merchantId: req.user._id}).select('name').exec(req.$eat(function (docs) {
             var rz = {catalogs: [
                 {text: 'PayPal Here', value: '-'}
             ]};
@@ -89,11 +88,11 @@ module.exports = function (router) {
 
     router.get('/api/catalogs/:id/tags', appUtils.auth, appUtils.hasRoles(appUtils.ROLES.ViewProducts), function (req, res) {
         if (req.params.id === '-') {
-            Product.getHereApiModel(req, function (err, model) {
+            ProductModel.getHereApiModel(req, function (err, model) {
                 res.json({tags: model.tags});
             });
         } else {
-            Product.ProductModel.findOne({merchantId: req.user._id, _id: req.params.id}, req.$eat(function (doc) {
+            ProductModel.findOne({merchantId: req.user._id, _id: req.params.id}, req.$eat(function (doc) {
                 res.json({tags: doc.tags});
             }));
         }
@@ -121,7 +120,7 @@ module.exports = function (router) {
             res.redirect('/products');
             return;
         }
-        var newModel = Product.ProductModel({
+        var newModel = new ProductModel({
             merchantId: req.user._id,
             name: req.params.modelName
         });
@@ -146,7 +145,7 @@ module.exports = function (router) {
             return;
         }
         var model = JSON.parse(req.body.model);
-        Product.ProductModel.findOrCreate({
+        ProductModel.findOrCreate({
             merchantId: req.user._id,
             name: req.body.name
         }, {}, req.$eat(function (doc) {
@@ -162,7 +161,7 @@ module.exports = function (router) {
             imgHelper.resize(data, 200, 200, req.$eat(function (thumb) {
                 thumb.toBuffer(req.$eat(function (thumbBuffer) {
                     var hash = require('crypto').createHash('sha512').update(data).digest('hex');
-                    Product.Image.findOrCreate({ hash: hash },
+                    ImageModel.findOrCreate({ hash: hash },
                         {
                             width: thumb.width,
                             height: thumb.height,
@@ -197,8 +196,8 @@ function makeSavedModels(docs) {
 }
 
 function getModel(req, res, next) {
-    Product.ProductModel.find({merchantId: req.user._id}).select('name').exec(req.$eat(function (docs) {
-        Product.getHereApiModel(req, function (err, model) {
+    ProductModel.find({merchantId: req.user._id}).select('name').exec(req.$eat(function (docs) {
+        ProductModel.getHereApiModel(req, function (err, model) {
             if (err) {
                 next(err);
             } else {
@@ -211,7 +210,7 @@ function getModel(req, res, next) {
 
 function getModelByNameOrId(req, res, modelNameOrId, successCallback) {
     var byName = function () {
-        Product.ProductModel.findOne({merchantId: req.user._id, name: modelNameOrId}, req.$eat(function (doc) {
+        ProductModel.findOne({merchantId: req.user._id, name: modelNameOrId}, req.$eat(function (doc) {
             if (!doc) {
                 logger.warn('Attempted to access unknown model by name ' + modelNameOrId);
                 res.render('errors/404', 404);
@@ -221,7 +220,7 @@ function getModelByNameOrId(req, res, modelNameOrId, successCallback) {
         }));
     };
     if (ObjectId.isValid(modelNameOrId)) {
-        Product.ProductModel.findOne({merchantId: req.user._id, _id: new ObjectId(modelNameOrId)}, req.$eat(function (doc) {
+        ProductModel.findOne({merchantId: req.user._id, _id: new ObjectId(modelNameOrId)}, req.$eat(function (doc) {
             if (!doc) {
                 byName();
             } else {
@@ -261,7 +260,7 @@ function putModel(req, model, fn) {
 function saveModel(req, res, model) {
     if (req.body.modelId !== '_') {
         // Save to a local model
-        Product.ProductModel.findOne({_id: req.body.modelId}, req.$eat(function (exModel) {
+        ProductModel.findOne({_id: req.body.modelId}, req.$eat(function (exModel) {
             exModel.fromHereAPIModel(model);
             exModel.save(req.$eat(function () {
                 res.json({success: true});

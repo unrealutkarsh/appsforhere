@@ -1,0 +1,11 @@
+<div class="alert alert-info form-inline text-center">
+    <div class="form-group text-center">
+        <label>Add this app to&nbsp;</label>
+                            <span id="locationDrop">
+                                <input class="form-control form-inline" id="locationId" placeholder="Choose a location" style="width: 250px;"/>
+                            </span>
+        <label>&nbsp; with a button named &nbsp;</label>
+        <input class="form-control form-inline" id="buttonName" placeholder="Choose a button name" style="width: 220px;"/>
+        &nbsp;<button type="button" id="locationSaveButton" class="btn btn-primary ladda-button" data-style="expand-left">Save</button>
+    </div>
+</div>

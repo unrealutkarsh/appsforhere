@@ -2,7 +2,7 @@
 var appUtils = require('appUtils');
 var httpunch = require('httpunch');
 var FormData = require('form-data');
-var Product = require('../models/products');
+var Image = require('../models/image');
 var imgHelper = require('../lib/products/img-canvas-helper');
 var fs = require('fs');
 
@@ -45,7 +45,7 @@ module.exports = function (router) {
             imgHelper.resize(data, 200, 200, req.$eat(function (thumb) {
                 thumb.toBuffer(req.$eat(function (thumbBuffer) {
                     var hash = require('crypto').createHash('sha512').update(data).digest('hex');
-                    Product.Image.findOrCreate({ hash: hash },
+                    Image.findOrCreate({ hash: hash },
                         {
                             width: thumb.width,
                             height: thumb.height,

@@ -1,0 +1,88 @@
+{>"layouts/loggedIn" active="apps"/}
+
+{<body}
+    <div id="wrapper">
+        <div class="container">
+            <div class="row">
+                <div id="sidebar" class="sidebar-nav col-md-2">
+                    <div id="sidebarContent">
+                        <ul class="nav nav-list">
+                            <li class="nav-header">Your Apps
+                                <ul class="nav nav-list" id="taxRateRepeater">
+                                    {#apps}
+                                        <li><a href="/apps/edit/{applicationType}/{id}"><span
+                                                class="pull-right">{applicationType}</span>{name}</a></li>
+                                    {/apps}
+                                </ul>
+                            </li>
+
+                        </ul>
+                    </div>
+                </div>
+                <div id="main" class="col-md-9" style="font-size:larger">
+
+                    <h1>PayPal In-Store Payment Apps</h1>
+
+                    <p>Millions of consumers have the PayPal mobile application on their iOS, Android and Windows devices. They are near your locations and ready to pay with minimal friction.</p>
+
+                    <p>All they have to do is run the PayPal app, find and checkin to your store and they will be available for payment.</p>
+
+                    <p>Optionally, you can create "Post Checkin Apps" that are mini-web apps run inside the PayPal app and can perform a variety of functions from pay-at-table to customer satisfaction surveys.</p>
+
+                    <p>As our site name suggests, we've built a handful of these applications for you. There is no additional charge for this service and you can change or remove apps at any time.</p>
+                    <br/>
+
+                    <div class="panel-group" id="accordion">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <!--
+                                <div class="pull-right"><a data-toggle="collapse" data-target="#orderAppDetail"><span style="top: 2px;" class="glyphicon glyphicon-plus-sign"></span>&nbsp;&nbsp;more info</a></div>
+                                -->
+                                <a data-toggle="collapse" data-target="#amountAppDetail"><b>Amount</b></a></div>
+                            <div id="amountAppDetail" class="panel-collapse">
+                                <div class="panel-body">
+                                    <p>The Amount app will allow users to choose from a list of preset amounts or enter a custom amount and then complete the payment automatically. This can be useful for charitable events where people can pay on their own initiative, or situations where you don't have a point of sale to build orders and complete payments.</p>
+
+                                    <p>When payment is completed, you can specify an email address or SMS number to be notified (standard text messaging charges apply).</p>
+
+                                    <a href="/apps/amount/new"><span style="top: 2px;" class="glyphicon glyphicon-plus-sign"></span>&nbsp;&nbsp;Create App</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <a data-toggle="collapse" data-target="#orderAppDetail">
+                                    <b>Order Ahead</b></a></div>
+                            </a>
+                            <div id="orderAppDetail" class="panel-collapse">
+                                <div class="panel-body">
+                                    <p>The Order Ahead app will present a <a href="/products">Product Catalog</a> of your choosing and allow customers to create an order of one or more products. The products can include variations and modifiers. Once the order is complete, the customer payment will be authorized and you will be contacted via email or SMS. You must accept or reject the order (or if you are using PayPal Here you can modify the order if necessary).</p>
+
+                                    <p>Once the order is accepted, the customer will be notified and can either pick up the order or, if you support delivery, you can deliver it.</p>
+
+                                    <div><a href="/apps/order/new"><span style="top: 2px;" class="glyphicon glyphicon-plus-sign"></span>&nbsp;&nbsp;Create App</a></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+{/body}
+
+{<bodyElements}
+
+{/bodyElements}
+
+{<scripts}
+    <script type="text/javascript" src="/js/common-addons.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places"></script>
+    <script type="text/javascript">
+        var _csrf = '{_csrf}';
+    </script>
+{/scripts}

@@ -7,11 +7,12 @@ pretty much anywhere.
 ** PLEASE NOTE **
 For improved performance, these modules should be installed globally to ensure native modules where appropriate:
 
-* Node module [mongoose](http://mongoosejs.com/) ^3.8.15
+* [mongoose](http://mongoosejs.com/) ^3.8.15
 * connect-mongo ^0.4.0
 * [canvas](https://github.com/LearnBoost/node-canvas)
 * [pm2](https://github.com/unitech/pm2)
 * socket.io ^1.1.0
+* mubsub
 
 And then you must set the NODE_DIR environment variable to your global module directory. We do this to enable git deploy
 with the same package.json.

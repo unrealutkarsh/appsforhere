@@ -1,3 +1,19 @@
+/*───────────────────────────────────────────────────────────────────────────*\
+ │  Copyright (C) 2014 eBay Software Foundation                               │
+ |                                                                            |
+ | yyyyyyyyyyyysssssssssss+++osssssssssssyyyyyyyyyyyy                         |
+ | yyyyyysssssssssssssss/----../sssssssssssssssyyyyyy                         |
+ | sysssssssssssssssss/--:-`    `/sssssssssssssssssys                         |
+ | sssssssssssssssso/--:-`        `/sssssssssssssssss   AppsForHere           |
+ | sssssssssssssso/--:-`            `/sssssssssssssss                         |
+ | sssssssssssso/-::-`                `/sssssssssssss   Advanced integration  |
+ | sssssssssso/-::-`                    `/sssssssssss   for PayPal Here and   |
+ | sssssssso/-::-`                        `/sssssssss   the PayPal retail     |
+ | ssssoso:-::-`                            `/osossss   family of products.   |
+ | osooos:-::-                                -soooso                         |
+ | ooooooo:---.``````````````````````````````.+oooooo                         |
+ | oooooooooooooooooooooooooooooooooooooooooooooooooo                         |
+ \*───────────────────────────────────────────────────────────────────────────*/
 'use strict';
 var logger = require('pine')();
 /* NewRelic is disabled until this is fixed: https://github.com/krakenjs/kraken-js/issues/285

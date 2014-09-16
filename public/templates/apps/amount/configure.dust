@@ -1,0 +1,190 @@
+{>"layouts/loggedIn" active="apps"/}
+
+{<body}
+    <div id="wrapper">
+        <div class="container">
+
+            <form role="form" action="/apps/amount{?app.id}/{app.id}{/app.id}" id="amountForm" method="POST" autocomplete="off">
+                <input type="hidden" name="_csrf" value="{_csrf}"/>
+
+                {^key}
+                    <div class="panel panel-info">
+                        <div class="panel-heading">{@pre type="content" key="amountapp.title"/}</div>
+                        <div class="panel-body">
+                            {@pre type="content" key="amountapp.desc"/}
+                        </div>
+                    </div>
+                {:else}
+                    <div class="alert alert-success text-center">
+                        <p>{@pre type="content" key="amountapp.urlinfo"/}
+                            <br/><br/>
+                            <b>
+                                <small><a id="appLink" href="https://{host}/apps/amount/{app.id}?uuid={key}&tabId={~lb}tabId{~rb}&locationId={~lb}locationId{~rb}&customerId={~lb}customerId{~rb}">
+                                    https://{host}/apps/amount/{app.id}?uuid={key}&tabId={~lb}tabId{~rb}&locationId={~lb}locationId{~rb}&customerId={~lb}customerId{~rb}
+                                </a></small>
+                                <br/><br/>
+                                {@pre type="content" key="amountapp.urlwarning"/}</b>
+                        </p>
+                    </div>
+
+                    {>"apps/partials/addAppToLocation"/}
+                {/key}
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">General Settings</div>
+                    <div class="panel-body">
+                        {>"partials/textField" layout="vertical" id="appName" label="Application Name" placeholder="Choose a name to help you remember the purpose of this app" value="{app.name}"/}
+                        {^app.id}
+                        {>"partials/textField" layout="vertical" id="notification" label="Notification Email or SMS" placeholder="Choose an optional email address or SMS-capable phone number for notifications" value="{app.configuration.notificationEmail}{app.configuration.notificationSms}"/}
+                        {/app.id}
+                        {>"partials/textField" layout="vertical" id="description" label="Item Description" placeholder="Enter an item description to appear on the customer receipt" value="{app.configuration.description}"/}
+                        {>"partials/textField" layout="vertical" id="amounts" label="Preset Amounts" placeholder="Enter a list of amounts that will appear as buttons in the app" value="{amountFieldValue}"/}
+                        <div class="form-group">
+                            <div class="checkbox">
+                                <label>
+                                    <input type="checkbox" id="customAmount" name="customAmount" {?app.configuration.customAmount}checked{/app.configuration.customAmount}> Allow the customer to enter a custom amount
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel panel-default">
+                    <div class="panel-heading">Appearance</div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label>Welcome Message</label>
+                            <textarea class="form-control" rows="5" id="welcomeMessage" name="welcomeMessage">{app.configuration.welcomeMessage}</textarea>
+                            <p class="help-block">You can use <a href="http://daringfireball.net/projects/markdown/" target="_blank">markdown</a> here.</p>
+                        </div>
+                        <div class="form-group">
+                            <label>Thank You Message</label>
+                            <textarea class="form-control" rows="5" id="thankyouMessage" name="thankyouMessage">{app.configuration.thankyouMessage}</textarea>
+                            <p class="help-block">You can use <a href="http://daringfireball.net/projects/markdown/" target="_blank">markdown</a> here.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <p>
+                    {?app.id}
+                        <button type="submit" class="btn btn-primary pull-right">Save Changes</button>
+                        <button type="button" class="btn btn-danger pull-left" id="deleteApp">Delete Application</button>
+                    {:else}
+                        <button type="submit" class="btn btn-primary pull-right">Create App</button>
+                    {/app.id}
+                </p>
+            </form>
+
+        </div>
+        <br/>
+        <br/>
+    </div>
+
+{/body}
+
+{<bodyElements}
+    {>"partials/progressModal"/}
+{/bodyElements}
+
+{<head}
+    <link href="/components/selectize/dist/css/selectize.bootstrap3.css" rel="stylesheet">
+    <link href="/components/bootstrapValidator/dist/css/bootstrapValidator.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/components/ladda/dist/ladda-themeless.min.css">
+    <style type="text/css">
+        #locationDrop div.selectize-dropdown {
+            width: 500px !important;
+            text-align: left;
+        }
+    </style>
+{/head}
+
+{<scripts}
+    <script type="text/javascript" src="/components/bignumber.js/bignumber.min.js"></script>
+    <script type="text/javascript" src="/components/bootstrapValidator/dist/js/bootstrapValidator.min.js"></script>
+    <script type="text/javascript" src="/components/selectize/dist/js/standalone/selectize.min.js"></script>
+    <script type="text/javascript" src="/components/accounting/accounting.min.js"></script>
+    <script type="text/javascript" src="/js/common-addons.js"></script>
+    <script src="/components/ladda/dist/spin.min.js"></script>
+    <script src="/components/ladda/dist/ladda.min.js"></script>
+    <script type="text/javascript">
+        var _csrf = '{_csrf}';
+
+        $(document).ready(function () {
+
+            var options = [{
+                value: '5',
+                text: accounting.formatMoney('5')
+            },{
+                value: '10',
+                text: accounting.formatMoney('10')
+            },{
+                value: '25',
+                text: accounting.formatMoney('25')
+            },{
+                value: '50',
+                text: accounting.formatMoney('50')
+            },{
+                value: '100',
+                text: accounting.formatMoney('100')
+            }];
+            var initial = $('#amounts').val().replace(/\s/g,'').split(',');
+            if (initial && (initial.length > 1 || initial[0].length)) {
+                for (var i = 0; i < initial.length; i++) {
+                    var found = false, num = new BigNumber(initial[i]);
+                    for (var j = 0; j < options.length; j++) {
+                        if (new BigNumber(options[j].value).equals(num)) {
+                            found = true;
+                            break;
+                        }
+                    }
+                    if (!found) {
+                        options.push({value: initial[i], text: accounting.formatMoney(num.toString())});
+                    }
+                }
+            }
+            var amountSelect = $("#amounts").selectize({
+                delimiter: ',',
+                persist: false,
+                hideSelected: true,
+                options: options,
+                plugins: ['remove_button'],
+                create: function (input) {
+                    if (/^[0-9\.]+$/.test(input)) {
+                        return {
+                            value:input,
+                            text:accounting.formatMoney(input)
+                        };
+                    }
+                    return null;
+                }
+            });
+
+            $('#amountForm').bootstrapValidator({
+                live: 'submitted',
+                fields: {
+                    appName: {
+                        validators: {
+                            notEmpty: {
+                                message: 'A name is required.'
+                            }
+                        }
+                    },
+                    description: {
+                        validators: {
+                            notEmpty: {
+                                message: 'An item description is required.'
+                            }
+                        }
+                    }
+                }
+            });
+
+        });
+
+        function addr(item) {
+            return item.address.line1 + ', ' + item.address.city + ', ' + item.address.state;
+        }
+
+    </script>
+    <script src="/js/apps/addAppToLocation.js"></script>
+{/scripts}
