@@ -35,7 +35,7 @@
     "accounting": "^0.4.1",
     "bignumber.js": "^1.4.1",
     "form-data": "^0.1.4",
-    "newrelic": "^1.10.3",
+    "newrelic": "^1.12.0",
     "node-uuid": "^1.4.1",
     "underscore": "^1.7.0",
     "cookie-jar": "^0.3.0",
