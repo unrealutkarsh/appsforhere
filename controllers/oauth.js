@@ -6,7 +6,7 @@ var PayPalUser = require('../models/payPalUser');
 var PayPalDelegatedUser = require('../models/payPalDelegatedUser');
 var appUtils = require('appUtils');
 
-var appScopes = 'openid https://uri.paypal.com/services/paypalhere email https://uri.paypal.com/services/paypalattributes profile';
+var appScopes = 'openid https://uri.paypal.com/services/paypalhere email https://uri.paypal.com/services/paypalattributes profile https://api.paypal.com/v1/vault/credit-card https://api.paypal.com/v1/vault/credit-card/.*';
 
 module.exports = function (router) {
 
