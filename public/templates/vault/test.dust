@@ -4,25 +4,15 @@
     <div id="wrapper">
         <div class="container">
             <div class="row">
-                <div class="panel panel-default col-md-6 col-md-offset-3">
+                <div class="panel panel-default">
                     <div class="panel-body">
                         This tool allows you to test the client side javascript encryption utility.
                     </div>
                 </div>
             </div>
-            {?number}
-                <div class="row">
-                    <div class="alert alert-success col-md-6 col-md-offset-3">
-                        <div class="text-center">
-                            Your short code for card <b>{number}</b> is<br/>
 
-                            <div class="shortcode">{code}</div>
-                        </div>
-                    </div>
-                </div>
-            {/number}
             <div class="row">
-                <form role="form" class="col-md-6 col-md-offset-3">
+                <form role="form" class="col-md-5">
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title">Simulated Server "Create Session" Call</h3>
@@ -42,6 +32,15 @@
                         </div>
                     </div>
                 </form>
+                <div class="col-md-7 alert alert-info">
+                    <p><strong>Your server</strong> will make this call before/during the render of the page that has the credit card fields on it (let's call it the <i>checkout page</i>).</p>
+                    <p>You will receive three values back:</p>
+                    <ul>
+                        <li><strong>id</strong> - an id for the session, which you should embed in your checkout page</li>
+                        <li><strong>serverSecret</strong> - a string that you should keep in either the server's session object for the user, or a database such that when the checkout page is posted back to your server, you can retrieve this value. You CAN store this on the client if you have no other reasonable choice, but it's not quite as secure.</li>
+                        <li><strong>publicKey</strong> - an RSA public key generated just for this session which the client javascript will use to encrypt the card data.</li>
+                    </ul>
+                </div>
                 <br/>
                 <br/>
             </div>
@@ -50,7 +49,7 @@
                     <input type="hidden" name="_csrf" value="{_csrf}"/>
                     <input type="hidden" name="card-type" class="cc-type"/>
 
-                    <div class="col-md-6 col-md-offset-3">
+                    <div class="col-md-5">
                         <div class="panel panel-default">
                             <div class="panel-heading">
                                 <h3 class="panel-title">Simulated Customer Card Data Entry</h3>
@@ -80,39 +79,66 @@
                         </div>
                         <div class="col-md-3">&nbsp;</div>
                     </div>
+
+                    <div class="col-md-7 alert alert-info">
+                        <p>This is an example of the kind of form that would be hosted on your web site. Given the information from step 1, you would put this somewhere on your page (e.g. before the end body tag):</p>
+                        <pre>
+&lt;script type="text/javascript" src="https://appsforhere.ebayc3.com/vault/session/YOUR_SESSION_ID_HERE"&gt;&lt;/script&gt;
+                        </pre>
+                        <p>This will pull in the public key issued to your session automatically. You can also include the static version of the script and just set the values in script:</p>
+                        <pre>&lt;script type="text/javascript"&gt;
+  window.appsforhere.pk = "SESSION PUBLIC KEY HERE";
+&lt;/script&gt;
+&lt;script type="text/javascript" src="https://appsforhere.ebayc3.com/js/vault/client.js"&gt;&lt;/script&gt;
+</pre>
+                    </div>
                 </form>
             </div>
 
             <div class="row">
-                <div class="col-md-6 col-md-offset-3 form">
+                <div class="col-md-5 form">
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title">Encrypted Payload</h3>
                         </div>
                         <div class="panel-body">
-                            <textarea class="form-control" rows="6" id="encryptedBlob"></textarea>
+                            <textarea class="form-control" rows="6" id="encryptedBlob" disabled="true"></textarea>
                             <br/>
                             <button type="button" id="decrypt" class="btn btn-primary ladda-button" data-style="expand-left" disabled="true">Retrieve Tokenized Card</button>
                         </div>
                     </div>
+                </div>
+                <div class="col-md-7 alert alert-info">
+                    <p>Before you submit your form to your server for processing, you should call the encrypt method with the card data as a Javascript object. On this page that looks like:</p>
+                        <pre>&lt;script type="text/javascript"&gt;
+var formValueToBeSubmitted = window.appsforhere.encrypt({
+ 'n': $('#card-number').val(),
+ 'x': $('#card-expiration').val(),
+ 'c': $('#card-cvc').val()
+});
+&lt;/script&gt;
+</pre>
+                    <p>You will likely want to mask your card input fields after that, and if they change, you need to call encrypt again.</p>
                 </div>
                 <br/>
                 <br/>
             </div>
 
             <div class="row">
-                <div class="col-md-6 col-md-offset-3 form">
+                <div class="col-md-5 form">
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <h3 class="panel-title">Vaulted Card</h3>
                         </div>
                         <div class="panel-body">
-                            <textarea class="form-control" rows="6" id="vaultedCard"></textarea>
+                            <textarea class="form-control" rows="6" id="vaultedCard" disabled="true"></textarea>
                         </div>
                     </div>
                 </div>
-
-
+                <div class="col-md-7 alert alert-info">
+                    <p>This value contains details about the vaulted card in the context of your account. You can submit the card for payment according to the <a href="https://developer.paypal.com/webapps/developer/docs/api/#vault">PayPal Vault API documentation</a>.</p>
+                    <p>You get this by calling the session completion URL with a POST request from your server.</p>
+                </div>
             </div>
         </div>
 
