@@ -6,21 +6,29 @@ var PayPalUser = require('../models/payPalUser');
 var PayPalDelegatedUser = require('../models/payPalDelegatedUser');
 var appUtils = require('appUtils');
 var crypto = require('crypto');
+var cardinfo = require('../lib/cardinfo');
 var util = require('util');
 var Vault = require('../models/vault');
+var VaultSession = require('../models/vaultSession');
 
 // Create a token generator with the default settings:
 var randtoken = require('rand-token').generator({
     chars: 'abcdefghijklmnpqrstuvwxyz0123456789'
 });
 
+var jsTemplate = require('fs').readFileSync('.build/js/vault/client.js').toString();
+
 module.exports = function (router) {
+
+    var saveRole = appUtils.hasRoles(appUtils.ROLES.SaveVault);
 
     router
         .use(appUtils.domain);
 
     router.route('/')
+        .all(appUtils.loginWithQueryParams)
         .all(appUtils.auth)
+        .all(saveRole)
         .get(function (req, res) {
             res.render('vault/index', {
                 host: req.headers.host,
@@ -28,6 +36,78 @@ module.exports = function (router) {
                 code: 'CODE_HERE'
             });
         });
+
+    router.route('/session')
+        .all(appUtils.loginWithQueryParams)
+        .all(appUtils.auth)
+        .all(saveRole)
+        .get(function (req, res) {
+           VaultSession.createSession(req, function (e,info) {
+               if (e) {
+                   res.status(500).json({
+                       error: e.toString()
+                   });
+               } else {
+                   res.json({
+                       id: info.session.id.toString(),
+                       serverSecret: info.key,
+                       publicKey: info.session.publicKey
+                   });
+               }
+           });
+        });
+
+    router.route('/session/:id')
+        .get(function (req, res) {
+            VaultSession.getSession(req.params.id, function (err, doc) {
+               res.send(jsTemplate.replace('{{PUBLICKEY}}', doc.publicKey));
+            });
+        })
+        .delete(function (req, res) {
+            VaultSession.findOneAndRemove({id:req.params.id}, function (e) {
+               if (e) {
+                   res.status(500).json({error: e.toString()});
+               } else {
+                   res.json({status:'deleted'});
+               }
+            });
+        });
+
+    router.post('/session/complete/:id', appUtils.payPalAccess, function (req, res) {
+        VaultSession.decryptPayload(req, function (err, payload) {
+            if (err) {
+                logger.error('Completion failed: %s\n%s', err.message, err.stack);
+                res.status(500).json({error: err.toString()});
+                return;
+            }
+            var json;
+            try {
+                json = JSON.parse(payload);
+            } catch (x) {
+                logger.error('JSON parsing failed: %s', x.message);
+                res.status(500).json({error: x.toString()});
+                return;
+            }
+            if (!json || !translateAndValidate(json)) {
+                logger.error('Invalid card JSON received');
+                res.status(500).json({error: 'Invalid card JSON received.'});
+                return;
+            }
+            vaultIt(req, json, function (err,info) {
+                if (err) {
+                    logger.error('Vaulting failed: %s\n%s', err.message, err.stack);
+                    res.status(500).json({error: err.toString()});
+                } else {
+                    delete info.links; // just too verbose to be useful IMHO
+                    res.json(info);
+                }
+            });
+        });
+    });
+
+    router.get('/test', function (req, res) {
+       res.render('vault/test');
+    });
 
     router.get('/pickup/:verification/:code', function (req, res, next) {
         Vault.findOne({short_code: req.params.code}, function (e, d) {
@@ -59,35 +139,19 @@ module.exports = function (router) {
 
     router.route('/save')
         .all(appUtils.auth)
+        .all(saveRole)
         .post(function (req, res, next) {
-            var url = req.hereApiUrl('credit-card', 'vault');
-            var dateParts = req.body['card-expiration'].split('/');
-            var y = parseInt(dateParts[1]);
-            if (y < 2000) {
-                y += 2000;
-            }
+            var dateParts = expirationFromString(req.body['card-expiration']);
             var body = {
                 number: req.body['card-number'].replace(/[^0-9]/g, ''),
                 type: req.body['card-type'],
-                expire_month: String(parseInt(dateParts[0])),
-                expire_year: String(y),
+                expire_month: dateParts.m,
+                expire_year: dateParts.y,
                 cvv2: req.body['card-cvc']
             };
-            req.hereApi().post({
-                url: url,
-                tokens: req.user,
-                json: true,
-                headers: {
-                    'content-type': 'application/json'
-                },
-                body: JSON.stringify(body)
-            }, function (err, rz) {
+            vaultIt(req, body, function (err, rz) {
                 if (err) {
                     next(err);
-                    return;
-                }
-                if (rz.debug_id) {
-                    next(new Error('Card failed: ' + util.inspect(rz)));
                     return;
                 }
                 saveCode(req, rz, function (err, doc) {
@@ -100,6 +164,92 @@ module.exports = function (router) {
                 });
             });
         });
+
+    var translationTable = {
+        'n': 'number',
+        'm': 'expire_month',
+        'y': 'expire_year',
+        'x': function (json, x) {
+            var dateParts = expirationFromString(x);
+            json.expire_month = dateParts.m;
+            json.expire_year = dateParts.y;
+        },
+        't': 'type',
+        'c': 'cvv2'
+    };
+    /**
+     * Change short-named properties into normal ones for the vault service
+     * @param json from the client
+     */
+    function translateAndValidate(json) {
+        for (var k in translationTable) {
+            if (json[k]) {
+                if (typeof(translationTable[k]) === 'function') {
+                    translationTable[k](json, json[k]);
+                } else {
+                    json[translationTable[k]] = json[k];
+                }
+                delete json[k];
+            }
+        }
+        ensureType(json);
+        return validateCard(json);
+    }
+
+    function validateCard(json) {
+        if (!json.number || !json.expire_month || !json.expire_year && !json.type) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Fill in credit card type from number if not passed
+     */
+    function ensureType(json) {
+        if (!json.type) {
+            var info = cardinfo.cardFromNumber(json.number);
+            if (info) {
+                json.type = info.type;
+            }
+        }
+    }
+
+    function vaultIt(req, cardBody, cb) {
+        var url = req.hereApiUrl('credit-card', 'vault');
+        req.hereApi().post({
+            url: url,
+            tokens: req.user,
+            json: true,
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(cardBody)
+        }, function (err, rz) {
+            if (err) {
+                cb(err);
+                return;
+            }
+            if (rz.debug_id) {
+                cb(new Error('Card failed: ' + util.inspect(rz)));
+                return;
+            }
+            cb(null, rz);
+        });
+    }
+
+    function expirationFromString(s) {
+        var dateParts = s.split('/');
+        var m = parseInt(dateParts[0]);
+        var y = parseInt(dateParts[1]);
+        if (y < 2000) {
+            y += 2000;
+        }
+        return {
+            m: m > 9 ? String(m) : ('0'+String(m)),
+            y: String(y)
+        };
+    }
 
     function saveCode(req, cardInfo, cb) {
         var short = randtoken.generate(5);

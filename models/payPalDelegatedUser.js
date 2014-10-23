@@ -2,6 +2,7 @@
 
 var mongoose = require('mongoose'),
     findOrCreate = require('mongoose-findorcreate'),
+    logger = require('pine')(),
     crypto = require('../lib/crypto'),
     uuid = require('node-uuid'),
     payPalUser = require('./payPalUser');
@@ -25,6 +26,36 @@ var paypalDelegatedUserModel = function () {
 
     paypalUserSchema.methods.hereApiUrl = payPalUser.schema.methods.hereApiUrl;
     paypalUserSchema.methods.hereApi = payPalUser.schema.methods.hereApi;
+
+    paypalUserSchema.statics.login = function (req, res, info, cb) {
+        mongoose.models.PayPalDelegatedUser.findById(info.id, req.$eat(function (user) {
+            if (!user) {
+                logger.error('Delegate login attempted for unknown delegate %s', info.id);
+                cb(new Error('Unknown delegate'));
+                return;
+            }
+            user.decryptRefreshToken(info.uuid, info.password, function (err, rt, binKey) {
+                if (err) {
+                    cb(new Error('Invalid delegate token'));
+                    return;
+                }
+                var sk = binKey.toString('base64');
+                res.cookie('sessionkey', sk);
+                user._sessionKey = sk; // For this request, since the cookie didn't come in
+                user._isDelegatedUser = true;
+                req.login(user, function (err) {
+                    if (err) {
+                        cb(err);
+                    } else {
+                        cb(null, {
+                            delegate: user,
+                            key: binKey
+                        });
+                    }
+                });
+            });
+        }));
+    };
 
     paypalUserSchema.statics.encryptRefreshToken = function (token, pwd, cb) {
         var key = uuid.v4();
@@ -52,7 +83,7 @@ var paypalDelegatedUserModel = function () {
     };
 
     paypalUserSchema.statics.decryptRefreshTokenWithKey = function (request, cb) {
-        var key = request.cookies.sessionkey;
+        var key = request.cookies.sessionkey||request.user._sessionKey;
         if (!key) {
             request.logout();
             cb(new Error('Invalid session guid during refresh token usage.'));

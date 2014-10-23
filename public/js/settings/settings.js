@@ -5,7 +5,8 @@ var allRoles = [
     {text: 'Edit Products', value: 'EditProducts'},
     {text: 'View Sales Reports', value: 'ViewReports'},
     {text: 'View Locations', value: 'ViewLocations'},
-    {text: 'Edit Locations', value: 'EditLocations'}
+    {text: 'Edit Locations', value: 'EditLocations'},
+    {text: 'Save to Vault', value: 'SaveVault'}
 ];
 
 var DelegateDataSource = function (options) {
