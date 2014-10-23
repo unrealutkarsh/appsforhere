@@ -1,0 +1,193 @@
+{>"layouts/loggedIn" active="products"/}
+
+{<body}
+    <div id="wrapper">
+        <div class="container">
+            <div class="row">
+                <div class="panel panel-default col-md-6 col-md-offset-3">
+                    <div class="panel-body">
+                        This tool allows you to test the client side javascript encryption utility.
+                    </div>
+                </div>
+            </div>
+            {?number}
+                <div class="row">
+                    <div class="alert alert-success col-md-6 col-md-offset-3">
+                        <div class="text-center">
+                            Your short code for card <b>{number}</b> is<br/>
+
+                            <div class="shortcode">{code}</div>
+                        </div>
+                    </div>
+                </div>
+            {/number}
+            <div class="row">
+                <form role="form" class="col-md-6 col-md-offset-3">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Simulated Server "Create Session" Call</h3>
+                        </div>
+                        <div class="panel-body">
+                            <input type="hidden" name="_csrf" value="{_csrf}"/>
+
+                            <div class="form-group">
+                                <label>Session Id</label>
+                                <input autocompletetype="off" required="required" class="form-control" id="sessionIdField" disabled="true">
+                            </div>
+                            <div class="form-group">
+                                <label>Server Secret</label>
+                                <input autocompletetype="off" required="required" class="form-control" id="sessionKeyField" disabled="true">
+                            </div>
+                            <button type="button" id="sessionize" class="btn btn-primary ladda-button" data-style="expand-left">Get a Session Id</button>
+                        </div>
+                    </div>
+                </form>
+                <br/>
+                <br/>
+            </div>
+            <div class="row">
+                <form role="form" id="credit-card-form">
+                    <input type="hidden" name="_csrf" value="{_csrf}"/>
+                    <input type="hidden" name="card-type" class="cc-type"/>
+
+                    <div class="col-md-6 col-md-offset-3">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Simulated Customer Card Data Entry</h3>
+                            </div>
+                            <div class="panel-body">
+
+                                <div class="form-group">
+                                    <label>Card Number</label>
+                                    <input id="card-number" type="tel" autocompletetype="off" required="required" class="form-control cc-num paymentInput" value="4111111111111111">
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Expiration</label>
+                                            <input id="card-expiration" type="text" class="form-control cc-exp paymentInput" placeholder="MM/YY" autocomplete="off" value="01 / 20">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>CVC</label>
+                                            <input id="card-cvc" type="text" class="form-control cc-cvc paymentInput" placeholder="Ex. 331" autocomplete="off" value="101">
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" id="tokenize" class="btn btn-primary" disabled="true">Tokenize Card</button>
+                            </div>
+                        </div>
+                        <div class="col-md-3">&nbsp;</div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 col-md-offset-3 form">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Encrypted Payload</h3>
+                        </div>
+                        <div class="panel-body">
+                            <textarea class="form-control" rows="6" id="encryptedBlob"></textarea>
+                            <br/>
+                            <button type="button" id="decrypt" class="btn btn-primary ladda-button" data-style="expand-left" disabled="true">Retrieve Tokenized Card</button>
+                        </div>
+                    </div>
+                </div>
+                <br/>
+                <br/>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 col-md-offset-3 form">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Vaulted Card</h3>
+                        </div>
+                        <div class="panel-body">
+                            <textarea class="form-control" rows="6" id="vaultedCard"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+
+{/body}
+
+{<bodyElements}
+{/bodyElements}
+
+{<head}
+        <link rel="stylesheet" href="/components/ladda/dist/ladda-themeless.min.css">
+{/head}
+
+{<scripts}
+        <script type="text/javascript">
+            var _csrf = '{_csrf}';
+        </script>
+        <script type="text/javascript" src="/components/jquery.payment/lib/jquery.payment.js"></script>
+        <script type="text/javascript" src="/js/vault/vault.js"></script>
+        <script type="text/javascript" src="/components/ladda/dist/spin.min.js"></script>
+        <script type="text/javascript" src="/components/ladda/dist/ladda.min.js"></script>
+        <script type="text/javascript" src="/js/vault/client.js"></script>
+        <script type="text/javascript">
+            $(function () {
+                var sessionLadda = Ladda.create($('#sessionize')[0]);
+                var decryptLadda = Ladda.create($('#decrypt')[0]);
+                $('#tokenize').on('click', function () {
+                    /*
+                    The blob must contain a card number, expiration date and cvv. We allow
+                    short property names n: number, x: expiration month and year, c: cvv2.
+                    But you can also just pass what PayPal Vault expects (e.g. billing address)
+                    and we'll pass it through
+                    */
+                    $('#encryptedBlob').val(window.appsforhere.encrypt({
+                        'n': $('#card-number').val(),
+                        'x': $('#card-expiration').val(),
+                        'c': $('#card-cvc').val()
+                    }));
+                    $('#decrypt').removeAttr("disabled");
+                });
+                /* You can't do this in real life because the client won't have your merchant credentials.
+                  In that case you need to make the session creation call from your server and pass the PK
+                  by including the script with a URL including the session info (/vault/session/[id]) AND
+                  then storing the key on the server side or in the session in order to get the vaulted data back
+                  later.
+                 */
+                $('#sessionize').on('click', function () {
+                    sessionLadda.start();
+                    $.get('/vault/session')
+                            .done(function (data) {
+                                window.appsforhere.pk = data.publicKey;
+                                $('#sessionIdField').val(data.id);
+                                $('#sessionKeyField').val(data.serverSecret);
+                                sessionLadda.stop();
+                                $('#tokenize').removeAttr("disabled");
+                            })
+                            .fail(function (xhr, e) {
+                                alert("Failed! " + e.toString());
+                                sessionLadda.stop();
+                            });
+                });
+
+                $('#decrypt').on('click', function () {
+                    decryptLadda.start();
+                    $.post('/vault/session/complete/' + $('#sessionIdField').val() + '?uuid=' + $('#sessionKeyField').val(),
+                                    'blob=' + encodeURIComponent($('#encryptedBlob').val()))
+                            .done(function (data) {
+                                decryptLadda.stop();
+                                $('#vaultedCard').val(JSON.stringify(data,null,'\t'));
+                            })
+                            .fail(function (xhr, e) {
+                                alert("Failed! " + e.toString());
+                                decryptLadda.stop();
+                            });
+                });
+
+            });
+        </script>
+{/scripts}

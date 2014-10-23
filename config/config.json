@@ -67,7 +67,10 @@
             }
         },
 
-        
+        "appsec": {
+            "route": "/:route((?!vault/session/complete/\\S+)(*))"
+        },
+
         "expressView": {
             "priority": 100,
             "enabled": true,
