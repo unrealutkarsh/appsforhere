@@ -18,8 +18,8 @@
 var logger = require('pine')();
 
 if (process.env.NODE_ENV === 'production') {
-    logger.info("Starting newrelic agent.");
-    require('newrelic');
+    logger.info("Starting newrelic agent. (currently disabled)");
+    //    require('newrelic');
 } else {
     logger.info("newrelic inactive (%s).", process.env.NODE_ENV || 'no NODE_ENV set');
 }
