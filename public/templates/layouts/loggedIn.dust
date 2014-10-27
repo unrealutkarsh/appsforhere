@@ -28,7 +28,9 @@
 
 <body>
 
+    {^kiosk}
     {>"partials/topNav"/}
+    {/kiosk}
 
     {+body /}
 
