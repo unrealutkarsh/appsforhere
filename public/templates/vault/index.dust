@@ -3,6 +3,7 @@
 {<body}
     <div id="wrapper">
         <div class="container">
+            {^kiosk}
             <div class="row">
                 <div class="panel panel-default col-md-6 col-md-offset-3">
                     <div class="panel-body">
@@ -10,49 +11,54 @@
                     </div>
                 </div>
             </div>
+            {/kiosk}
             {?number}
-            <div class="row">
+            <div class="row" id="result">
                 <div class="alert alert-success col-md-6 col-md-offset-3">
                     <div class="text-center">
                         Your short code for card <b>{number}</b> is<br/>
                         <div class="shortcode">{code}</div>
+                        <br/><br/>
+                        <button type="button" class="btn btn-primary" id="newCardButton">Enter a New Card</button>
                     </div>
                 </div>
             </div>
             {/number}
-            <div class="row">
+            <div class="row" id="newCard" {?number}style="display:none;"{/number}>
 
                 <form role="form" id="credit-card-form" action="/vault/save" method="post">
                     <input type="hidden" name="_csrf" value="{_csrf}"/>
+                    {?kiosk}<input type="hidden" name="kiosk" value="kiosk"/>{/kiosk}
                     <input type="hidden" name="card-type" class="cc-type"/>
                     <div class="col-md-4"></div>
                     <div class="col-md-4">
                         <form role="form">
                             <div class="form-group">
                                 <label>Card Number</label>
-                                <input name="card-number" type="tel" autocompletetype="off" required="required" class="form-control cc-num paymentInput">
+                                <input name="card-number" id="card-number" type="tel" autocompletetype="off" required="required" class="form-control cc-num paymentInput" data-bv-creditcard="true"
+                                       data-bv-creditcard-message="The credit card number is not valid">
                             </div>
                             <div class="row">
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Expiration</label>
-                                        <input name="card-expiration" type="text" class="form-control cc-exp paymentInput" placeholder="MM/YY" autocomplete="off">
+                                        <input name="card-expiration" type="tel" class="form-control cc-exp paymentInput" placeholder="MM/YY" autocomplete="off">
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>CVC</label>
-                                        <input name="card-cvc" type="text" class="form-control cc-cvc paymentInput" placeholder="Ex. 331" autocomplete="off">
+                                        <input name="card-cvc" type="tel" class="form-control cc-cvc paymentInput" placeholder="Ex. 331" autocomplete="off">
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Postal Code</label>
-                                        <input name="card-postal" type="text" class="form-control cc-postal paymentInput" placeholder="00000" autocomplete="off">
+                                        <input name="card-postal" type="tel" class="form-control cc-postal paymentInput" placeholder="00000" autocomplete="off">
                                     </div>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-primary">Save Card</button>
+                            <button type="submit" class="btn btn-primary" name="saveCard" value="saveCard">Save Card</button>
                         </form>
                     </div>
                     <div class="col-md-4"></div>
@@ -60,6 +66,7 @@
 
             </div>
             <p></p>
+            {^kiosk}
             <div class="row">
                 <div class="panel panel-default col-md-6 col-md-offset-3">
                     <div class="panel-body">
@@ -68,6 +75,7 @@
                     </div>
                 </div>
             </div>
+            {/kiosk}
         </div>
     </div>
 
@@ -83,12 +91,14 @@
             font-size: 24pt ;
         }
     </style>
+    <link href="/components/bootstrapValidator/dist/css/bootstrapValidator.min.css" rel="stylesheet">
 {/head}
 
 {<scripts}
     <script type="text/javascript">
         var _csrf = '{_csrf}';
     </script>
+    <script type="text/javascript" src="/components/bootstrapValidator/dist/js/bootstrapValidator.min.js"></script>
     <script type="text/javascript" src="/components/jquery.payment/lib/jquery.payment.js"></script>
     <script type="text/javascript" src="/js/vault/vault.js"></script>
 {/scripts}

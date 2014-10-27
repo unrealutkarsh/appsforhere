@@ -30,11 +30,15 @@ module.exports = function (router) {
         .all(appUtils.auth)
         .all(saveRole)
         .get(function (req, res) {
-            res.render('vault/index', {
+            var model = {
                 host: req.headers.host,
                 hash: codeForId(req.user.profileId),
                 code: 'CODE_HERE'
-            });
+            };
+            if (req.query.kiosk) {
+                model.kiosk = true;
+            }
+            res.render('vault/index', model);
         });
 
     router.route('/session')
@@ -155,12 +159,16 @@ module.exports = function (router) {
                     return;
                 }
                 saveCode(req, rz, function (err, doc) {
-                    res.render('vault/index', {
+                    var model = {
                         host: req.headers.host,
                         hash: codeForId(req.user.profileId),
                         code: doc.short_code,
                         number: endOf(doc.number, 4)
-                    });
+                    };
+                    if (req.body.kiosk) {
+                        model.kiosk = true;
+                    }
+                    res.render('vault/index', model);
                 });
             });
         });
@@ -287,7 +295,7 @@ module.exports = function (router) {
         if (str.length < chars) {
             return str;
         }
-        return str.substr(str.length - chars + 1);
+        return str.substr(str.length - chars);
     }
 
     function codeForId(profileId) {
