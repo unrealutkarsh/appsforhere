@@ -73,6 +73,12 @@
                                             <input id="card-cvc" type="text" class="form-control cc-cvc paymentInput" placeholder="Ex. 331" autocomplete="off" value="101">
                                         </div>
                                     </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Postal Code</label>
+                                            <input id="card-postal" type="tel" class="form-control cc-postal paymentInput" placeholder="00000" autocomplete="off">
+                                        </div>
+                                    </div>
                                 </div>
                                 <button type="button" id="tokenize" class="btn btn-primary" disabled="true">Tokenize Card</button>
                             </div>
@@ -86,9 +92,9 @@
 &lt;script type="text/javascript" src="https://appsforhere.ebayc3.com/vault/session/YOUR_SESSION_ID_HERE"&gt;&lt;/script&gt;
                         </pre>
                         <p>This will pull in the public key issued to your session automatically. You can also include the static version of the script and just set the values in script:</p>
-                        <pre>&lt;script type="text/javascript"&gt;
-  window.appsforhere.pk = "SESSION PUBLIC KEY HERE";
-&lt;/script&gt;
+                        <pre>&lt;script type="text/javascript"&gt;{~n}
+  window.appsforhere.pk = "SESSION PUBLIC KEY HERE";{~n}
+&lt;/script&gt;{~n}
 &lt;script type="text/javascript" src="https://appsforhere.ebayc3.com/js/vault/client.js"&gt;&lt;/script&gt;
 </pre>
                     </div>
@@ -110,12 +116,12 @@
                 </div>
                 <div class="col-md-7 alert alert-info">
                     <p>Before you submit your form to your server for processing, you should call the encrypt method with the card data as a Javascript object. On this page that looks like:</p>
-                        <pre>&lt;script type="text/javascript"&gt;
-var formValueToBeSubmitted = window.appsforhere.encrypt({
- 'n': $('#card-number').val(),
- 'x': $('#card-expiration').val(),
- 'c': $('#card-cvc').val()
-});
+                        <pre>&lt;script type="text/javascript"&gt;{~n}
+var formValueToBeSubmitted = window.appsforhere.encrypt({{~n}
+ 'n': $('#card-number').val(),{~n}
+ 'x': $('#card-expiration').val(),{~n}
+ 'c': $('#card-cvc').val(){~n}
+});{~n}
 &lt;/script&gt;
 </pre>
                     <p>You will likely want to mask your card input fields after that, and if they change, you need to call encrypt again.</p>
@@ -149,6 +155,7 @@ var formValueToBeSubmitted = window.appsforhere.encrypt({
 
 {<head}
         <link rel="stylesheet" href="/components/ladda/dist/ladda-themeless.min.css">
+        <link href="/components/bootstrapValidator/dist/css/bootstrapValidator.min.css" rel="stylesheet">
 {/head}
 
 {<scripts}
@@ -159,6 +166,7 @@ var formValueToBeSubmitted = window.appsforhere.encrypt({
         <script type="text/javascript" src="/js/vault/vault.js"></script>
         <script type="text/javascript" src="/components/ladda/dist/spin.min.js"></script>
         <script type="text/javascript" src="/components/ladda/dist/ladda.min.js"></script>
+        <script type="text/javascript" src="/components/bootstrapValidator/dist/js/bootstrapValidator.min.js"></script>
         <script type="text/javascript" src="/js/vault/client.js"></script>
         <script type="text/javascript">
             $(function () {
@@ -174,7 +182,8 @@ var formValueToBeSubmitted = window.appsforhere.encrypt({
                     $('#encryptedBlob').val(window.appsforhere.encrypt({
                         'n': $('#card-number').val(),
                         'x': $('#card-expiration').val(),
-                        'c': $('#card-cvc').val()
+                        'c': $('#card-cvc').val(),
+                        'zip': $('#card-postal').val()
                     }));
                     $('#decrypt').removeAttr("disabled");
                 });
@@ -202,6 +211,8 @@ var formValueToBeSubmitted = window.appsforhere.encrypt({
 
                 $('#decrypt').on('click', function () {
                     decryptLadda.start();
+                    /* In order to use PayFlow, include the following in the BODY of the POST request:
+                    vault=payflow&user=[something]&password=[something]&vendor=[something]&partner=[something] and optionally env=pilot */
                     $.post('/vault/session/complete/' + $('#sessionIdField').val() + '?uuid=' + $('#sessionKeyField').val(),
                                     'blob=' + encodeURIComponent($('#encryptedBlob').val()))
                             .done(function (data) {

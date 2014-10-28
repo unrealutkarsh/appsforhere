@@ -8,6 +8,8 @@ var appUtils = require('appUtils');
 var crypto = require('crypto');
 var cardinfo = require('../lib/cardinfo');
 var util = require('util');
+var httpunch = require('httpunch');
+var qs = require('querystring');
 var Vault = require('../models/vault');
 var VaultSession = require('../models/vaultSession');
 
@@ -97,15 +99,26 @@ module.exports = function (router) {
                 res.status(500).json({error: 'Invalid card JSON received.'});
                 return;
             }
-            vaultIt(req, json, function (err,info) {
-                if (err) {
-                    logger.error('Vaulting failed: %s\n%s', err.message, err.stack);
-                    res.status(500).json({error: err.toString()});
-                } else {
-                    delete info.links; // just too verbose to be useful IMHO
-                    res.json(info);
-                }
-            });
+            if (req.body.vault === 'payflow') {
+                payflowVault(req, json, function (err, info) {
+                   if (err) {
+                       logger.error('Vaulting failed: %s\n%s', err.message, err.stack);
+                       res.status(500).json({error: err.toString()});
+                   } else {
+                       res.json(info);
+                   }
+                });
+            } else {
+                vaultIt(req, json, function (err, info) {
+                    if (err) {
+                        logger.error('Vaulting failed: %s\n%s', err.message, err.stack);
+                        res.status(500).json({error: err.toString()});
+                    } else {
+                        delete info.links; // just too verbose to be useful IMHO
+                        res.json(info);
+                    }
+                });
+            }
         });
     });
 
@@ -243,6 +256,37 @@ module.exports = function (router) {
                 return;
             }
             cb(null, rz);
+        });
+    }
+
+    function payflowVault(req, json, cb) {
+        var args = {
+            USER: req.body.user,
+            PWD: req.body.password,
+            PARTNER: req.body.partner,
+            VENDOR: req.body.vendor,
+            TRXTYPE: 'L',
+            TENDER: 'C',
+            ACCT: json.number,
+            EXPDATE: String(json.expire_month) + String(json.expire_year),
+            CVV2: req.cvv2
+        };
+        if (json.zip) {
+            args.BILLTOZIP = json.zip;
+        }
+        var body = qs.stringify(args);
+        httpunch.post({
+            url: req.body.env === 'pilot' ? 'https://pilot-payflowpro.paypal.com' : 'https://payflowpro.paypal.com',
+            body: body,
+            headers: {
+                'content-length': body.length
+            }
+        }, function (err, rz) {
+            if (err) {
+                cb(err);
+            } else {
+                cb(err, qs.parse(rz.body.toString()));
+            }
         });
     }
 
