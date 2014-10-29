@@ -8,7 +8,7 @@ var appUtils = require('appUtils');
 var crypto = require('crypto');
 var cardinfo = require('../lib/cardinfo');
 var util = require('util');
-var httpunch = require('httpunch');
+var wreck = require('wreck');
 var qs = require('querystring');
 var Vault = require('../models/vault');
 var VaultSession = require('../models/vaultSession');
@@ -275,9 +275,8 @@ module.exports = function (router) {
             args.BILLTOZIP = json.zip;
         }
         var body = qs.stringify(args);
-        httpunch.post({
-            url: req.body.env === 'pilot' ? 'https://pilot-payflowpro.paypal.com' : 'https://payflowpro.paypal.com',
-            body: body,
+        wreck.post(req.body.env === 'pilot' ? 'https://pilot-payflowpro.paypal.com' : 'https://payflowpro.paypal.com', {
+            payload: body,
             headers: {
                 'content-length': body.length
             }

@@ -1,6 +1,6 @@
 'use strict';
 var appUtils = require('appUtils');
-var httpunch = require('httpunch');
+var wreck = require('wreck');
 var FormData = require('form-data');
 var Image = require('../models/image');
 var imgHelper = require('../lib/products/img-canvas-helper');
@@ -129,8 +129,7 @@ module.exports = function (router) {
                     res.json(loc);
                     return;
                 }
-                httpunch.get({
-                    url: logo,
+                wreck.get(logo, {
                     rejectUnauthorized: false
                 }, req.$eat(function (response) {
                     if (response.httpStatusCode < 200 || response.httpStatusCode > 299) {

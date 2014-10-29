@@ -4,7 +4,6 @@ var logger = require('pine')();
 var appUtils = require('appUtils');
 var ProductModel = require('../models/products');
 var ImageModel = require('../models/image');
-var httpunch = require('httpunch');
 var async = require('async');
 var fs = require('fs');
 var csv = require('csv');

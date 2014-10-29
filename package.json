@@ -20,11 +20,9 @@
     "less": "^1.7.4",
     "pine": "^1.0.0",
     "express-session": "^1.7.6",
-    "node-liwp": "^0.1.3",
     "passport": "^0.2.0",
     "passport-oauth": "^1.0.0",
     "mongoose-findorcreate": "^0.1.2",
-    "httpunch": "^1.1.0",
     "twilio": "^1.7.0",
     "mongodb-queue": "^0.9.1",
     "async": "^0.9.0",
@@ -48,7 +46,10 @@
     "marked": "^0.3.2",
     "rand-token": "^0.2.1",
     "node-forge": "^0.6.14",
-    "form-data": "^0.1.4"
+    "form-data": "^0.1.4",
+    "wreck": "^5.0.1",
+    "objutil": "^0.4.0",
+    "uuid": "^2.0.1"
   },
   "devDependencies": {
     "mocha": "^1.18.0",

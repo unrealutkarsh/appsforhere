@@ -23,13 +23,12 @@ module.exports = function (router) {
         var qs = _.clone(req.query);
         delete qs.url;
         reportLib.request(req, 'https://pph-reporting.pphme.ebaystratus.com/' + req.query.url + '?' + querystring.stringify(qs),
-            function (rErr, rRz) {
+            function (rErr, rz) {
                 if (rErr) {
                     logger.error('Error getting report: %s\n%s', rErr.message, rErr.stack);
                     res.json({errorCode: 0xdeadbeef, message: rErr.message});
                     return;
                 }
-                var rz = JSON.parse(rRz.body.toString());
                 if (req.query.transform && reportLib.transformers[req.query.transform]) {
                     rz = reportLib.transformers[req.query.transform](rz);
                 }

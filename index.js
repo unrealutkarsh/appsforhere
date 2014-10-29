@@ -36,7 +36,7 @@ var mongo = require('./lib/mongo'),
     PayPalUser = require('./models/payPalUser'),
     PayPalDelegatedUser = require('./models/payPalDelegatedUser'),
     Queue = require('./lib/queue'),
-    Liwp = require('node-liwp'),
+    Liwp = require('./lib/loginWithPayPal'),
     options = {
         onconfig: function appsforhereConfiguration(config, next) {
             configureLogging(config);
