@@ -241,7 +241,7 @@ function putModel(req, model, fn) {
         headers: {
             'Content-type': 'application/json'
         },
-        body: JSON.stringify(model)
+        payload: JSON.stringify(model)
     }, req.$eat(function (json, response) {
         if (json && json.errorCode) {
             if (json.developerMessage) {

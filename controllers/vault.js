@@ -196,7 +196,11 @@ module.exports = function (router) {
             json.expire_year = dateParts.y;
         },
         't': 'type',
-        'c': 'cvv2'
+        'c': 'cvv2',
+        'zip': function (json, x) {
+            // remove this for now.
+            // TODO depends on whether we're vaulting or PayFlowing
+        }
     };
     /**
      * Change short-named properties into normal ones for the vault service
@@ -245,7 +249,7 @@ module.exports = function (router) {
             headers: {
                 'content-type': 'application/json'
             },
-            body: JSON.stringify(cardBody)
+            payload: JSON.stringify(cardBody)
         }, function (err, rz) {
             if (err) {
                 cb(err);

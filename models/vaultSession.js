@@ -83,7 +83,7 @@ var vaultSessionModel = function () {
                cb(err);
                return;
            }
-           doc.decryptSecureConfiguration(req.query.uuid, function (decErr, config) {
+           doc.decryptSecureConfiguration(req.body.uuid||req.query.uuid, function (decErr, config) {
                var pk = pki.privateKeyFromPem(config.privateKey);
                var rsak = new RSAKey();
                rsak.setPrivate(pk.n.toString(16), '10001', pk.d.toString(16));
