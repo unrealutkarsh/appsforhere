@@ -14,8 +14,8 @@
         <!-- Main jumbotron for a primary marketing message or call to action -->
         <div class="jumbotron" style="margin: 50px 20px">
             <h1>Welcome to Apps for Here!</h1>
-            <p>This site contains various enhancements and applications for your <a href="https://www.paypal.com/here">PayPal Here</a> experience. Currently, you can
-                manage your item catalog, manage merchant locations and view sales reports via a regular web browser. To get started, we will
+            <p>This site contains various enhancements and applications for your <a href="https://www.paypal.com/here">PayPal Here</a> experience. Currently, you can{~n}
+                manage your item catalog, manage merchant locations and view sales reports via a regular web browser. To get started, we will{~n}
                 send you over to paypal.com to login securely with your PayPal account.</p>
             <p class="text-center"><a href="/oauth/login"><img src="https://www.paypalobjects.com/webstatic/en_US/developer/docs/lipp/loginwithpaypalbutton.png"/></a></p>
         </div>

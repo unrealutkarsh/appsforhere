@@ -1,0 +1,112 @@
+{>"layouts/master" /}
+
+{<body}
+    <br/>
+    <div class="container theme-showcase" role="main">
+        <div class="jumbotron" style="margin: 50px 20px">
+            <h1>Secret Exchange</h1>
+            <p>This tool makes it easier for you to securely exchange secrets (short messages) with other people. It is <b>completely</b> client side code - there are no server calls once you{~n}
+                have loaded this page, and none of your information ever leaves this page unless you send it somewhere.</p>
+            <div id="startDiv">
+                <p>The first person to use the tool should be{~n}
+                    the person <b>receiving</b> the secret information</p>
+                <p><button type="button" class="btn-primary btn btn-lg ladda-button" data-style="expand-left" id="start">Get Started</button></p>
+            </div>
+            <div id="keyDiv" style="display: none;">
+                <p>Send the following value to the person who wants to send you a secret:</p>
+                <textarea class="form-control" rows="6" id="key"></textarea>
+                Or, send them a link to this page: <a href="#" id="keyLink" target="new">Send me a secret</a><br/><br/>
+                <p>Do not leave this page or you will lose your key and not be able to decrypt their secret.</p>
+                <p><button type="button" class="btn-primary btn btn-lg ladda-button" data-style="expand-left" id="next">Next</button></p>
+            </div>
+            <div id="entryDiv" style="display: none;">
+                <p>Paste the value you get from the other person in this box:</p>
+                <textarea class="form-control" rows="6" id="cipher"></textarea><br/>
+                <p><button type="button" class="btn-primary btn btn-lg ladda-button" data-style="expand-left" id="decrypt">Decrypt</button></p>
+            </div>
+            <div id="clearDiv" style="display: none;">
+                <textarea class="form-control" rows="6" id="clear"></textarea><br/>
+                <p><button type="button" class="btn-primary btn btn-lg ladda-button" data-style="expand-left" id="decryptAnother">Another</button></p>
+            </div>
+            <div id="secretDiv" style="display:none;">
+                <p>Enter your secret message (The size of a tweet or less):</p>
+                <textarea class="form-control" rows="6" id="secret" maxlength="256"></textarea><br/>
+                <p><button type="button" class="btn-primary btn btn-lg ladda-button" data-style="expand-left" id="encrypt">Encrypt Secret</button></p>
+            </div>
+            <div id="payloadDiv" style="display:none;">
+                <p>Send this to the person receiving the secret through any channel - Skype, email, billboard, smoke signal, whatever. It's not useful
+                without the key that only the receiver has.</p>
+                <textarea class="form-control" rows="6" id="payload"></textarea><br/>
+                <p><button type="button" class="btn-primary btn btn-lg ladda-button" data-style="expand-left" id="another">Send Another</button></p>
+            </div>
+        </div>
+    </div>
+{/body}
+
+{<head}
+    <link rel="stylesheet" href="/components/ladda/dist/ladda-themeless.min.css">
+{/head}
+
+{<scripts}
+    <script type="text/javascript" src="/js/exchange/exchange.js"></script>
+    <script type="text/javascript" src="/components/ladda/dist/spin.min.js"></script>
+    <script type="text/javascript" src="/components/ladda/dist/ladda.min.js"></script>
+    <script type="text/javascript">
+        function getParameterByName(name) {
+            name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+            var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                    results = regex.exec(location.search);
+            return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+        }
+        $(function () {
+            var startLadda = Ladda.create($('#start')[0]);
+            var rsaKey = new RSAKey();
+            if (getParameterByName("key")) {
+                rsaKey.setPublic(getParameterByName("key"), "10001");
+                $('#startDiv').hide();
+                $('#secretDiv').show();
+                $('#secret').focus();
+            }
+            $('#start').on('click', function () {
+                startLadda.start();
+                setTimeout(function () {
+                    rsaKey.generate("2048", "10001");
+                    $('#key').val(rsaKey.n.toString(16));
+                    $('#keyLink').attr('href', 'https://{host}/exchange?key=' + rsaKey.n.toString(16));
+                    $('#startDiv').hide();
+                    $('#keyDiv').show();
+                    $('#key').select();
+                }, 100);
+            });
+            $('#encrypt').on('click', function () {
+                $('#payload').val(rsaKey.encrypt($('#secret').val()));
+                $('#secret').val('');
+                $('#secretDiv').hide();
+                $('#payloadDiv').show();
+                $('#payload').select();
+            });
+            $('#next').on('click', function () {
+                $('#keyDiv').hide();
+                $('#entryDiv').show();
+                $('#cipher').focus();
+            });
+            $('#decrypt').on('click', function () {
+                $('#clear').val(rsaKey.decrypt($('#cipher').val()));
+                $('#entryDiv').hide();
+                $('#clearDiv').show();
+                $('#entry').val('');
+            });
+            $('#another').on('click', function () {
+                $('#secretDiv').show();
+                $('#payloadDiv').hide();
+                $('#secret').focus();
+            });
+            $('#decryptAnother').on('click', function () {
+                $('#clearDiv').hide();
+                $('#entryDiv').show();
+                $('#entry').focus();
+            });
+        });
+    </script>
+{/scripts}
+

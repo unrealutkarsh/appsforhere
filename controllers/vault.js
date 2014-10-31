@@ -208,7 +208,7 @@ module.exports = function (router) {
      */
     function translateAndValidate(json) {
         for (var k in translationTable) {
-            if (json[k]) {
+            if (json.hasOwnProperty(k)) {
                 if (typeof(translationTable[k]) === 'function') {
                     translationTable[k](json, json[k]);
                 } else {
@@ -284,11 +284,11 @@ module.exports = function (router) {
             headers: {
                 'content-length': body.length
             }
-        }, function (err, rz) {
+        }, function (err, rz, body) {
             if (err) {
                 cb(err);
             } else {
-                cb(err, qs.parse(rz.body.toString()));
+                cb(err, qs.parse(body.toString()));
             }
         });
     }
