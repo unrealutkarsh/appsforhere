@@ -314,7 +314,15 @@ function saveLocation() {
         cache: false,
         success: function (data) {
             if (data && !data.success) {
-                $('#progressError').html(data.message);
+                if (data.message) {
+                    $('#progressError').html(data.message);
+                } else if (data.errorCode) {
+                    var msg = 'Server error ' + data.errorCode;
+                    if (data.correlationId) {
+                        msg += ' (Case #' + data.correlationId + ')';
+                    }
+                    $('#progressError').html(msg);
+                }
                 $('#progressAlert').css('display', 'block').alert();
                 return;
             }
@@ -464,6 +472,8 @@ function initializeMaps() {
         if (place.geometry && place.geometry.location) {
             $('#locGps').val(place.geometry.location.lng() + "," + place.geometry.location.lat());
         }
+
+        $('#locationDetailForm').data('bootstrapValidator').validate();
 
         infowindow.setContent('<div><strong>' + place.name + '</strong><br>' + address);
         infowindow.open(map, marker);
@@ -691,6 +701,7 @@ $(document).ready(function () {
         } else {
             $('#locGps').val("");
         }
+        $('#locationDetailForm').data('bootstrapValidator').validate();
         $('#googleModal').modal();
     });
 

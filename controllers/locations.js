@@ -5,6 +5,7 @@ var FormData = require('form-data');
 var Image = require('../models/image');
 var imgHelper = require('../lib/products/img-canvas-helper');
 var fs = require('fs');
+var logger = require('pine')();
 
 var builtInButtons = ['bid','donate','order','schedule','viewbill'];
 
@@ -118,10 +119,12 @@ module.exports = function (router) {
      * The workhorse - save a location and potentially a location logo
      */
     router.post('/api', appUtils.apiAuth, hasEditRole, function (req, res) {
+        logger.debug('Saving location: %j', (req.body && req.body.model) ? req.body.model : 'empty');
         var model = JSON.parse(req.body.model);
         // We need an eBay picture URL, so we'll have to make one if it isn't already there.
         if (model.logoUrl && model.logoUrl.length && model.logoUrl.indexOf('https://pics.paypal.com/') !== 0) {
             // TODO factor this out into another fn
+            logger.debug('Saving location image');
             var logo = model.logoUrl;
             delete model.logoUrl;
             saveLocation(req, model, function (loc) {
@@ -193,6 +196,7 @@ function saveLocation(req, model, cb) {
     var url = req.user.hereApiUrl('locations');
 
     function completion(json) {
+        logger.debug('Saved location: %s', json);
         if (json.errorCode) {
             json.success = false;
         } else {
@@ -202,21 +206,23 @@ function saveLocation(req, model, cb) {
     }
 
     if (model.id) {
+        logger.debug('Calling hereapi PUT location');
         req.user.hereApi().put({
             tokens: req.user,
             json: true,
             url: url + '/' + model.id,
-            body: JSON.stringify(model),
+            payload: JSON.stringify(model),
             headers: {
                 'Content-type': 'application/json'
             }
         }, req.$eat(completion));
     } else {
+        logger.debug('Calling hereapi POST location');
         req.user.hereApi().post({
             tokens: req.user,
             json: true,
             url: url,
-            body: JSON.stringify(model),
+            payload: JSON.stringify(model),
             headers: {
                 'Content-type': 'application/json'
             }

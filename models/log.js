@@ -11,7 +11,7 @@ var logModel = function () {
         timestamp: Date,
         meta: mongoose.Schema.Types.Mixed
     },{
-        capped: 2000000000
+        capped: 20000000
     });
 
     return mongoose.model('nodelogs', logSchema);
