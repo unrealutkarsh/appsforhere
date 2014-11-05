@@ -33,7 +33,7 @@ module.exports = function (router) {
         if (req.params.modelId === '_') {
             req.user.hereApi().get({
                 tokens: req.user,
-                url: 'https://www.paypal.com/webapps/hereapi/merchant/v1/products',
+                url: req.user.hereApiUrl('products'),
                 json: true,
                 headers: {
                     'Content-type': 'application/json'
@@ -233,7 +233,7 @@ function getModelByNameOrId(req, res, modelNameOrId, successCallback) {
 }
 
 function putModel(req, model, fn) {
-    var url = 'https://www.paypal.com/webapps/hereapi/merchant/v1/products';
+    var url = req.user.hereApiUrl('products');
     req.user.hereApi().put({
         tokens: req.user,
         url: url,

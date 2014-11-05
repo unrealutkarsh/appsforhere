@@ -41,11 +41,21 @@ var paypalUserModel = function () {
         }
     };
     paypalUserSchema.methods.hereApiUrl = function (method, api) {
-        return appUtils.hereApiUrl(this.environment, method, api);
+        // Somehow, "request" is this here...
+        var user = this;
+        if (user.user) {
+            user = user.user;
+        }
+        return appUtils.hereApiUrl(user.environment, method, api);
     };
 
     paypalUserSchema.methods.hereApi = function () {
-        return appUtils.hereApi(this.environment);
+        // Somehow, "request" is this here...
+        var user = this;
+        if (user.user) {
+            user = user.user;
+        }
+        return appUtils.hereApi(user.environment);
     };
 
     paypalUserSchema.plugin(findOrCreate);

@@ -107,9 +107,10 @@ function configureQueue() {
  * @param config from Kraken/confit
  */
 function configureLogging(config) {
-    var MongoDB = require('winston-mongodb').MongoDB;
+    /* Something is causing trouble when the capped collection fills up */
+    // var MongoDB = require('winston-mongodb').MongoDB;
     // only way to set the default logger config is via the private pine impl
-    logger._impl.add(MongoDB, config.get('winston-mongodb'));
+    // logger._impl.add(MongoDB, config.get('winston-mongodb'));
 }
 
 /**
@@ -183,8 +184,8 @@ function configurePassport(config) {
             profileURL: 'https://api.sandbox.paypal.com/v1/identity/openidconnect/userinfo/?schema=openid',
             statusURL: 'https://api.sandbox.paypal.com/retail/merchant/v1/status',
             hereApi: new Liwp({
-                appId: 'AeoOpBB2XJWwORPT8Q7NpPQgr8eStz39tt8IsM6wRaxiRg50hdMTSgNk7rFg',
-                secret: 'EDZTDBAH7SoQsPZxVAJ4n7SvVfMwWGziwLpJsvKj8Ghe8Wxm1Hg70Tt2pXP7'
+                appId: process.env.SANDBOX_APP_ID || 'AeoOpBB2XJWwORPT8Q7NpPQgr8eStz39tt8IsM6wRaxiRg50hdMTSgNk7rFg',
+                secret: process.env.SANDBOX_APP_SECRET || 'EDZTDBAH7SoQsPZxVAJ4n7SvVfMwWGziwLpJsvKj8Ghe8Wxm1Hg70Tt2pXP7'
             }),
             passReqToCallback: true
         },
