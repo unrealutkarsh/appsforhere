@@ -36,13 +36,15 @@ var mongo = require('./lib/mongo'),
     PayPalUser = require('./models/payPalUser'),
     PayPalDelegatedUser = require('./models/payPalDelegatedUser'),
     Queue = require('./lib/queue'),
+    appUtils = require('./lib/appUtils'),
     Liwp = require('./lib/loginWithPayPal'),
     options = {
         onconfig: function appsforhereConfiguration(config, next) {
             configureLogging(config);
             configureMongo(config);
+            appUtils.configure(config);
             configurePassport(config);
-            configureQueue();
+            configureQueue(config);
 
             next(null, config);
         }
@@ -92,14 +94,14 @@ process.on('message', function (msg) {
 /**
  * The queue monitor will look for delayed jobs and execute them
  */
-function configureQueue() {
+function configureQueue(config) {
     var queueOptions = {
         process: true
     };
     if (process.env.NO_QUEUE_PROCESSING) {
         queueOptions.process = false;
     }
-    Queue.init(mongo.db, queueOptions);
+    Queue.init(mongo.db, config, queueOptions);
 }
 
 /**
@@ -147,9 +149,9 @@ function configureMongo(config) {
  */
 function configurePassport(config) {
     passport.use(new PayPalStrategy({
-            clientID: process.env.PAYPAL_APP_ID,
-            clientSecret: process.env.PAYPAL_APP_SECRET,
-            callbackURL: process.env.PAYPAL_RETURN_URL || 'https://appsforhereweb.ebaystratus.com/oauth/return',
+            clientID: config.get('loginWithPayPal').live.client_id,
+            clientSecret: config.get('loginWithPayPal').live.secret,
+            callbackURL: config.get('loginWithPayPal').live.return_url || 'https://appsforhere.ebayc3.com/oauth/return',
             passReqToCallback: true
         },
         function savePassportUserToMongo(req, accessToken, refreshToken, profile, done) {
@@ -176,17 +178,14 @@ function configurePassport(config) {
 
     passport.use(new PayPalStrategy({
             name: 'sandbox',
-            callbackURL: process.env.PAYPAL_RETURN_URL || 'https://appsforhereweb.ebaystratus.com/oauth/return',
-            clientID: 'AeoOpBB2XJWwORPT8Q7NpPQgr8eStz39tt8IsM6wRaxiRg50hdMTSgNk7rFg',
-            clientSecret: 'EDZTDBAH7SoQsPZxVAJ4n7SvVfMwWGziwLpJsvKj8Ghe8Wxm1Hg70Tt2pXP7',
+            clientID: config.get('loginWithPayPal').sandbox.client_id,
+            clientSecret: config.get('loginWithPayPal').sandbox.secret,
+            callbackURL: config.get('loginWithPayPal').sandbox.return_url || 'https://appsforhere.ebayc3.com/oauth/return',
             authorizationURL: 'https://www.sandbox.paypal.com/webapps/auth/protocol/openidconnect/v1/authorize',
             tokenURL: 'https://api.sandbox.paypal.com/v1/identity/openidconnect/tokenservice',
             profileURL: 'https://api.sandbox.paypal.com/v1/identity/openidconnect/userinfo/?schema=openid',
             statusURL: 'https://api.sandbox.paypal.com/retail/merchant/v1/status',
-            hereApi: new Liwp({
-                appId: process.env.SANDBOX_APP_ID || 'AeoOpBB2XJWwORPT8Q7NpPQgr8eStz39tt8IsM6wRaxiRg50hdMTSgNk7rFg',
-                secret: process.env.SANDBOX_APP_SECRET || 'EDZTDBAH7SoQsPZxVAJ4n7SvVfMwWGziwLpJsvKj8Ghe8Wxm1Hg70Tt2pXP7'
-            }),
+            hereApi: appUtils.hereApis.sandbox,
             passReqToCallback: true
         },
         function saveSandboxPassportUserToMongo(req, accessToken, refreshToken, profile, done) {

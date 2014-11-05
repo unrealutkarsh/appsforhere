@@ -1,4 +1,20 @@
 {
+    "loginWithPayPal": {
+        "sandbox": {
+            "client_id": "AeoOpBB2XJWwORPT8Q7NpPQgr8eStz39tt8IsM6wRaxiRg50hdMTSgNk7rFg",
+            "secret": "EDZTDBAH7SoQsPZxVAJ4n7SvVfMwWGziwLpJsvKj8Ghe8Wxm1Hg70Tt2pXP7"
+        }
+    },
+
+    "twilio": {
+        "sid": "Your TWILIO sid",
+        "auth": "Your TWILIO auth",
+        "number": "Your TWILIO Number"
+    },
+
+    "mailgun": {
+        "key": "Your MAILGUN key"
+    },
 
     "express": {
         "view cache": false,
@@ -28,7 +44,7 @@
         "contentPath": "path:./locales",
         "fallback": "en-US"
     },
-    
+
     "mongoUrl": "mongodb://localhost/pph-loyalty",
 
     "winston-mongodb": {
@@ -78,7 +94,7 @@
                 "name": "engine-munger/lib/expressView"
             }
         },
-        
+
 
         "fileNotFound": {
             "enabled": true,
