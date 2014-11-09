@@ -51,7 +51,7 @@ module.exports = function (router) {
      * Complete a payment by calling the MIS APIs and send any notifications required to the merchant.
      */
     router.post('/complete/:id', checkinUtils.addAppTabAndLocationToRequest, function (req, res) {
-        var url = 'https://api.paypal.com/retail/merchant/v1/pay';
+        var url = req.hereApiUrl('pay');
         req.hereApi().post({
             url: url,
             json: true,

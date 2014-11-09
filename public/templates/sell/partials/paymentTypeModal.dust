@@ -1,0 +1,105 @@
+<div id="paymentTypeModal" class="modal fade" aria-hidden="true" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Choose a Payment Type</h4>
+            </div>
+            <div class="modal-body">
+                <div class="text-center">
+                    <div style="height:0;width:0;overflow:hidden">
+                        <input type="text" id="keyboardWatcher"/>
+                    </div>
+                    <div class="alert alert-info" id="keyboardHasFocus" style="display:none;">
+                        <p>If you have a <a href="#" target="_blank">supported payment entry device</a>{~n}
+                            such as a USB credit card reader, barcode scanner or NFC reader,{~n}
+                            you may swipe scan or tap at this time.</p>
+                    </div>
+                    <div class="alert alert-warning" id="keyboardNeedsFocus">
+                        <p>If you wish to use a <a href="#" target="_blank">supported payment entry device</a>{~n}
+                            such as a USB credit card reader, barcode scanner or NFC reader,{~n}
+                            <a href='#' id="keyboardGetFocus" title="click this link to enable the swipe, scan or tap feature with supported hardware">click here</a>
+                        </p>
+                    </div>
+                    <div class="btn-group btn-group-lg" id="paymentTypeSelector">
+                        <button type="button" class="btn btn-default" data-value="cardEntry">Card</button>
+                        <button type="button" class="btn btn-default" data-value="checkinEntry">Checkin</button>
+                        <button type="button" class="btn btn-default" data-value="cashEntry">Cash</button>
+                        <button type="button" class="btn btn-default" data-value="checkEntry">Check</button>
+                        <button type="button" class="btn btn-default" data-value="invoiceEntry">Invoice</button>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <div id="cardEntry" style="display:none;">
+                            <form role="form" id="credit-card-form">
+                                <div class="form-group">
+                                    <label>Card Number</label>
+                                    <input placeholder="Enter the full credit card number" id="card-number" type="tel" autocompletetype="off" required="required" class="form-control cc-num paymentInput" data-bv-creditcard="true"
+                                           data-bv-creditcard-message="The credit card number is not valid">
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Expiration</label>
+                                            <input name="card-expiration" type="tel" class="form-control cc-exp paymentInput" placeholder="MM/YY" autocomplete="off">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Security Code</label>
+                                            <input name="card-cvc" type="tel" class="form-control cc-cvc paymentInput" placeholder="Ex. 331" autocomplete="off">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label>Postal Code</label>
+                                            <input name="card-postal" type="tel" class="form-control cc-postal paymentInput" placeholder="00000" autocomplete="off">
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary text-right" id="doCardPayment">Confirm Payment</button>
+                            </form>
+                        </div>
+                        <div id="checkinEntry" style="display:none;">
+                            Coming soon.
+                        </div>
+                        <div id="cashEntry" style="display:none;">
+                            Coming soon.
+                        </div>
+                        <div id="checkEntry" style="display:none;">
+                            Coming soon.
+                        </div>
+                        <div id="invoiceEntry" style="display:none;">
+                            Coming soon.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div id="paymentConfirmModal" class="modal fade" aria-hidden="true" role="dialog" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Confirm Payment</h4>
+            </div>
+            <div class="modal-body text-center">
+                <div class="confirmText">
+                    <span id="confirmAmount">$1.23</span> will be charged using <span id="summary">PayPal</span>.
+                </div>
+                <div class="modal-footer">
+                    <div class="col-sm-6 text-left">
+                        <button type="button" class="btn btn-default btn-lg" data-dismiss="modal">Cancel</button>
+                    </div>
+                    <div class="col-sm-6 text-right">
+                        <button type="submit" class="btn btn-primary btn-lg ladda-button" data-style="expand-left" id="doPayment">OK</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
