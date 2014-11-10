@@ -397,6 +397,9 @@ function paycodeDetected(data) {
     addMerchantInfo(paymentRequest.invoice);
     $('#keyboardWatcher').val('');
     $('#paymentTypeModal').modal('hide');
+    var tots = inv.calculate();
+    $('#confirmAmount').text(m$(tots.total.toString()));
+    $('#summary').text('PayPal');
     $('#paymentConfirmModal').modal();
 }
 
