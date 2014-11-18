@@ -68,6 +68,9 @@ function showItem(product) {
 }
 
 function setupItemModal() {
+    $('#itemModal').on('shown.bs.modal', function () {
+       $('#itemName').focus();
+    });
     $("#itemPrice").money_field({});
     $('#deleteItem').on('click', function () {
         if (selectedProduct) {

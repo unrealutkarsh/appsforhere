@@ -221,7 +221,7 @@ function realInit() {
         }
     });
 
-        var cartDS = new CartDataSource();
+    var cartDS = new CartDataSource();
     $('#cartGrid').repeater({
         dataSource: cartDS.data,
         defaultView: 'list',
@@ -283,6 +283,14 @@ function realInit() {
         labelField: 'name',
         searchField: ['name'],
         create: false
+    });
+    catalogSelectize.on('change', function () {
+        var newModel = $(this).val();
+        if (newModel !== selectedModel) {
+            selectedModel = newModel;
+            delete dataSource.sourceData;
+            $('#productGrid').repeater('render');
+        }
     });
 
     var eventCounter = 0;
@@ -367,6 +375,8 @@ function realInit() {
             cache: false,
             success: function (data) {
                 l.stop();
+                $('#paymentConfirmModal').modal('hide');
+                $('#paymentCompleteModal').modal();
             },
             error: function (xhr, type, error) {
                 l.stop();
@@ -379,12 +389,54 @@ function realInit() {
         });
     });
 
+    $('#newOrder').on('click', function () {
+        inv = new Invoice('USD');
+        $('#cartGrid').repeater('render');
+        $('#charge').prop('disabled', true);
+        $('#chargeBtnAmount').text(m$("0"));
+        $('#paymentCompleteModal').modal('hide');
+    });
+
     setupCardEntry();
 }
 
 function swipeDetected(data) {
-    console.log(data);
-    $('#keyboardWatcher').val('');
+    paymentRequest = {
+        paymentType: 'card',
+        card: {
+            reader: {
+                vendor: "IDTECH",
+                keySerialNumber: data.ksn,
+                readerSerialNumber: data.serial
+            },
+            track1: data.track1,
+            track2: data.track2,
+            inputType: 'swipe'
+        },
+        invoice: JSON.parse(JSON.stringify(inv))
+    };
+    addMerchantInfo(paymentRequest.invoice);
+    if (data.track1Masked) {
+        var re = /^%([A-Z\*])([0-9\*]{1,19})\^([^\^]{2,26})\^([0-9\*]{4}|\^)([0-9\*]{3}|\^)([^\?]+)\?\*?$/;
+        var m = data.track1Masked.match(re);
+        if (m) {
+            var card = m[2];
+            if (card && card.length > 4) {
+                card = card.substring(card.length - 4);
+            }
+            showConfirm('the card ending in ' + card);
+        }
+    } else if (data.track2Masked) {
+        var re = /^;([0-9\*]{1,19})=([^\?]+)\?\*?$/;
+        var m = data.track2Masked.match(re);
+        if (m) {
+            var card = m[1];
+            if (card && card.length > 4) {
+                card = card.substring(card.length - 4);
+            }
+            showConfirm('the card ending in ' + card);
+        }
+    }
 }
 
 function paycodeDetected(data) {
@@ -395,11 +447,15 @@ function paycodeDetected(data) {
         invoice: JSON.parse(JSON.stringify(inv))
     };
     addMerchantInfo(paymentRequest.invoice);
+    showConfirm('PayPal');
+}
+
+function showConfirm(summary) {
     $('#keyboardWatcher').val('');
     $('#paymentTypeModal').modal('hide');
     var tots = inv.calculate();
     $('#confirmAmount').text(m$(tots.total.toString()));
-    $('#summary').text('PayPal');
+    $('#summary').text(summary);
     $('#paymentConfirmModal').modal();
 }
 

@@ -151,6 +151,7 @@ AjaxDataSource.prototype = {
             data = self.filter(data, options);
         }
 
+        data = data || [];
         var count = data.length;
 
         if (options.sortProperty) {

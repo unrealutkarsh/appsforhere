@@ -65,6 +65,9 @@ function setupVariants() {
             variantsBeingEdited.splice($.inArray(selectedVariant, variantsBeingEdited), 1);
         }
     });
+    $('#variantModal').on('shown.bs.modal', function () {
+        $('#variantPrice').focus();
+    });
     $("#variantPrice").money_field({});
     $('#variantForm').bootstrapValidator({
         live: 'enabled',

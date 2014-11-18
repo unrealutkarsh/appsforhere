@@ -183,14 +183,6 @@ ProductDataSource.prototype = {
 
 dataSource = new ProductDataSource();
 
-$('#productGrid').repeater({
-    dataSource: function (o, c) {
-        dataSource.data(o, c);
-    },
-    defaultView: 'list',
-    list_selectable: true
-});
-
 function setupProductGrid() {
     $('#productGrid').on('click', 'table>tbody>tr', function () {
         var $this = $(this);
@@ -307,4 +299,13 @@ function setupProductGrid() {
         $('#modelNameModal').modal('hide');
         publishModel($('#modelName').val());
     });
+
+    $('#productGrid').repeater({
+        dataSource: function (o, c) {
+            dataSource.data(o, c);
+        },
+        defaultView: 'list',
+        list_selectable: true
+    });
+
 }

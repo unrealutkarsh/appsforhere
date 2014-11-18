@@ -7,6 +7,7 @@
                 {>"products/partials/leftNav"/}
                 <div id="main" class="col-md-10">
                     {>"products/partials/productRepeater"/}
+                    {>"products/partials/inventory"/}
                 </div>
             </div>
         </div>

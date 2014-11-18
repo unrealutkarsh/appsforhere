@@ -1,0 +1,11 @@
+<h3>Inventory</h3>
+
+<p>You can use appsforhere to track inventory by item. Items (and variations of items) to be tracked must have SKUs{~n}
+    (i.e. alphanumeric item codes) and you must enable appsforhere to process 'webhooks' when orders are completed.{~n}
+    If the inventory counts ever get out of sync, just come back into appsforhere and reset the counts.
+</p>
+
+<form method="POST" action="/products/webhooks">
+<input type="hidden" name="_csrf" value="{_csrf}"/>
+<button type="submit" class="btn btn-lg">Enable Inventory</button>
+</form>

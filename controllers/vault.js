@@ -18,8 +18,6 @@ var randtoken = require('rand-token').generator({
     chars: 'abcdefghijklmnpqrstuvwxyz0123456789'
 });
 
-var jsTemplate = require('fs').readFileSync('.build/js/vault/client.js').toString();
-
 module.exports = function (router) {
 
     var saveRole = appUtils.hasRoles(appUtils.ROLES.SaveVault);
@@ -64,11 +62,6 @@ module.exports = function (router) {
         });
 
     router.route('/session/:id')
-        .get(function (req, res) {
-            VaultSession.getSession(req.params.id, function (err, doc) {
-               res.send(jsTemplate.replace('{{PUBLICKEY}}', doc.publicKey));
-            });
-        })
         .delete(function (req, res) {
             VaultSession.findOneAndRemove({id:req.params.id}, function (e) {
                if (e) {
@@ -241,7 +234,7 @@ module.exports = function (router) {
     }
 
     function vaultIt(req, cardBody, cb) {
-        var url = req.hereApiUrl('credit-card', 'vault');
+        var url = req.hereApiUrl('vault/credit-card', 'ppaas');
         req.hereApi().post({
             url: url,
             tokens: req.user,

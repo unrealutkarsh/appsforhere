@@ -177,6 +177,19 @@ module.exports = function (router) {
             }));
         }));
     });
+
+    router.post('/webhooks', appUtils.auth, appUtils.hasRoles(appUtils.ROLES.EditProducts), function (req, res, next) {
+        req.user.hereApi().get({
+            tokens: req.user,
+            url: req.user.hereApiUrl('notifications/webhooks'),
+            json: true,
+            headers: {
+                'Content-type': 'application/json'
+            }
+        }, req.$eat(function (json) {
+            res.json(json.toString());
+        }));
+    });
 };
 
 function makeSavedModels(docs) {

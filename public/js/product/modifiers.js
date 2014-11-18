@@ -124,7 +124,7 @@ function setupOptionNav(li, mod) {
         },
         validate: function (validator, $field, options) {
             var value = $field.val();
-            if (model.options.length == 0) {
+            if (!model.options || model.options.length == 0) {
                 return true;
             }
             for (var i = 0; i < model.options.length; i++) {
@@ -221,6 +221,9 @@ function setupModifiers() {
     $('#modifierAdd').on('click', addModifier);
     $('#addModifierValue').on('click', showModValue);
     $('#modValuePrice').money_field();
+    $('#modValueModal').on('shown.bs.modal', function () {
+        $('#modValueName').focus();
+    });
 
     $('#deleteModifier').on('click', function () {
        if (selectedModifier) {
