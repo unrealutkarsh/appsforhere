@@ -1,5 +1,5 @@
 var selectedModel = '_', categoryFilter, filterAny = true, inv = new Invoice('USD'), model;
-var editingItem, paymentTypeView, paymentRequest;
+var editingItem, paymentTypeView, paymentRequest, coords;
 var locationSelectize, categorySelectize, locations;
 
 var CartDataSource = function () {
@@ -166,7 +166,7 @@ $(function () {
 });
 
 function haveLocation(position) {
-    console.log(position.coords);
+    coords = position.coords;
     $('#pleaseWaitDialog').modal('hide');
 }
 
@@ -206,15 +206,15 @@ function realInit() {
         inv.addItem(item);
         $('#cartGrid').repeater('render');
     });
-    $('#cartGrid').on('click', 'table>tbody>tr', function () {
+    $('#cartGrid').on('click', 'table.repeater-list-items>tbody>tr', function () {
         var $this = $(this);
         editingItem = $this.data("item_data");
         // Undo selection UI
         $this.removeClass('selected');
         $this.find('.repeater-list-check').remove();
-        if (editingItem.special === 'tax') {
+        if (editingItem && editingItem.special === 'tax') {
 
-        } else if (editingItem.special === 'discount') {
+        } else if (editingItem && editingItem.special === 'discount') {
 
         } else {
             $('#cartItemModal').modal();
@@ -397,11 +397,164 @@ function realInit() {
         $('#paymentCompleteModal').modal('hide');
     });
 
+    $('#customerInfo').on('click', function () {
+        if (inv.payerEmail && inv.payerEmail !== 'noreply@here.paypal.com') {
+            $('#customerEmail').val(inv.payerEmail);
+        }
+        var l = getCurrentLocation();
+        if (l && l.address) {
+            $('#customerCountry').val(l.address.country);
+        }
+        if (inv.billingInfo) {
+            $('#customerFirstName').val(inv.billingInfo.firstName);
+            $('#customerLastName').val(inv.billingInfo.lastName);
+            $('#customerBizName').val(inv.billingInfo.businessName);
+            $('#customerPhone').val(inv.billingInfo.phoneNumber);
+            var a = inv.billingInfo.address;
+            if (a) {
+                $('#customerAddress1').val(a.line1);
+                $('#customerAddress2').val(a.line2);
+                $('#customerCity').val(a.city);
+                $('#customerState').val(a.state);
+                $('#customerPostal').val(a.postalCode);
+                $('#customerCountry').val(a.country);
+            }
+        }
+        $('#customerInfoModal').modal();
+    });
+
+    $('#customerInfoForm').bootstrapValidator({
+        live: 'enabled',
+        trigger: 'blur',
+        feedbackIcons: {
+            valid: 'glyphicon glyphicon-ok',
+            invalid: 'glyphicon glyphicon-remove',
+            validating: 'glyphicon glyphicon-refresh'
+        },
+        fields: {
+            customerEmail: {
+                validators: {
+                    emailAddress: {
+                        message: 'Please enter a valid email address.'
+                    }
+                }
+            }
+        }
+    });
+
+    function neVal(selector) {
+        var x = $(selector).val();
+        if (x && x.length > 0) {
+            return x;
+        }
+        return null;
+    }
+    $('#saveCustomerInfo').on('click', function (e) {
+        e.preventDefault();
+        $('#customerInfoModal').modal('hide');
+        inv.payerEmail = $('#customerEmail').val();
+        var fn = neVal('#customerFirstName'), ln = neVal('#customerLastName'), bz = neVal('#customerBizName');
+        var a1 = neVal('#customerAddress1'), a2 = neVal('#customerAddress2'), ph = neVal('#customerPhone');
+        var c = neVal('#customerCity'), s = neVal('#customerState'), z = neVal('#customerPostal'), ct = neVal('#customerCountry');
+        if (fn || ln || bz || a1 || a2 || c || s || z || ph) {
+            var bi = inv.billingInfo;
+            if (!bi) {
+                bi = inv.billingInfo = {};
+            }
+            bi.firstName = fn;
+            bi.lastName = ln;
+            bi.businessName = bz;
+            bi.phoneNumber = ph;
+            if (a1 || a2 || c || s || z) {
+                if (!bi.address) { bi.address = {}; }
+                bi.address.line1 = a1;
+                bi.address.line2 = a2;
+                bi.address.city = c;
+                bi.address.state = s;
+                bi.address.postalCode = z;
+                bi.address.country = ct;
+            }
+        } else {
+            delete inv.billingInfo;
+        }
+        updateCartCustomerInfo();
+    });
+
+    updateCartCustomerInfo();
     setupCardEntry();
+}
+
+function personalName(bi) {
+    if (!bi) { return null; }
+    var ret = "";
+    if (bi.firstName) {
+        ret = bi.firstName;
+        if (bi.lastName) {
+            ret += " ";
+        }
+    }
+    if (bi.lastName) {
+        ret += bi.lastName;
+    }
+    return ret.length > 0 ? ret : null;
+}
+
+function addr(info) {
+    if (!info) { return null; }
+    var ret = "";
+    if (info.line1) {
+        ret = info.line1;
+    }
+    if (info.line2) {
+        ret += "<br/>" + info.line2;
+    }
+    if (info.city || info.state || info.postalCode) {
+        ret += "<br/>";
+        if (info.city) {
+            ret += info.city;
+            if (info.state) {
+                ret += ',';
+            }
+            if (info.state || info.postalCode) {
+                ret += ' ';
+            }
+            if (info.state) {
+                ret += info.state;
+                if (info.postalCode) {
+                    ret += ' ';
+                }
+            }
+            if (info.postalCode) {
+                ret += info.postalCode;
+            }
+        }
+    }
+    return ret.length > 0 ? ret : null;
+}
+
+function updateCartCustomerInfo() {
+    var name, address, email, phone;
+    if (inv.billingInfo) {
+        name = inv.billingInfo.businessName || personalName(inv.billingInfo);
+        address = addr(inv.billingInfo.address);
+        phone = inv.billingInfo.phoneNumber;
+    }
+    email = inv.payerEmail;
+    if (inv.payerEmail === 'noreply@here.paypal.com') {
+        email = null;
+    }
+    $('#curCustomerName').toggleClass('placeholder', !name);
+    $('#curCustomerEmail').toggleClass('placeholder', !email);
+    $('#curCustomerName').text(name||'Customer Name');
+    $('#curCustomerEmail').text(email||'someone@somewhere.com');
+    $('#curCustomerAddress').html(address);
+    $('#curCustomerPhone').text(phone);
 }
 
 function swipeDetected(data) {
     paymentRequest = {
+        latitude: coords.latitude,
+        longitude: coords.longitude,
         paymentType: 'card',
         card: {
             reader: {
@@ -441,6 +594,8 @@ function swipeDetected(data) {
 
 function paycodeDetected(data) {
     paymentRequest = {
+        latitude: coords.latitude,
+        longitude: coords.longitude,
         paymentType: 'payCode',
         payCode: data,
         // Deep freeze the invoice.
@@ -459,18 +614,25 @@ function showConfirm(summary) {
     $('#paymentConfirmModal').modal();
 }
 
-function addMerchantInfo(inv) {
+function getCurrentLocation() {
     var l = locationSelectize[0].selectize.getValue();
     for (var i = 0; i < locations.length; i++) {
         var loc = locations[i];
         if (loc.id === l) {
-            inv.merchantInfo = inv.merchantInfo || {};
-            inv.merchantInfo.address = loc.address;
-            inv.merchantInfo.businessName = loc.name;
-            if (!inv.logoUrl && loc.logoUrl) {
-                inv.logoUrl = loc.logoUrl;
-            }
-            return;
+            return loc;
+        }
+    }
+    return null;
+}
+
+function addMerchantInfo(inv) {
+    var loc = getCurrentLocation();
+    if (loc) {
+        inv.merchantInfo = inv.merchantInfo || {};
+        inv.merchantInfo.address = loc.address;
+        inv.merchantInfo.businessName = loc.name;
+        if (!inv.logoUrl && loc.logoUrl) {
+            inv.logoUrl = loc.logoUrl;
         }
     }
 }

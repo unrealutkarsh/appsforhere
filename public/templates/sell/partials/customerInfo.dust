@@ -1,0 +1,67 @@
+<div id="customerInfoModal" class="modal fade" aria-hidden="true" role="dialog" tabindex="-1">
+    <form role="form" class="form-horizontal" id="customerInfoForm">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Enter Customer Information</h4>
+                </div>
+                <div class="modal-body">
+                    <small><b>PLEASE NOTE:</b> In most regions retailers are prohibited from{~n}
+                        collecting and recording a customer’s personal identifying information{~n}
+                        as a condition of accepting payment by credit card. (<a href="http://www.leginfo.ca.gov/cgi-bin/displaycode?section=civ&group=01001-02000&file=1747-1748.95">Song-Beverly Act</a>)
+                    </small>
+                    <hr/>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Name</label>
+
+                        <div class="col-sm-9">
+                            <div class="row">
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" id="customerFirstName" placeholder="First name"/>
+                            </div>
+                            <div class="col-sm-6">
+                                <input type="text" class="form-control" id="customerLastName" placeholder="Last name"/>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {>"partials/textField" id="customerBizName" placeholder="Company/Business Name"/}
+
+                    {>"partials/textField" id="customerAddress1" label="Address" placeholder="Line 1"/}
+
+                    {>"partials/textField" id="customerAddress2" placeholder="Line 2"/}
+
+                    <div class="form-group cityStateZip">
+                        <div class="col-sm-3 col-sm-offset-3 tight">
+                            <input class="form-control" id="customerCity" placeholder="City"/>
+                        </div>
+                        <div class="col-sm-2 tight">
+                            <input class="form-control" id="customerState" placeholder="State"/>
+                        </div>
+                        <div class="col-sm-2 tight">
+                            <input class="form-control" id="customerPostal" placeholder="Postal"/>
+                        </div>
+                        <div class="col-sm-2">
+                            <input class="form-control" id="customerCountry" placeholder="Ctry"/>
+                        </div>
+                    </div>
+
+                    {>"partials/textField" id="customerEmail" label="Email" placeholder="Email Address" type="email"/}
+
+                    {>"partials/textField" id="customerPhone" label="Phone" placeholder="Customer Phone Number" type="tel"/}
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary" id="saveCustomerInfo">Save Changes</button>
+                </div>
+
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </form>
+</div><!-- /.modal -->

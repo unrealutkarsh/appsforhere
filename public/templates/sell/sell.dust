@@ -22,6 +22,7 @@
     {>"sell/partials/variantOptionModal"/}
     {>"sell/partials/paymentTypeModal"/}
     {>"sell/partials/paymentComplete"/}
+    {>"sell/partials/customerInfo"/}
     <div class="modal fade" aria-hidden="true" role="dialog" tabindex="-1" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -59,6 +60,9 @@
             color: #2E4054;
             height: 100%;
             width: 30%;
+        }
+        #sidebar .selectize-input {
+            font-size: .8em;
         }
         #main {
             background-color: #F2F5F9;
@@ -113,7 +117,30 @@
             margin-bottom: 30px;
         }
         #cartGrid .repeater-header {
-            padding-top: 10px;
+            padding-top: 9px;
+        }
+        #customerInfo .glyphicon-edit {
+            float: right;
+        }
+        #curCustomerEmail.placeholder, #curCustomerName.placeholder {
+            color: #ccc;
+        }
+        #customerInfo {
+            font-size: .75em;
+        }
+        #curCustomerName {
+            font-size: 1.2em;
+        }
+        #customerInfo * {
+            cursor: pointer !important;
+        }
+        #customerInfo span.badge {
+            position: absolute;
+            left: 66px;
+            margin-top: -5px;
+        }
+        div.cityStateZip>div.tight {
+            padding-right: 0px;
         }
     </style>
     <link rel="stylesheet" href="/components/ladda/dist/ladda-themeless.min.css">

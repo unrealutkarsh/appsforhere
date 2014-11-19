@@ -9,6 +9,19 @@
                 <input class="form-control" id="catalog" placeholder="Select Catalog"/>
             </div>
         </div>
+        <table width="100%" id="customerInfo">
+            <tr><td style="width:80px;">
+                <span class="badge" style="display:none;" id="checkedInCount">4</span>
+                <img id="customerPhoto" src="/media/small_avatar.png" height="72" width="72"/>
+            </td>
+            <td style="vertical-align: top;">
+                <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                <div id="curCustomerName" class="placeholder"></div>
+                <div id="curCustomerAddress"></div>
+                <div id="curCustomerEmail" class="placeholder"></div>
+                <div id="curCustomerPhone" class="placeholder"></div>
+            </td></tr>
+        </table>
     </div>
 
     <div class="repeater-viewport">

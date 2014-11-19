@@ -39,6 +39,22 @@ module.exports = function (router) {
     });
 
     /**
+     * Get open tabs for a location
+     */
+    router.get('/api/:id/tabs', appUtils.apiAuth, hasViewRole, function (req, res) {
+        req.user.hereApi().get({
+            tokens: req.user,
+            url: req.user.hereApiUrl('locations/'+req.params.id+'/tabs'),
+            json: true,
+            headers: {
+                'Content-type': 'application/json'
+            }
+        }, req.$eat(function (json) {
+            res.json(json);
+        }));
+    });
+
+    /**
      * Set the image for a location
      */
     router.post('/api/image', appUtils.apiAuth, hasEditRole, function (req, res) {
