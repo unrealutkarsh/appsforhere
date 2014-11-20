@@ -1,6 +1,30 @@
 var selectedModel = '_', categoryFilter, filterAny = true, inv = new Invoice('USD'), model;
-var editingItem, paymentTypeView, paymentRequest, coords;
+var editingItem, paymentTypeView, paymentRequest, coords, tabs;
 var locationSelectize, categorySelectize, locations;
+
+var CheckinDataSource = function () {
+    var cols = [
+        {
+            property: 'imageTag',
+            cssClass: 'pph-itemPhoto',
+            width: 30
+        },
+        {
+            property: 'customerName'
+        }
+    ];
+    this.data = function (opt, cb) {
+        var t = tabs || [];
+        for (var i = 0; i < t.length; i++) {
+            t[i].imageTag = "<img src=\"" + t[i].photoUrl.replace("\"", "") +
+            "\" width=\"40\" height=\"40\"/>";
+            t[i].src = t[i].photoUrl;
+            t[i].name = t[i].customerName;
+        }
+        var r = { items: t, start: 0, end: t.length, count: t.length, pages: 1, page: 1, columns: cols };
+        cb(r);
+    };
+};
 
 var CartDataSource = function () {
     var cols = [
@@ -228,6 +252,14 @@ function realInit() {
         list_selectable: true
     });
 
+    var ciDS = new CheckinDataSource();
+    $('#checkinGrid').repeater({
+        dataSource: ciDS.data,
+        thumbnail_selectable: true,
+        defaultView: 'thumbnail',
+        list_selectable: true
+    });
+
     var rep = $('#productGrid').data('repeater');
     rep.$search.on('keyup.fu.search', $.proxy(rep.render, rep, { clearInfinite: true, pageIncrement: null }));;
 
@@ -269,10 +301,15 @@ function realInit() {
                     locations = res.locations;
                     if (s.getValue().length == 0 && res.locations && res.locations.length > 0) {
                         s.setValue(res.locations[0].id);
+                        pollTabs();
                     }
                 }
             });
         }
+    });
+
+    locationSelectize[0].selectize.on('change', function () {
+        pollOnce();
     });
 
     catalogSelectize = $('#catalog').selectize({
@@ -397,7 +434,12 @@ function realInit() {
         $('#paymentCompleteModal').modal('hide');
     });
 
-    $('#customerInfo').on('click', function () {
+    $('#customerInfo').on('click', 'td.user', function (e) {
+        $('#checkinGrid').repeater('render');
+        $('#checkinModal').modal();
+    });
+
+    $('#customerInfo').on('click', 'td.info', function (e) {
         if (inv.payerEmail && inv.payerEmail !== 'noreply@here.paypal.com') {
             $('#customerEmail').val(inv.payerEmail);
         }
@@ -800,3 +842,30 @@ function readSerialIdTech(parsed, info, cardData) {
     parsed.ksn = cardData.substring(encEnd + 20, encEnd + 40);
 }
 
+function pollOnce() {
+    var loc = getCurrentLocation();
+    if (loc) {
+        $.ajax({
+            url: '/locations/api/'+loc.id+'/tabs',
+            type: 'GET',
+            error: function(r, msg, e) {
+                console.log('Location poll error', e);
+            },
+            success: function(res) {
+                if (res && res.tabs && res.tabs.length) {
+                    tabs = res.tabs;
+                    $('#checkedInCount').text(res.tabs.length).show();
+                } else {
+                    tabs = null;
+                    $('#checkedInCount').hide();
+                }
+                console.log(res);
+            }
+        })
+    }
+}
+
+function pollTabs() {
+    pollOnce();
+    setTimeout(pollTabs, 10000);
+}

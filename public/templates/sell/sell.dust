@@ -23,6 +23,7 @@
     {>"sell/partials/paymentTypeModal"/}
     {>"sell/partials/paymentComplete"/}
     {>"sell/partials/customerInfo"/}
+    {>"sell/partials/checkedIn"/}
     <div class="modal fade" aria-hidden="true" role="dialog" tabindex="-1" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog">
             <div class="modal-content">
