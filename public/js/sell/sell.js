@@ -6,7 +6,7 @@ var CheckinDataSource = function () {
     var cols = [
         {
             property: 'imageTag',
-            cssClass: 'pph-itemPhoto',
+            className: 'pph-itemPhoto',
             width: 30
         },
         {
@@ -30,11 +30,11 @@ var CartDataSource = function () {
     var cols = [
         {
             width: 10,
-            cssClass: 'pph-spacer'
+            className: 'pph-spacer'
         },
         {
             property: 'imageTag',
-            cssClass: 'pph-itemPhoto',
+            className: 'pph-itemPhoto',
             width: 30
         },
         {
@@ -42,7 +42,7 @@ var CartDataSource = function () {
         },
         {
             property: 'qtyPrice',
-            cssClass: 'amt'
+            className: 'amt'
         },
         {
             width: 10
@@ -84,7 +84,7 @@ var ProductDataSource = function (options) {
             property: 'imageTag',
             label: '<div class="glyphicon glyphicon-camera"></div>',
             sortable: false,
-            cssClass: 'pph-itemPhoto',
+            className: 'pph-itemPhoto',
             width: 60
         },
         {
@@ -96,7 +96,7 @@ var ProductDataSource = function (options) {
             property: 'displayPrice',
             label: 'Price',
             sortable: true,
-            cssClass: 'text-right',
+            className: 'text-right',
             width: 175
         }
     ];
@@ -227,10 +227,11 @@ function realInit() {
             });
         }
         item.photoUrl = product.photoUrl;
+        item._product = product;
         inv.addItem(item);
         $('#cartGrid').repeater('render');
     });
-    $('#cartGrid').on('click', 'table.repeater-list-items>tbody>tr', function () {
+    $('#cartGrid').on('click', 'div.repeater-list-wrapper>table >tbody>tr', function () {
         var $this = $(this);
         editingItem = $this.data("item_data");
         // Undo selection UI
@@ -241,8 +242,44 @@ function realInit() {
         } else if (editingItem && editingItem.special === 'discount') {
 
         } else {
+            $('#cartItemName').val(editingItem.item.name);
+            $('#cartItemDesc').val(editingItem.item.description);
+            $('#cartQty').val(editingItem.item.quantity.toString());
+            $('#cartItemPrice').val(editingItem.item.unitPrice.toString());
             $('#cartItemModal').modal();
         }
+    });
+
+    $('#cartItemModal').on('shown.bs.modal', function () {
+        if (editingItem && !editingItem.special) {
+            $('#cartQty').focus();
+        }
+    });
+
+    $('#cartQty').on('keypress', function (e) {
+        if (e.charCode === 32) {
+            e.preventDefault();
+            var inc = Invoice.Number($('#cartQty').val()).plus(1);
+            $('#cartQty').val(inc.toString());
+        }
+    });
+    $('#cartQty').zeninput({});
+    $('#cartItemPrice').zeninput({});
+
+    $('#saveCartItem').on('click', function (e) {
+        console.log(editingItem);
+        editingItem.item.quantity = Invoice.Number($('#cartQty').val());
+        editingItem.item.unitPrice = Invoice.Number($('#cartItemPrice').val());
+        e.preventDefault();
+        $('#cartGrid').repeater('render');
+        $('#cartItemModal').modal('hide');
+    });
+
+    $('#removeCartItem').on('click', function (e) {
+        var ix = $.inArray(editingItem.item, inv.items);
+        inv.items.splice(ix, 1);
+        $('#cartGrid').repeater('render');
+        $('#cartItemModal').modal('hide');
     });
 
     var cartDS = new CartDataSource();
@@ -257,10 +294,12 @@ function realInit() {
         dataSource: ciDS.data,
         thumbnail_selectable: true,
         defaultView: 'thumbnail',
-        list_selectable: true
+        list_selectable: true,
+        list_noItemsHTML: '<h1>No customers are checked in.</h1>',
+        thumbnail_noItemsHTML: '<h1>No customers are checked in.</h1>'
     });
 
-    var rep = $('#productGrid').data('repeater');
+    var rep = $('#productGrid').data('fu.repeater');
     rep.$search.on('keyup.fu.search', $.proxy(rep.render, rep, { clearInfinite: true, pageIncrement: null }));;
 
     categoryFilter = $("#categories").selectize({
@@ -391,6 +430,30 @@ function realInit() {
         $('#paymentTypeModal').modal();
     });
 
+    $('#cashTendered').money_field({});
+    $('#cashChange').money_field({});
+    $('#cashTendered').on('keyup', function (e) {
+        var amt = Invoice.Number($(this).val()).minus(inv.calculate().total);
+        $('#cashChange').val(amt.greaterThan(0) ? amt : '');
+    });
+    $('#doCashPayment').on('click', function (e) {
+        e.preventDefault();
+        var tender = $('#cashTendered').val();
+        if (tender && tender.length) {
+            inv.receiptDetails = inv.receiptDetails || {};
+            inv.receiptDetails.payment = inv.receiptDetails.payment || {};
+            inv.receiptDetails.payment.tendered = tender;
+        }
+        paymentRequest = {
+            latitude: coords.latitude,
+            longitude: coords.longitude,
+            paymentType: 'cash',
+            invoice: deepFreeze(inv)
+        };
+        addMerchantInfo(paymentRequest.invoice);
+        sendPaymentRequest(this, $('#paymentTypeModal'));
+    });
+
     $('#paymentTypeSelector').on('click', 'button', function () {
         var newView = $('#'+$(this).data('value'));
         if (paymentTypeView && paymentTypeView != newView) {
@@ -398,11 +461,20 @@ function realInit() {
         }
         paymentTypeView = newView;
         paymentTypeView.show();
-        $('#keyboardWatcher').focus();
+        var f = $('input[data-autofocus="1"]', paymentTypeView);
+        if (f && f.length) {
+            f.focus();
+        } else {
+            $('#keyboardWatcher').focus();
+        }
     });
 
     $('#doPayment').on('click', function () {
-        var l = Ladda.create(this);
+        sendPaymentRequest(this, $('#paymentConfirmModal'));
+    });
+
+    function sendPaymentRequest(button,fromModal) {
+        var l = Ladda.create(button);
         l.start();
         $.ajax({
             dataType: 'json',
@@ -412,13 +484,74 @@ function realInit() {
             cache: false,
             success: function (data) {
                 l.stop();
-                $('#paymentConfirmModal').modal('hide');
+                inv.payPalId = data.invoiceId;
+                inv.transactionId = data.transactionId;
+                fromModal.modal('hide');
                 $('#paymentCompleteModal').modal();
             },
             error: function (xhr, type, error) {
                 l.stop();
                 if (xhr.responseJSON && xhr.responseJSON.developerMessage) {
                     alert(xhr.responseJSON.developerMessage);
+                } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                    alert(xhr.responseJSON.message);
+                } else {
+                    alert(error);
+                }
+            }
+        });
+    }
+
+    $('#paymentCompleteModal').on('shown.bs.modal', function (e) {
+        $("#receiptDestination").focus();
+    });
+
+    $('#receiptDestination').on('keyup', function (e) {
+       var v = $(this).val(), tx, showDisclaimer = false;
+        if (v.match(/[^0-9\-\(\) ]+/)) {
+            tx = '@';
+        } else if (v.match(/^[0-9 \-\(\)]+$/)) {
+            tx = '#';
+            showDisclaimer = true;
+        } else {
+            tx = '@ | #';
+        }
+        $('#smsDisclaimer').toggle(showDisclaimer);
+        $('#receiptType').text(tx);
+    });
+
+    $('#sendReceiptButton').on('click', function (e) {
+        e.preventDefault();
+        var data = { invoiceId: inv.payPalId, _csrf: _csrf };
+        var rd = $('#receiptDestination'), v = rd.val();
+        if (v.indexOf('@') > 0) {
+            data.email = v;
+        } else {
+            data.phoneNumber = v;
+        }
+        var l = Ladda.create(this);
+        l.start();
+        $.ajax({
+            dataType: 'json',
+            data: data,
+            url: '/sell/receipt',
+            type: 'POST',
+            cache: false,
+            success: function (data) {
+                l.stop();
+                if (rd.attr('placeholder') != rd.data('sentplaceholder')) {
+                    rd.data('originalph', rd.attr('placeholder'));
+                    rd.attr('placeholder', rd.data('sentplaceholder'));
+                }
+                rd.attr('placeholder','Receipt sent');
+                rd.val('');
+            },
+            error: function (xhr, type, error) {
+                l.stop();
+                if (xhr.responseJSON && xhr.responseJSON.developerMessage) {
+                    alert(xhr.responseJSON.developerMessage);
+                } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                    alert(xhr.responseJSON.message);
                 } else {
                     alert(error);
                 }
@@ -428,6 +561,14 @@ function realInit() {
 
     $('#newOrder').on('click', function () {
         inv = new Invoice('USD');
+        var rd = $('#receiptDestination');
+        rd.val('');
+        if (rd.data('originalph')) {
+            rd.attr('placeholder', rd.data('originalph'));
+        }
+        $('#receiptType').text('@ | #');
+        $('#smsDisclaimer').hide();
+        i
         $('#cartGrid').repeater('render');
         $('#charge').prop('disabled', true);
         $('#chargeBtnAmount').text(m$("0"));
@@ -608,7 +749,7 @@ function swipeDetected(data) {
             track2: data.track2,
             inputType: 'swipe'
         },
-        invoice: JSON.parse(JSON.stringify(inv))
+        invoice: deepFreeze(inv)
     };
     addMerchantInfo(paymentRequest.invoice);
     if (data.track1Masked) {
@@ -641,7 +782,7 @@ function paycodeDetected(data) {
         paymentType: 'payCode',
         payCode: data,
         // Deep freeze the invoice.
-        invoice: JSON.parse(JSON.stringify(inv))
+        invoice: deepFreeze(inv)
     };
     addMerchantInfo(paymentRequest.invoice);
     showConfirm('PayPal');
@@ -742,7 +883,6 @@ function isBitSet(val, bits) {
 }
 
 function stringFromHex(bufString) {
-    console.log(bufString);
     return new Buffer(bufString, 'hex').toString('ascii');
 }
 
@@ -859,7 +999,6 @@ function pollOnce() {
                     tabs = null;
                     $('#checkedInCount').hide();
                 }
-                console.log(res);
             }
         })
     }
@@ -868,4 +1007,12 @@ function pollOnce() {
 function pollTabs() {
     pollOnce();
     setTimeout(pollTabs, 10000);
+}
+
+function deepFreeze(invoice) {
+    var frozen = JSON.parse(JSON.stringify(inv));
+    for (var i = 0; i < frozen.items.length; i++) {
+        delete frozen.items[i]._product;
+    }
+    return frozen;
 }

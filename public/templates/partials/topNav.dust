@@ -19,14 +19,14 @@
                 <li><a href="javascript:FreshWidget.show()">Support</a></li>
             </ul>
 
-            {@eq key=user.environment value="sandbox"}
+            {@eq key=userEnvironment value="sandbox"}
                 <div style="position:absolute; top: -3px; left: 10px; z-index: -1; color: rgba(150,10,10,0.25); font-size: 40px;">
                     <b>SANDBOX</b>
                 </div>
             {/eq}
 
             <ul class="nav navbar-nav navbar-right">
-                <li><a href="/settings">{user.email}</a></li>
+                <li><a href="/settings">{userEmail}</a></li>
                 <li><a href="/oauth/logout">Log Out</a></li>
             </ul>
 

@@ -1,21 +1,40 @@
-
 <div id="paymentCompleteModal" class="modal fade" aria-hidden="true" role="dialog" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Confirm Payment</h4>
+                <h4 class="modal-title">Payment Complete</h4>
             </div>
             <div class="modal-body text-center">
                 <div class="confirmText">
-                    <b>Payment Complete!</b>
+                    <b>Would you like a receipt?</b>
                 </div>
-                <div class="modal-footer">
-                    <div class="col-sm-12 text-right">
-                        <button type="submit" class="btn btn-primary btn-lg ladda-button" data-style="expand-left" id="newOrder">New Order</button>
+                <br/>
+
+                <form role="form">
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="col-sm-10 col-sm-offset-1">
+                                <div class="input-group">
+                                    <label class="sr-only" for="receiptDestination">Email or Mobile Phone Number</label>
+
+                                    <div class="input-group-addon" id="receiptType">@ | #</div>
+                                    <input type="email" class="form-control" id="receiptDestination" placeholder="Enter email or SMS-enabled phone number" data-sentplaceholder="Receipt sent.">
+                                    <div class="input-group-btn"><button type="button" class="btn btn-info ladda-button" href="#" id="sendReceiptButton" data-style="expand-right">Send</button></div>
+                                    </div>
+                            </div>
+                        </div>
                     </div>
+                    <br/>
+                    <div><span id="smsDisclaimer" style="display:none;">Standard text messaging rates will apply.</span></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div class="col-sm-12 text-right">
+                    <button type="submit" class="btn btn-primary btn-lg ladda-button" data-style="expand-left" id="newOrder">New Order</button>
                 </div>
             </div>
         </div>
     </div>
+</div>
 </div>

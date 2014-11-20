@@ -5,7 +5,7 @@ var LocationDataSource = function (options) {
             property: 'imageTag',
             label: '<div class="glyphicon glyphicon-camera"></div>',
             sortable: false,
-            cssClass: 'pph-itemPhoto',
+            className: 'pph-itemPhoto',
             width: 80
         },
         {
@@ -24,13 +24,13 @@ var LocationDataSource = function (options) {
             label: 'Availability',
             sortable: true,
             width: 125,
-            cssClass: 'pph-openclose'
+            className: 'pph-openclose'
         },
         {
             property: 'map',
             label: 'Map',
             width: 160,
-            cssClass: 'pph-map'
+            className: 'pph-map'
         }
     ];
 

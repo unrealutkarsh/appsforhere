@@ -29,12 +29,34 @@
                         <button type="button" class="btn btn-default" data-value="invoiceEntry">Invoice</button>
                     </div>
                     <div style="margin-top: 20px;">
+                        <div id="cashEntry" style="display:none;">
+                            <form role="form" id="cash-form" class="form-horizontal">
+
+                                <div class="form-group">
+                                    <label class="col-sm-7 text-right">Cash Tendered</label>
+
+                                    <div class="col-sm-3">
+                                        <input class="form-control" id="cashTendered" placeholder="0" autocomplete="off" data-autofocus="1"/>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-7 text-right">Change Due</label>
+
+                                    <div class="col-sm-3">
+                                        <input class="form-control col-md-7" id="cashChange" autocomplete="off" disabled="true"/>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary text-right ladda-button" data-style="expand-left" id="doCashPayment" data-autofocus="1">Complete Payment</button>
+                            </form>
+                        </div>
                         <div id="cardEntry" style="display:none;">
                             <form role="form" id="credit-card-form">
                                 <div class="form-group">
                                     <label>Card Number</label>
                                     <input placeholder="Enter the full credit card number" id="card-number" type="tel" autocompletetype="off" required="required" class="form-control cc-num paymentInput" data-bv-creditcard="true"
-                                           data-bv-creditcard-message="The credit card number is not valid">
+                                           data-bv-creditcard-message="The credit card number is not valid" data-autofocus="1">
                                 </div>
                                 <div class="row">
                                     <div class="col-md-4">
@@ -60,9 +82,6 @@
                             </form>
                         </div>
                         <div id="checkinEntry" style="display:none;">
-                            Coming soon.
-                        </div>
-                        <div id="cashEntry" style="display:none;">
                             Coming soon.
                         </div>
                         <div id="checkEntry" style="display:none;">

@@ -58,6 +58,12 @@ var mongo = require('./lib/mongo'),
 app.on('middleware:after:session', function addPassportToSession(eventargs) {
     app.use(passport.initialize());
     app.use(passport.session());
+    // Put some common things for all dust templates to use
+    app.use(function (req, res, next) {
+        res.locals.userEmail = req.user ? req.user.email : null;
+        res.locals.userEnvironment = req.user ? req.user.environment : null;
+        next();
+    });
 });
 
 app.use(kraken(options));

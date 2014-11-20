@@ -31,13 +31,41 @@ module.exports = function (router) {
                 payload: JSON.stringify(paymentRequest),
                 tokens: req.user
             }, req.$eat(function (payResult) {
-                console.log(payResult);
                 if (payResult.errorCode) {
                     payResult.ok = false;
                     res.status(500).json(payResult);
                 } else {
                     payResult.ok = true;
                     res.json(payResult);
+                }
+            }));
+        });
+
+    router.route('/receipt')
+        .all(appUtils.auth)
+        .post(function (req, res) {
+            var url = req.hereApiUrl('pay/sendReceipt');
+            var data = {
+                invoiceId: req.body.invoiceId,
+                phoneNumber: req.body.phoneNumber,
+                email: req.body.email
+            };
+            req.hereApi().post({
+                url: url,
+                json: true,
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8'
+                },
+                payload: JSON.stringify(data),
+                tokens: req.user
+            }, req.$eat(function (result) {
+                console.log(result);
+                if (result.errorCode) {
+                    result.ok = false;
+                    res.status(500).json(result);
+                } else {
+                    result.ok = true;
+                    res.json(result);
                 }
             }));
         });

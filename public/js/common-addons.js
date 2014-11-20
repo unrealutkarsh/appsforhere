@@ -199,9 +199,9 @@ $('.modal').on('shown.bs.modal', function (event) {
                 var mL = $(inObj).css('marginLeft');
                 mL = isNaN( parseInt(mL,10) )?( 0 ):( parseInt(mL,10) );
                 absL = t.left + mL - 6;
-                absW = $(inObj).outerWidth(true);
+                absW = $(inObj).outerWidth(true) + 13;
                 absH = $(inObj).outerHeight(true);
-                $(options.calculatewrapper).css({'left':absL+'px', 'top':absT-3+'px', 'width': absW+'px', 'padding':absH+6+'px 6px 2px 6px'});
+                $(options.calculatewrapper).css({'z-index':1, 'left':absL+'px', 'top':absT-3+'px', 'width': absW+'px', 'padding':absH+6+'px 6px 2px 6px'});
                 if (options.comment) $(options.comment).css({'display': 'block'});
                 if(options.onfocus) options.onfocus(this);
             });

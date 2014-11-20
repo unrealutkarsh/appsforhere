@@ -13,7 +13,7 @@
     <link href="/components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- FuelUX -->
-    <link href="/fuelux/css/fuelux.min.css" rel="stylesheet" type="text/css">
+    <link href="/components/fuelux/dist/css/fuelux.min.css" rel="stylesheet" type="text/css">
 
     <!-- Custom styles for this template -->
     <link href="/css/app.css" rel="stylesheet">
@@ -60,7 +60,7 @@
 
 <script src="/components/jquery/dist/jquery.min.js"></script>
 <script src="/components/bootstrap/dist/js/bootstrap.min.js"></script>
-<script src="/fuelux/js/fuelux.js" type="text/javascript"></script>
+<script src="/components/fuelux/dist/js/fuelux.js" type="text/javascript"></script>
 <script src="/js/jquery-dateFormat.min.js" type="text/javascript"></script>
 <script src="/components/accounting/accounting.min.js" type="text/javascript"></script>
 <script src="/components/underscore/underscore.js" type="text/javascript"></script>
