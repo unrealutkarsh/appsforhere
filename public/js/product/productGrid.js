@@ -5,7 +5,7 @@ var ProductDataSource = function (options) {
             property: 'imageTag',
             label: '<div class="glyphicon glyphicon-camera"></div>',
             sortable: false,
-            cssClass: 'pph-itemPhoto',
+            className: 'pph-itemPhoto',
             width: 40
         },
         {
@@ -18,7 +18,7 @@ var ProductDataSource = function (options) {
             label: 'Variations',
             sortable: true,
             width: 90,
-            cssClass: 'text-center'
+            className: 'text-center'
         },
         {
             property: 'displayTags',
@@ -35,7 +35,7 @@ var ProductDataSource = function (options) {
             property: 'displayPrice',
             label: 'Price',
             sortable: true,
-            cssClass: 'text-right',
+            className: 'text-right',
             width: 125
         }
     ];

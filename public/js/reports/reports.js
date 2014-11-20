@@ -662,14 +662,14 @@ var ProductDataSource = function (options) {
             label: 'Qty Sold',
             sortable: true,
             width: 100,
-            cssClass: 'text-right'
+            className: 'text-right'
         },
         {
             property: 'salesFormatted',
             sortProperty: 'sales',
             label: 'Total Sales',
             width: 200,
-            cssClass: 'text-right'
+            className: 'text-right'
         }
     ];
 };
@@ -721,7 +721,7 @@ var EmployeeDataSource = function (options) {
             label: '# Sales',
             sortable: true,
             width: 100,
-            cssClass: 'text-right'
+            className: 'text-right'
         },
         {
             property: 'salesFormat',
@@ -729,7 +729,7 @@ var EmployeeDataSource = function (options) {
             sortable: true,
             label: 'Total Sales',
             width: 150,
-            cssClass: 'text-right'
+            className: 'text-right'
         },
         {
             property: 'taxFormat',
@@ -737,7 +737,7 @@ var EmployeeDataSource = function (options) {
             sortable: true,
             label: 'Taxes',
             width: 100,
-            cssClass: 'text-right'
+            className: 'text-right'
         },
         {
             property: 'tipFormat',
@@ -745,7 +745,7 @@ var EmployeeDataSource = function (options) {
             sortable: true,
             label: 'Tips',
             width: 100,
-            cssClass: 'text-right'
+            className: 'text-right'
         },
         {
             property: 'discountFormat',
@@ -753,7 +753,7 @@ var EmployeeDataSource = function (options) {
             sortable: true,
             label: 'Discounts',
             width: 100,
-            cssClass: 'text-right'
+            className: 'text-right'
         },
         {
             property: 'totalCollectedFormat',
@@ -761,7 +761,7 @@ var EmployeeDataSource = function (options) {
             sortable: true,
             label: 'Total Collected',
             width: 150,
-            cssClass: 'text-right'
+            className: 'text-right'
         }
     ];
 };

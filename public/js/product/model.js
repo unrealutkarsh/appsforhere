@@ -70,6 +70,7 @@ function publishModel(modelName,cb) {
                 maybeId++;
             }
             p.id = maybeId;
+            pids[maybeId] = p;
         }
         var serverProduct = {
             id: p.id,

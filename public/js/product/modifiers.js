@@ -10,7 +10,7 @@ var ModifierDataSource = function (options) {
             property: 'displayPrice',
             label: 'Price',
             sortable: true,
-            cssClass: 'text-right',
+            className: 'text-right',
             width: 125
         }
     ];
@@ -174,8 +174,8 @@ function saveModifierToLocalModel() {
 function saveModifierValueToLocalModel() {
     if (!selectedModifierValue) {
         selectedModifierValue = {};
-        modifierValuesBeingEdited.push(selectedModifierValue);
     }
+    modifierValuesBeingEdited.push(selectedModifierValue);
     selectedModifierValue.name = $('#modValueName').val();
     selectedModifierValue.price = $('#modValuePrice').val();
     $('#modifierGrid').repeater('render');
