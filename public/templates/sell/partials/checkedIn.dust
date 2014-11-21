@@ -8,9 +8,29 @@
             <div class="modal-body text-center">
                 <div class="repeater" id="checkinGrid">
 
+                    <div class="repeater-header">
+                        <div class="repeater-header-left">
+                            <div class="repeater-search">
+                                <div class="search input-group">
+                                    <input type="search" class="form-control" placeholder="Search"/>
+                                                                <span class="input-group-btn">
+                                                                        <button class="btn btn-default" type="button">
+                                                                            <span class="glyphicon glyphicon-search"></span>
+                                                                            <span class="sr-only">Search</span>
+                                                                        </button>
+                                                                </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="repeater-viewport">
                         <div class="repeater-canvas"></div>
                         <div class="loader repeater-loader"></div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
                     </div>
 
                 </div>

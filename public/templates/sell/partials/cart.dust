@@ -2,19 +2,19 @@
 
     <div class="repeater-header">
         <div class="form-group">
-            <div style="width:49%;" class="repeater-header-left">
+            <div style="width:49%;" class="repeater-header-left" data-toggle="tooltip" data-placement="top" title="Choose your current location. Use the locations tab above to create and manage locations.">
                 <input class="form-control" id="location" placeholder="Select Location"/>
             </div>
-            <div style="width:49%;" class="repeater-header-right">
+            <div style="width:49%;" class="repeater-header-right" data-toggle="tooltip" data-placement="top" title="Choose a product catalog. Use the products tab to manage catalogs.">
                 <input class="form-control" id="catalog" placeholder="Select Catalog"/>
             </div>
         </div>
         <table width="100%" id="customerInfo">
-            <tr><td style="width:80px;" class="user">
+            <tr><td style="width:80px;" class="user" data-toggle="tooltip" data-placement="right" title="Click here to choose from checked in customers.">
                 <span class="badge" style="display:none;" id="checkedInCount">4</span>
                 <img id="customerPhoto" src="/media/small_avatar.png" height="72" width="72"/>
             </td>
-            <td style="vertical-align: top;" class="info">
+            <td style="vertical-align: top;" class="info" data-toggle="tooltip" data-placement="bottom" title="Click here to enter more information about the customer.">
                 <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                 <div id="curCustomerName" class="placeholder"></div>
                 <div id="curCustomerAddress"></div>

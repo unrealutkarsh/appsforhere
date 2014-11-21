@@ -35,7 +35,8 @@
     "underscore": "~1.7.0",
     "socket.io-client": "~1.1.0",
     "jquery.payment": "~1.1.4",
-    "fuelux": "~3.2.1"
+    "fuelux": "~3.2.1",
+    "jQuery-Storage-API": "~1.7.3"
   },
   "resolutions": {
     "moment": "~2.8.2"

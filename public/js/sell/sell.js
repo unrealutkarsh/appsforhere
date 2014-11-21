@@ -1,7 +1,17 @@
-var selectedModel = '_', categoryFilter, filterAny = true, inv = new Invoice('USD'), model;
-var editingItem, paymentTypeView, paymentRequest, coords, tabs;
+var selectedModel = '_', locationId, categoryFilter, filterAny = true, inv = new Invoice('USD'), model;
+var editingItem, paymentTypeView, paymentRequest, coords, tabs, selectedTab;
 var locationSelectize, categorySelectize, locations;
 
+var storageKey = _email.replace('.','');
+var prefs = $.localStorage.get(storageKey);
+if (prefs) {
+    if (prefs.catalog) {
+        selectedModel = prefs.catalog;
+    }
+    if (prefs.locationId) {
+        locationId = prefs.locationId;
+    }
+}
 var CheckinDataSource = function () {
     var cols = [
         {
@@ -20,6 +30,14 @@ var CheckinDataSource = function () {
             "\" width=\"40\" height=\"40\"/>";
             t[i].src = t[i].photoUrl;
             t[i].name = t[i].customerName;
+        }
+        if (opt.search) {
+            t = _.filter(t, function (t) {
+               if (t.customerName.toLowerCase().indexOf(opt.search.toLowerCase()) >= 0) {
+                   return true;
+               }
+                return false;
+            });
         }
         var r = { items: t, start: 0, end: t.length, count: t.length, pages: 1, page: 1, columns: cols };
         cb(r);
@@ -310,26 +328,45 @@ function realInit() {
         }
     });
 
+    function addTabId(h,c) {
+        h.item.data('tab', h.itemData);
+        c();
+    }
+
+    function checkinSelection(e,row) {
+        if (e.type === 'selected') {
+            selectedTab = $(row).data('tab');
+            $('#customerPhoto').attr('src',selectedTab.photoUrl);
+            console.log(selectedTab);
+        } else {
+            selectedTab = null;
+            $('#customerPhoto').attr('src','/media/small_avatar.png')
+        }
+    };
+
     var ciDS = new CheckinDataSource();
-    $('#checkinGrid').repeater({
+    var repeaterOptions = {
         dataSource: ciDS.data,
         thumbnail_selectable: true,
         defaultView: 'thumbnail',
         list_selectable: true,
         list_noItemsHTML: '<h1>No customers are checked in.</h1>',
-        thumbnail_noItemsHTML: '<h1>No customers are checked in.</h1>'
-    });
-    $('#checkinGrid2').repeater({
-        dataSource: ciDS.data,
-        thumbnail_selectable: true,
-        defaultView: 'thumbnail',
-        list_selectable: true,
-        list_noItemsHTML: '<h1>No customers are checked in.</h1>',
-        thumbnail_noItemsHTML: '<h1>No customers are checked in.</h1>'
-    });
+        thumbnail_noItemsHTML: '<h1>No customers are checked in.</h1>',
+        thumbnail_itemRendered: addTabId
+    };
+    $('#checkinGrid').repeater(repeaterOptions);
+    $('#checkinGrid2').repeater(repeaterOptions);
+    $('#checkinGrid').on('selected.fu.repeaterThumbnail', checkinSelection);
+    $('#checkinGrid').on('deselected.fu.repeaterThumbnail', checkinSelection);
+    $('#checkinGrid2').on('selected.fu.repeaterThumbnail', checkinSelection);
+    $('#checkinGrid2').on('deselected.fu.repeaterThumbnail', checkinSelection);
 
     var rep = $('#productGrid').data('fu.repeater');
-    rep.$search.on('keyup.fu.search', $.proxy(rep.render, rep, { clearInfinite: true, pageIncrement: null }));;
+    rep.$search.on('keyup.fu.search', $.proxy(rep.render, rep, { clearInfinite: true, pageIncrement: null }));
+    rep = $('#checkinGrid').data('fu.repeater');
+    rep.$search.on('keyup.fu.search', $.proxy(rep.render, rep, { clearInfinite: true, pageIncrement: null }));
+    rep = $('#checkinGrid2').data('fu.repeater');
+    rep.$search.on('keyup.fu.search', $.proxy(rep.render, rep, { clearInfinite: true, pageIncrement: null }));
 
     categoryFilter = $("#categories").selectize({
         delimiter: ',',
@@ -368,6 +405,16 @@ function realInit() {
                     callback(res.locations);
                     locations = res.locations;
                     if (s.getValue().length == 0 && res.locations && res.locations.length > 0) {
+                        if (locationId) {
+                            for (var i = 0; i < res.locations.length; i++) {
+                                if (res.locations[i].id === locationId) {
+                                    s.setValue(locationId);
+                                    pollTabs();
+                                    return;
+                                }
+                            }
+                        }
+                        // Oh well, pick the first one.
                         s.setValue(res.locations[0].id);
                         pollTabs();
                     }
@@ -377,7 +424,13 @@ function realInit() {
     });
 
     locationSelectize[0].selectize.on('change', function () {
-        pollOnce();
+        var loc = getCurrentLocation();
+        if (loc) {
+            prefs = prefs || {};
+            prefs.locationId = loc.id;
+            $.localStorage.set(storageKey, prefs);
+            pollOnce();
+        }
     });
 
     catalogSelectize = $('#catalog').selectize({
@@ -394,6 +447,9 @@ function realInit() {
         if (newModel !== selectedModel) {
             selectedModel = newModel;
             delete dataSource.sourceData;
+            prefs = prefs || {};
+            prefs.catalog = newModel;
+            $.localStorage.set(storageKey, prefs);
             $('#productGrid').repeater('render');
         }
     });
@@ -452,6 +508,11 @@ function realInit() {
         if (tots.total.toString() === '0') {
             return;
         }
+        if (selectedTab) {
+            doCheckinPayment();
+            return;
+        }
+        $('#checkinGrid2').repeater('render');
         if (!paymentTypeView) {
             paymentTypeView = $('#noEntry');
             paymentTypeView.show();
@@ -459,6 +520,24 @@ function realInit() {
         $('#paymentTypeModal').modal();
     });
 
+    function doCheckinPayment() {
+        if (!selectedTab) {
+            alert('You must select a customer first.');
+            return;
+        }
+        paymentRequest = {
+            latitude: coords.latitude,
+            longitude: coords.longitude,
+            paymentType: 'tab',
+            tabId: selectedTab.id,
+            // Deep freeze the invoice.
+            invoice: deepFreeze(inv)
+        };
+        addMerchantInfo(paymentRequest.invoice);
+        showConfirm('to ' + selectedTab.customerName + ' using PayPal');
+    }
+
+    $('#doCheckinPayment').on('click', doCheckinPayment);
     $('#cashTendered').money_field({});
     $('#cashChange').money_field({});
     $('#cashTendered').on('keyup', function (e) {
@@ -609,6 +688,8 @@ function realInit() {
 
     $('#newOrder').on('click', function () {
         inv = new Invoice('USD');
+        selectedTab = null;
+        $('#customerPhoto').attr('src','/media/small_avatar.png')
         var rd = $('#receiptDestination');
         rd.val('');
         if (rd.data('originalph')) {
@@ -616,7 +697,6 @@ function realInit() {
         }
         $('#receiptType').text('@ | #');
         $('#smsDisclaimer').hide();
-        i
         $('#cartGrid').repeater('render');
         $('#charge').prop('disabled', true);
         $('#chargeBtnAmount').text(m$("0"));
@@ -713,6 +793,8 @@ function realInit() {
 
     updateCartCustomerInfo();
     setupCardEntry();
+
+    $('[data-toggle="tooltip"]').tooltip();
 }
 
 function personalName(bi) {
@@ -808,7 +890,7 @@ function swipeDetected(data) {
             if (card && card.length > 4) {
                 card = card.substring(card.length - 4);
             }
-            showConfirm('the card ending in ' + card);
+            showConfirm('to the card ending in ' + card);
         }
     } else if (data.track2Masked) {
         var re = /^;([0-9\*]{1,19})=([^\?]+)\?\*?$/;
@@ -818,7 +900,7 @@ function swipeDetected(data) {
             if (card && card.length > 4) {
                 card = card.substring(card.length - 4);
             }
-            showConfirm('the card ending in ' + card);
+            showConfirm('to the card ending in ' + card);
         }
     }
 }
@@ -833,7 +915,7 @@ function paycodeDetected(data) {
         invoice: deepFreeze(inv)
     };
     addMerchantInfo(paymentRequest.invoice);
-    showConfirm('PayPal');
+    showConfirm('using PayPal');
 }
 
 function showConfirm(summary) {

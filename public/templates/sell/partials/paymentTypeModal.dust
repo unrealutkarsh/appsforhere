@@ -89,12 +89,30 @@
                         <div id="checkinEntry" style="display:none;">
                             <div class="repeater" id="checkinGrid2">
 
+                                <div class="repeater-header">
+                                    <div class="repeater-header-left">
+                                        <div class="repeater-search">
+                                            <div class="search input-group">
+                                                <input type="search" class="form-control" placeholder="Search"/>
+                                                                <span class="input-group-btn">
+                                                                        <button class="btn btn-default" type="button">
+                                                                            <span class="glyphicon glyphicon-search"></span>
+                                                                            <span class="sr-only">Search</span>
+                                                                        </button>
+                                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <div class="repeater-viewport">
                                     <div class="repeater-canvas"></div>
                                     <div class="loader repeater-loader"></div>
                                 </div>
 
                             </div>
+                            <br/>
+                            <button type="submit" class="btn btn-primary text-right" id="doCheckinPayment">Confirm Payment</button>
                         </div>
                         <div id="checkEntry" style="display:none;">
                             <form role="form" id="check-form" class="form-horizontal">
@@ -147,7 +165,7 @@
             </div>
             <div class="modal-body text-center">
                 <div class="confirmText">
-                    <span id="confirmAmount">$1.23</span> will be charged using <span id="summary">PayPal</span>.
+                    <span id="confirmAmount">$1.23</span> will be charged <span id="summary">using PayPal</span>.
                 </div>
                 <div class="modal-footer">
                     <div class="col-sm-6 text-left">

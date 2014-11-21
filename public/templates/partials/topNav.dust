@@ -25,10 +25,19 @@
                 </div>
             {/eq}
 
-            <ul class="nav navbar-nav navbar-right">
-                <li><a href="/settings">{userEmail}</a></li>
-                <li><a href="/oauth/logout">Log Out</a></li>
-            </ul>
+            <div class="nav navbar-nav navbar-right">
+            <div class="btn-group">
+                <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                    {?userEmail}{userEmail}{:else}Account{/userEmail} <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li><a href="/settings">Settings</a></li>
+                    <li><a href="javascript:FreshWidget.show()">Report a Bug</a></li>
+                    <li class="divider"></li>
+                    <li><a href="/oauth/logout">Logout</a></li>
+                </ul>
+            </div>
+            </div>
 
         </div><!--/.nav-collapse -->
     </div>

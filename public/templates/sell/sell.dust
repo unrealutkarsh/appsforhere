@@ -164,7 +164,9 @@
 {<scripts}
     <script type="text/javascript">
         var _csrf = '{_csrf}';
+        var _email = '{userEmail}';
     </script>
+    <script type="text/javascript" src="/components/jQuery-Storage-API/jquery.storageapi.min.js"></script>
     <script type="text/javascript" src="/components/bignumber.js/bignumber.min.js"></script>
     <script type="text/javascript" src="/components/selectize/dist/js/standalone/selectize.min.js"></script>
     <script type="text/javascript" src="/js/common-addons.js"></script>
