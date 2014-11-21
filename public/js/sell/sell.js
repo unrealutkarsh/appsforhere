@@ -50,15 +50,19 @@ var CartDataSource = function () {
     ];
     this.data = function (opt,cb) {
         var data = [];
+        data.push({special:'add',imageTag:'<img src="/media/image_default_138.png" height="40" width="40"/>',nameDesc:'New item...',qtyPrice:accounting.formatMoney(0)});
         inv.items.forEach(function (i) {
-           data.push({
-               item: i,
-               nameDesc: i.name,
-               qtyPrice: accounting.formatMoney(i.totalForInvoice(inv).toString()),
-               imageTag: "<img src=\"" +
-                   (i.photoUrl || '/media/image_default_138.png').replace("\"", "") +
-                   "\" width=\"40\" height=\"40\"/>"
-           });
+
+            var qtyPrice = '<div style="float:right;">' + accounting.formatMoney(i.totalForInvoice(inv).toString()) + '</div>';
+            qtyPrice += '<span class="badge">' + i.quantity + '</span>';
+            data.push({
+                item: i,
+                nameDesc: i.name,
+                qtyPrice: qtyPrice,
+                imageTag: "<img src=\"" +
+                (i.photoUrl || '/media/image_default_138.png').replace("\"", "") +
+                "\" width=\"40\" height=\"40\"/>"
+            });
         });
         var tots = inv.calculate();
         data.push({special:'discount',imageTag:'<img src="/media/ic_sale_discount.png" height="40" width="40"/>',nameDesc:'Discount',qtyPrice:accounting.formatMoney('0')});
@@ -240,10 +244,14 @@ function realInit() {
         if (editingItem && editingItem.special === 'tax') {
 
         } else if (editingItem && editingItem.special === 'discount') {
-
+        } else if (editingItem && editingItem.special === 'add') {
+            editingItem = null;
+            $('#cartItemName').val('');
+            $('#cartQty').val(1);
+            $('#cartItemPrice').val('');
+            $('#cartItemModal').modal();
         } else {
             $('#cartItemName').val(editingItem.item.name);
-            $('#cartItemDesc').val(editingItem.item.description);
             $('#cartQty').val(editingItem.item.quantity.toString());
             $('#cartItemPrice').val(editingItem.item.unitPrice.toString());
             $('#cartItemModal').modal();
@@ -253,6 +261,8 @@ function realInit() {
     $('#cartItemModal').on('shown.bs.modal', function () {
         if (editingItem && !editingItem.special) {
             $('#cartQty').focus();
+        } else {
+            $('#cartItemName').focus();
         }
     });
 
@@ -267,9 +277,14 @@ function realInit() {
     $('#cartItemPrice').zeninput({});
 
     $('#saveCartItem').on('click', function (e) {
-        console.log(editingItem);
-        editingItem.item.quantity = Invoice.Number($('#cartQty').val());
-        editingItem.item.unitPrice = Invoice.Number($('#cartItemPrice').val());
+        if (editingItem) {
+            editingItem.item.quantity = Invoice.Number($('#cartQty').val());
+            editingItem.item.unitPrice = Invoice.Number($('#cartItemPrice').val());
+        } else {
+            var item = new Invoice.Item($('#cartQty').val(), $('#cartItemPrice').val(), new Date().getTime());
+            item.name = $('#cartItemName').val();
+            inv.addItem(item);
+        }
         e.preventDefault();
         $('#cartGrid').repeater('render');
         $('#cartItemModal').modal('hide');
@@ -286,7 +301,13 @@ function realInit() {
     $('#cartGrid').repeater({
         dataSource: cartDS.data,
         defaultView: 'list',
-        list_selectable: true
+        list_selectable: true,
+        list_rowRendered: function (helpers, callback) {
+            if (helpers.rowData.special) {
+                helpers.item.addClass('special-'+helpers.rowData.special);
+            }
+            callback();
+        }
     });
 
     var ciDS = new CheckinDataSource();

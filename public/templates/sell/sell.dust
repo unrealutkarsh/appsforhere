@@ -99,6 +99,9 @@
         #cartGrid td.pph-itemPhoto, #cartGrid td.pph-spacer, #cartGrid {
             border: none;
         }
+        #cartGrid tr.special-add {
+            color: #ccc;
+        }
         .fuelux .repeater-list-header {
             display: none;
         }
@@ -107,6 +110,13 @@
         }
         .amt {
             text-align: right;
+        }
+        .amt>div {
+            padding-left: 10px;
+            padding-top: 2px;
+        }
+        .amt>.badge {
+            background-color: #2563AB;
         }
         #cartGrid .repeater-list td {
             border-bottom-color: #E6ECF3;

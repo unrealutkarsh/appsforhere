@@ -10,8 +10,6 @@
 
                     {>"partials/textField" id="cartItemName" label="Name" placeholder="Enter a name for the item"/}
 
-                    {>"partials/textField" id="cartItemDesc" label="Description" placeholder="Enter a description for the item"/}
-
                     {>"partials/textField" id="cartQty" label="Quantity" placeholder="Enter the item quantity"/}
 
                     {>"partials/textField" id="cartItemPrice" label="Price" placeholder="Enter the item unit price"/}
