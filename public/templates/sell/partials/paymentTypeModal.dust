@@ -26,14 +26,19 @@
                         <button type="button" class="btn btn-default" data-value="checkinEntry">Checkin</button>
                         <button type="button" class="btn btn-default" data-value="cashEntry">Cash</button>
                         <button type="button" class="btn btn-default" data-value="checkEntry">Check</button>
+                        <!--
                         <button type="button" class="btn btn-default" data-value="invoiceEntry">Invoice</button>
+                        -->
                     </div>
                     <div style="margin-top: 20px;">
+                        <div id="noEntry" style="display:none;">
+
+                        </div>
                         <div id="cashEntry" style="display:none;">
                             <form role="form" id="cash-form" class="form-horizontal">
 
                                 <div class="form-group">
-                                    <label class="col-sm-7 text-right">Cash Tendered</label>
+                                    <label class="col-sm-6 text-right">Cash Tendered</label>
 
                                     <div class="col-sm-3">
                                         <input class="form-control" id="cashTendered" placeholder="0" autocomplete="off" data-autofocus="1"/>
@@ -41,7 +46,7 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <label class="col-sm-7 text-right">Change Due</label>
+                                    <label class="col-sm-6 text-right">Change Due</label>
 
                                     <div class="col-sm-3">
                                         <input class="form-control col-md-7" id="cashChange" autocomplete="off" disabled="true"/>
@@ -82,10 +87,44 @@
                             </form>
                         </div>
                         <div id="checkinEntry" style="display:none;">
-                            Coming soon.
+                            <div class="repeater" id="checkinGrid2">
+
+                                <div class="repeater-viewport">
+                                    <div class="repeater-canvas"></div>
+                                    <div class="loader repeater-loader"></div>
+                                </div>
+
+                            </div>
                         </div>
                         <div id="checkEntry" style="display:none;">
-                            Coming soon.
+                            <form role="form" id="check-form" class="form-horizontal">
+
+                                <div class="form-group">
+                                    <label class="col-sm-5 text-right">Check Number</label>
+
+                                    <div class="col-sm-5">
+                                        <input class="form-control" id="checkNumber" placeholder="(optional)" autocomplete="off" data-autofocus="1"/>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-5 text-right">Name on Check</label>
+
+                                    <div class="col-sm-5">
+                                        <input class="form-control col-md-7" id="checkName" placeholder="(optional)" autocomplete="off"/>
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="col-sm-5 text-right">Phone</label>
+
+                                    <div class="col-sm-5">
+                                        <input class="form-control col-md-7" id="checkPhone" placeholder="(optional)" autocomplete="off"/>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary text-right ladda-button" data-style="expand-left" id="doCheckPayment" data-autofocus="1">Complete Payment</button>
+                            </form>
                         </div>
                         <div id="invoiceEntry" style="display:none;">
                             Coming soon.

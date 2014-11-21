@@ -319,6 +319,14 @@ function realInit() {
         list_noItemsHTML: '<h1>No customers are checked in.</h1>',
         thumbnail_noItemsHTML: '<h1>No customers are checked in.</h1>'
     });
+    $('#checkinGrid2').repeater({
+        dataSource: ciDS.data,
+        thumbnail_selectable: true,
+        defaultView: 'thumbnail',
+        list_selectable: true,
+        list_noItemsHTML: '<h1>No customers are checked in.</h1>',
+        thumbnail_noItemsHTML: '<h1>No customers are checked in.</h1>'
+    });
 
     var rep = $('#productGrid').data('fu.repeater');
     rep.$search.on('keyup.fu.search', $.proxy(rep.render, rep, { clearInfinite: true, pageIncrement: null }));;
@@ -445,7 +453,7 @@ function realInit() {
             return;
         }
         if (!paymentTypeView) {
-            paymentTypeView = $('#checkinEntry');
+            paymentTypeView = $('#noEntry');
             paymentTypeView.show();
         }
         $('#paymentTypeModal').modal();
@@ -469,6 +477,25 @@ function realInit() {
             latitude: coords.latitude,
             longitude: coords.longitude,
             paymentType: 'cash',
+            invoice: deepFreeze(inv)
+        };
+        addMerchantInfo(paymentRequest.invoice);
+        sendPaymentRequest(this, $('#paymentTypeModal'));
+    });
+    $('#doCheckPayment').on('click', function (e) {
+        e.preventDefault();
+        var num = $('#checkNumber').val();
+        var name = $('#checkName').val();
+        var ph = $('#checkPhone').val();
+        if ((num && num.length) || (name && name.length) || (ph && ph.length)) {
+            inv.receiptDetails = inv.receiptDetails || {};
+            inv.receiptDetails.payment = inv.receiptDetails.payment || {};
+            inv.receiptDetails.payment.check = {num:num,name:name,phone:ph};
+        }
+        paymentRequest = {
+            latitude: coords.latitude,
+            longitude: coords.longitude,
+            paymentType: 'check',
             invoice: deepFreeze(inv)
         };
         addMerchantInfo(paymentRequest.invoice);
