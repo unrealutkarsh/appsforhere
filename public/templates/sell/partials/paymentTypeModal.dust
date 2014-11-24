@@ -67,13 +67,13 @@
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label>Expiration</label>
-                                            <input name="card-expiration" type="tel" class="form-control cc-exp paymentInput" placeholder="MM/YY" autocomplete="off">
+                                            <input name="card-expiration" id="card-expiration" type="tel" class="form-control cc-exp paymentInput" placeholder="MM/YY" autocomplete="off">
                                         </div>
                                     </div>
                                     <div class="col-md-4">
                                         <div class="form-group">
                                             <label>Security Code</label>
-                                            <input name="card-cvc" type="tel" class="form-control cc-cvc paymentInput" placeholder="Ex. 331" autocomplete="off">
+                                            <input name="card-cvc" id="card-cvc" type="tel" class="form-control cc-cvc paymentInput" placeholder="Ex. 331" autocomplete="off">
                                         </div>
                                     </div>
                                     <div class="col-md-4">

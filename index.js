@@ -40,6 +40,9 @@ var mongo = require('./lib/mongo'),
     Liwp = require('./lib/loginWithPayPal'),
     options = {
         onconfig: function appsforhereConfiguration(config, next) {
+            if (GLOBAL._hasShutdown) {
+                return;
+            }
             configureLogging(config);
             configureMongo(config);
             appUtils.configure(config);
@@ -88,6 +91,7 @@ function listen() {
  */
 process.on('message', function (msg) {
     if (msg == 'shutdown') {
+        GLOBAL._hasShutdown = true;
         console.log('Shutting down kraken');
         try {
             server.close();
@@ -129,6 +133,9 @@ function configureLogging(config) {
 function configureMongo(config) {
     mongo.config(config.get('mongoUrl'));
     mongo.connection.once('connected', function () {
+        if (GLOBAL._hasShutdown) {
+            return;
+        }
         // This infra needs a mongo connection for session data, so wait...
         var mubsub = require('mubsub')(config.get('mongoUrl'), {
             auto_reconnect: true

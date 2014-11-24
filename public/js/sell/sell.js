@@ -689,6 +689,35 @@ function realInit() {
         sendPaymentRequest(this, $('#paymentTypeModal'));
     });
 
+    $('#doCardPayment').on('click', function (e) {
+        e.preventDefault();
+        var exp = $.payment.cardExpiryVal($('#card-expiration').val());
+        paymentRequest = {
+            latitude: coords.latitude,
+            longitude: coords.longitude,
+            paymentType: 'card',
+            card: {
+                inputType:"keyIn",
+                accountNumber: $('#card-number').val(),
+                expirationMonth: exp.month,
+                expirationYear:exp.year,
+                cvv:$('#card-cvc').val(),
+                postalCode:$('#card-postal').val()
+            },
+            invoice: deepFreeze(inv)
+        };
+        addMerchantInfo(paymentRequest.invoice);
+        $('#card-number').val('');
+        $('#card-cvc').val('');
+        $('#card-postal').val('');
+        $('#card-expiration').val('');
+        var card = paymentRequest.card.accountNumber;
+        if (card && card.length > 4) {
+            card = card.substring(card.length - 4);
+        }
+        showConfirm('to the card ending in ' + card);
+    });
+
     $('#paymentTypeSelector').on('click', 'button', function () {
         var newView = $('#'+$(this).data('value'));
         if (paymentTypeView && paymentTypeView != newView) {
