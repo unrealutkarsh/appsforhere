@@ -6,17 +6,12 @@
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     <h4 class="modal-title">Choose Options and Variations</h4>
                 </div>
-                <div class="modal-body">
-
-                    {>"partials/textField" id="cartItemName" label="Name" placeholder="Enter a name for the item"/}
-
-                    {>"partials/textField" id="cartQty" label="Quantity" placeholder="Enter the item quantity"/}
-
-                    {>"partials/textField" id="cartItemPrice" label="Price" placeholder="Enter the item unit price"/}
+                <div class="modal-body text-center" id="variantDiv">
+                    &nbsp;
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-primary" id="saveCartItem">Save Changes</button>
+                    <button type="button" class="btn btn-primary" id="saveWithOptions">Save Item</button>
                 </div>
 
             </div>

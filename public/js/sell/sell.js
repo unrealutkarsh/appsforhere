@@ -73,9 +73,13 @@ var CartDataSource = function () {
 
             var qtyPrice = '<div style="float:right;">' + accounting.formatMoney(i.totalForInvoice(inv).toString()) + '</div>';
             qtyPrice += '<span class="badge">' + i.quantity + '</span>';
+            var nd = i.name;
+            if (i.description) {
+                nd += $('<div/>',{class:'itemDesc',text: i.description}).prop('outerHTML');
+            }
             data.push({
                 item: i,
-                nameDesc: i.name,
+                nameDesc: nd,
                 qtyPrice: qtyPrice,
                 imageTag: "<img src=\"" +
                 (i.photoUrl || '/media/image_default_138.png').replace("\"", "") +
@@ -228,13 +232,84 @@ function realInit() {
         defaultView: 'list',
         list_selectable: true
     });
+
+    /**
+     * Handle option and variant selection
+     */
+    $('#variantDiv').on('click', 'button', function (e) {
+        e.preventDefault();
+        var parent = $(this).parent('[data-select]');
+        console.log(parent);
+
+        if ($(this).hasClass('active')) {
+            if (parent.data('select') !== 'exactlyOne') {
+                $(this).removeClass('active');
+            }
+        } else {
+            $(this).addClass('active');
+            if (parent.data('select') === 'exactlyOne' || parent.data('select') !== 'any') {
+                $(this).siblings().removeClass('active');
+            }
+        }
+    });
+
     $('#productGrid').on('click', 'table>tbody>tr', function () {
         var $this = $(this);
         // Undo selection UI
         $this.removeClass('selected');
         $this.find('.repeater-list-check').remove();
         var product = $(this).data("item_data");
-        if ((product.variations && product.variations.length)||(product.options && product.options.length)) {
+        var variations = product.variations, options = product.options;
+        if ((variations && variations.length)||(options && options.length)) {
+            var v = $('#variantDiv');
+            v.empty();
+            if (variations && variations.length) {
+                var vG = $('<div class="btn-group variants" role="group"/>');
+                vG.attr('data-select','exactlyOne');
+                vG.data('product', product);
+                for (var i = 0; i < variations.length; i++) {
+                    var btn = $('<button>', {class:'btn btn-default',type:'button'});
+                    btn.append($('<div/>', {text: variations[i].name, class:'name'}));
+                    var price = '-';
+                    if (variations[i].price) {
+                        price = accounting.formatMoney(variations[i].price);
+                    }
+                    btn.data('variant', variations[i]);
+                    if (i == 0) {
+                        btn.addClass('active');
+                    }
+                    btn.append($('<div/>', {text: price, class:'price'}));
+                    vG.append(btn);
+                }
+                v.append('<h3>Choose a variation</h3>');
+                v.append(vG);
+            }
+
+            if (options && options.length) {
+                for (var o = 0; o < options.length; o++) {
+                    v.append($('<h3/>', {text:options[o]}));
+                    for (var g = 0; g < model.options.length; g++) {
+                        if (model.options[g].name.toLowerCase() === options[o].toLowerCase()) {
+                            var vG = $('<div class="btn-group options" role="group"/>');
+                            vG.attr('data-select', model.options[g].select);
+                            for (var val = 0; val < model.options[g].values.length; val++) {
+                                var btn = $('<button>', {class: 'btn btn-default', type: 'button'});
+                                btn.append($('<div/>', {text: model.options[g].values[val].name, class: 'name'}));
+                                var price = '-';
+                                if (model.options[g].values[val].price) {
+                                    price = accounting.formatMoney(model.options[g].values[val].price);
+                                }
+                                btn.append($('<div/>', {text: price, class: 'price'}));
+                                btn.data('optionValue', model.options[g].values[val]);
+                                btn.data('optionGroup', model.options[g]);
+                                vG.append(btn);
+                            }
+                            v.append(vG);
+                        }
+                    }
+                }
+            }
+
             $('#optionModal').modal();
             return;
         }
@@ -253,6 +328,33 @@ function realInit() {
         inv.addItem(item);
         $('#cartGrid').repeater('render');
     });
+
+    $('#saveWithOptions').on('click', function (e) {
+        var variant = $('#variantDiv div.variants button.active').data('variant');
+        var options = $('#variantDiv div.options button.active');
+        var product = $('#variantDiv div.variants').data('product');
+        var price = variant.price||product.unitPrice;
+        var detailId = [variant||{}], desc = variant.name||"";
+        options.each(function (o) {
+            var val = $(this).data('optionValue');
+            detailId.push(val);
+            if (desc.length > 0) { desc += ', '; }
+            desc += val.name;
+            if (val.price) {
+                price = Invoice.Number(val.price).plus(price);
+            }
+        });
+        var item = new Invoice.Item(1, price, product, JSON.stringify({opts:detailId}));
+        item.name = product.name;
+        item.description = desc;
+        item.photoUrl = product.photoUrl;
+        item._product = product;
+        item._options = detailId;
+        inv.addItem(item);
+        $('#cartGrid').repeater('render');
+        $('#optionModal').modal('hide');
+    });
+
     $('#cartGrid').on('click', 'div.repeater-list-wrapper>table >tbody>tr', function () {
         var $this = $(this);
         editingItem = $this.data("item_data");
@@ -296,6 +398,12 @@ function realInit() {
 
     $('#saveCartItem').on('click', function (e) {
         if (editingItem) {
+            if (editingItem.item.name !== $('#cartItemName').val() ||
+                !editingItem.item.unitPrice.equals($('#cartItemPrice').val())) {
+                // Break this item off from its source
+                console.log(editingItem);
+                editingItem.item.itemId = new Date().getTime();
+            }
             editingItem.item.quantity = Invoice.Number($('#cartQty').val());
             editingItem.item.unitPrice = Invoice.Number($('#cartItemPrice').val());
         } else {
@@ -1143,6 +1251,7 @@ function deepFreeze(invoice) {
     var frozen = JSON.parse(JSON.stringify(inv));
     for (var i = 0; i < frozen.items.length; i++) {
         delete frozen.items[i]._product;
+        delete frozen.items[i]._options;
     }
     return frozen;
 }

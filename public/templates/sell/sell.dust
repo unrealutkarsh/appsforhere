@@ -124,6 +124,11 @@
         #cartGrid .repeater-list table>thead {
             display:none;
         }
+        #cartGrid .itemDesc {
+            font-size: .7em;
+            color: #bbb;
+            font-weight: bold;
+        }
         #paymentConfirmModal div.confirmText {
             font-weight: bold;
             font-size: +1.5em;
@@ -155,6 +160,12 @@
         }
         div.cityStateZip>div.tight {
             padding-right: 0px;
+        }
+        #variantDiv div.name {
+            font-weight: bold;
+        }
+        #variantDiv div.price {
+            font-size: .9em;
         }
     </style>
     <link rel="stylesheet" href="/components/ladda/dist/ladda-themeless.min.css">
