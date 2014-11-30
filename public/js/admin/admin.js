@@ -21,9 +21,12 @@ function setupLogPage() {
         li.attr('id', 'el' + (ctr++));
         li.addClass(d.level);
         if (d.hostname) {
-            li.append('<span class="host"></span>').text(d.hostname);
+            li.append($('<span/>', {class:'host', text: d.hostname}));
         }
-        li.append('<span class="message"></span>').text(d.message);
+        li.append($('<span/>',{class:'message', text:d.message}));
+        if (d.meta && !$.isEmptyObject(d.meta)) {
+            li.append($('<pre/>', {class: 'detail', text: JSON.stringify(d.meta, null, '\t')}));
+        }
         logsElement.append(li);
         if (autoScroll) {
             logsElement.scrollTop(logsElement[0].scrollHeight);

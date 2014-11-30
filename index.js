@@ -34,6 +34,7 @@ var mongo = require('./lib/mongo'),
     server = require('http').Server(app),
     io = require('socket.io')(server),
     passport = require('passport'),
+    expressWinston = require('express-winston'),
     PayPalStrategy = require('./lib/payPalStrategy'),
     PayPalUser = require('./models/payPalUser'),
     PayPalDelegatedUser = require('./models/payPalDelegatedUser'),
@@ -70,6 +71,22 @@ app.on('middleware:after:session', function addPassportToSession(eventargs) {
         next();
     });
 });
+
+app.on('middleware:after:router', function addExpressWinston(eventargs) {
+    app.use(expressWinston.errorLogger({
+        winstonInstance: logger._impl
+    }));
+});
+
+expressWinston.requestWhitelist = ['url', 'headers', 'method', 'httpVersion', 'originalUrl', 'query'];
+expressWinston.bodyWhitelist = ['none'];
+
+// express-winston logger makes sense BEFORE the router.
+app.use(expressWinston.logger({
+    winstonInstance: logger._impl,
+    msg: "{{req.method}} {{req.url}} {{res.statusCode}} {{res.responseTime}}ms",
+    meta: false
+}));
 
 app.use(kraken(options));
 
@@ -121,10 +138,13 @@ function configureQueue(config) {
  * @param config from Kraken/confit
  */
 function configureLogging(config) {
-    /* Something is causing trouble when the capped collection fills up */
-    // var MongoDB = require('winston-mongodb').MongoDB;
-    // only way to set the default logger config is via the private pine impl
-    // logger._impl.add(MongoDB, config.get('winston-mongodb'));
+    // Make sure the collection is created before we start logging.
+    var Log = require('./models/log');
+    new Log({message:'Ensuring capped collection.'}).save(function () {
+        var MongoDB = require('winston-mongodb').MongoDB;
+        // only way to set the default logger config is via the private pine impl
+        logger._impl.add(MongoDB, config.get('winston-mongodb'));
+    });
 }
 
 /**
@@ -142,6 +162,8 @@ function configureMongo(config) {
         var mubsub = require('mubsub')(config.get('mongoUrl'), {
             auto_reconnect: true
         });
+        // Create the mubsub channel for socket.io with the configured settings
+        mubsub.channel('socket.io', config.get('socket.io').mubsub);
         io.adapter(require('socket.io-adapter-mongo')({
             client: mubsub
         }));

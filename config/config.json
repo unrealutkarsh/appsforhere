@@ -49,9 +49,18 @@
 
     "winston-mongodb": {
         "dbUri": "mongodb://localhost/pph-loyalty",
-        "collection": "node_logs",
+        "collection": "cappedlogs",
+        "capped": true,
+        "cappedSize": 1000000,
         "level": "silly",
-        "storeHost": true
+        "storeHost": true,
+        "json": true
+    },
+
+    "socket.io": {
+        "mubsub": {
+            "size": 10000000
+        }
     },
 
     "middleware": {

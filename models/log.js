@@ -11,11 +11,11 @@ var logModel = function () {
         timestamp: Date,
         meta: mongoose.Schema.Types.Mixed
     },{
-        capped: 20000000
+        capped: 1000000
     });
 
-    return mongoose.model('nodelogs', logSchema);
+    return mongoose.model('cappedlogs', logSchema);
 };
 
 // In case you somehow require this twice when it thinks they're separate modules.
-module.exports = mongoose.models.nodelogs || new logModel();
+module.exports = mongoose.models.cappedlogs || new logModel();
