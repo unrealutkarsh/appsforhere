@@ -82,11 +82,16 @@ expressWinston.requestWhitelist = ['url', 'headers', 'method', 'httpVersion', 'o
 expressWinston.bodyWhitelist = ['none'];
 
 // express-winston logger makes sense BEFORE the router.
-app.use(expressWinston.logger({
+var ewLogger = expressWinston.logger({
     winstonInstance: logger._impl,
-    msg: "{{req.method}} {{req.url}} {{res.statusCode}} {{res.responseTime}}ms",
+    msg: "{{req.method}} {{req.logSafeUrl}} {{res.statusCode}} {{res.responseTime}}ms",
     meta: false
-}));
+});
+app.use(function (req, res, next) {
+    var badParams = /uuid=(.+[^0-9\-])/g;
+    req.logSafeUrl = req.url.replace(badParams, 'uuid=*');
+    return ewLogger(req, res, next);
+});
 
 app.use(kraken(options));
 

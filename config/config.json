@@ -86,6 +86,12 @@
             }
         },
 
+        "logger": {
+            "module": {
+                "name": "path:./lib/noUuidLogger"
+            }
+        },
+
         "router": {
             "module": {
                 "arguments": [{ "directory": "path:./controllers" }]
