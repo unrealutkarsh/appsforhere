@@ -8,12 +8,18 @@
 
                 <div id="sidebar" class="sidebar-nav col-md-2">
                     <ul class="nav nav-list">
-                        <li class="active"><a id="delegates" href="#">Delegates</a></li>
+                        <li class="active"><a data-view="delegateView" href="#">Delegates</a></li>
+                        <li><a data-view="hardwareView" href="#">Hardware Interfaces</a></li>
                     </ul>
                 </div>
 
                 <div id="main" class="col-md-10">
-                    {>"settings/partials/delegateRepeater"/}
+                    <div id="delegateView">
+                        {>"settings/partials/delegateRepeater"/}
+                    </div>
+                    <div id="hardwareView" style="display:none;">
+                        {>"settings/partials/hardwareRepeater"/}
+                    </div>
                 </div>
             </div>
         </div>
@@ -24,9 +30,11 @@
 {<head}
     <link href="/components/selectize/dist/css/selectize.bootstrap3.css" rel="stylesheet">
     <link href="/components/bootstrapValidator/dist/css/bootstrapValidator.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/components/ladda/dist/ladda-themeless.min.css">
 {/head}
 
 {<bodyElements}
+    {>"settings/partials/hardwareModal"/}
     {>"settings/partials/delegateModal"/}
     {>"settings/partials/delegationUrlModal"/}
     {>"partials/progressModal"/}
@@ -37,6 +45,8 @@
     <script type="text/javascript" src="/components/bignumber.js/bignumber.min.js"></script>
     <script type="text/javascript" src="/components/selectize/dist/js/standalone/selectize.min.js"></script>
     <script type="text/javascript" src="/components/bootstrapValidator/dist/js/bootstrapValidator.js"></script>
+    <script type="text/javascript" src="/components/ladda/dist/spin.min.js"></script>
+    <script type="text/javascript" src="/components/ladda/dist/ladda.min.js"></script>
     <script type="text/javascript" src="/js/common-addons.js"></script>
     <script type="text/javascript" src="/js/settings/settings.js"></script>
     <script type="text/javascript">

@@ -9,8 +9,37 @@ var allRoles = [
     {text: 'Save to Vault', value: 'SaveVault'}
 ];
 
-var DelegateDataSource = function (options) {
+var HardwareDataSource = function (options) {
+    AjaxDataSource.call(this, function () {
+        return '/devices/all';
+    });
+    this._columns = [
+        {
+            property: 'host',
+            label: 'Host',
+            sortable: true
+        },{
+            property: 'name',
+            label: 'Device Name'
+        },{
+            property: 'id',
+            label: 'Device Id'
+        }
+    ];
+};
+HardwareDataSource.prototype = Object.create(AjaxDataSource.prototype);
+HardwareDataSource.prototype.constructor = HardwareDataSource;
+HardwareDataSource.prototype.success = function (data, options, cb) {
+    this.sourceData = data.devices||[];
+    this._buildResponse(options, cb);
+};
 
+var hardwareDataSource = new HardwareDataSource();
+
+var DelegateDataSource = function (options) {
+    AjaxDataSource.call(this, function () {
+        return '/oauth/delegates?format=json'
+    });
     this._columns = [
         {
             property: 'name',
@@ -43,79 +72,21 @@ var DelegateDataSource = function (options) {
         });
     }
 };
-
-DelegateDataSource.prototype = {
-
-    /**
-     * Returns stored column metadata
-     */
-    columns: function () {
-        return this._columns;
-    },
-
-    _buildResponse: function (options, callback) {
-        var data = this.rawData;
-        // Return data to Datagrid
-        if (options.search) {
-            data = _.filter(data, function (item) {
-                var match = false;
-
-                _.each(item, function (prop) {
-                    if (_.isString(prop) || _.isFinite(prop)) {
-                        if (prop.toString().toLowerCase().indexOf(options.search.toLowerCase()) !== -1) match = true;
-                    }
-                });
-
-                return match;
-            });
-        }
-
-        var count = data.length;
-
-        if (options.sortProperty) {
-            data = _.sortBy(data, options.sortProperty);
-            if (options.sortDirection === 'desc') {
-                data.reverse();
+DelegateDataSource.prototype = Object.create(AjaxDataSource.prototype);
+DelegateDataSource.prototype.constructor = DelegateDataSource;
+DelegateDataSource.prototype.success = function (response, options, cb) {
+    this.sourceData = response.delegates;
+    this._buildResponse(options, cb);
+};
+DelegateDataSource.prototype.formatter = function (index, item) {
+    item.allowedString = item.allowed.map(function (a) {
+        for (var i = 0; i < allRoles.length; i++) {
+            if (allRoles[i].value === a) {
+                return allRoles[i].text;
             }
         }
-        // PAGING
-        var startIndex = options.pageIndex * options.pageSize;
-        var endIndex = startIndex + options.pageSize;
-        var end = (endIndex > count) ? count : endIndex;
-        var pages = Math.ceil(count / options.pageSize);
-        var page = options.pageIndex;
-        var start = startIndex;
-
-        data = data.slice(startIndex, endIndex);
-        if (this._formatter) {
-            this._formatter(data);
-        }
-
-        var resp = { items: data, start: start, end: end, count: count, pages: pages, page: page, columns: this._columns };
-        callback(resp);
-    },
-
-    /**
-     * Called when Datagrid needs data. Logic should check the options parameter
-     * to determine what data to return, then return data by calling the callback.
-     * @param {object} options Options selected in datagrid (ex: {pageIndex:0,pageSize:5,search:'searchterm'})
-     * @param {function} callback To be called with the requested data.
-     */
-    data: function (options, callback) {
-        if (this.rawData) {
-            this._buildResponse(options, callback);
-        } else {
-            var self = this;
-            $.ajax('/oauth/delegates?format=json', {
-                dataType: 'json',
-                type: 'GET'
-            }).done(function (response) {
-                model = response;
-                self.rawData = response.delegates;
-                self._buildResponse(options, callback);
-            });
-        }
-    }
+        return a;
+    }).join(', ');
 };
 
 dataSource = new DelegateDataSource();
@@ -162,7 +133,7 @@ function saveDelegate() {
                     $('#delegateModal').modal('hide');
 
                     if (needInsert) {
-                        dataSource.rawData.unshift(selectedDelegate);
+                        dataSource.sourceData.unshift(selectedDelegate);
                     }
                     $('#delegateGrid').repeater('render');
 
@@ -303,4 +274,45 @@ $(document).ready(function () {
         saveDelegate();
     });
     wireValidatedSelectize('delegateFeatures', bv);
+
+    $('#sidebar').on('click', 'a', function (e) {
+        e.preventDefault();
+        if (!$(this).parent().hasClass('active')) {
+            var view = $(this).data('view');
+            $('#sidebar li').removeClass('active');
+            $(this).parent().addClass('active');
+            $('#main>div').hide();
+            $('#'+view).show();
+        }
+    });
+
+    /*** Hardware Interfaces ***/
+    $('#hardwareGrid').repeater({
+        dataSource: function (o, c) {
+            return hardwareDataSource.data(o, c);
+        },
+        defaultView: 'list',
+        list_selectable: true,
+        list_noItemsHTML: '<i>You currently have no hardware interfaces configured.</i>'
+    });
+
+    $('#addHardware').on('click', function (e) {
+        e.preventDefault();
+        $('#hardwareModal').modal();
+    });
+
+    $('#addHardwareButton').on('click', function (e) {
+        e.preventDefault();
+        var l = Ladda.create(this);
+        l.start();
+        $.get('/devices/add?uuid='+encodeURIComponent($('#installationKey').val()))
+            .done(function (data) {
+                l.stop();
+                console.log(data);
+            })
+            .fail(function (xhr, e) {
+                alert("Failed! " + e.toString());
+                l.stop();
+            });
+    });
 });
