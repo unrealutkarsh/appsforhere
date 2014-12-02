@@ -1,5 +1,5 @@
 <div id="hardwareModal" class="modal fade" aria-hidden="true" role="dialog" tabindex="-1">
-    <form role="form" class="form-horizontal" id="delegateForm">
+    <form role="form" class="form-horizontal">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">

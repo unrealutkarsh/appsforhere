@@ -1,4 +1,4 @@
-var $delegateFeatureSelect, dataSource, selectedDelegate, fakePassword = '••••••••••••';
+var $delegateFeatureSelect, dataSource, selectedDelegate, selectedDevice, fakePassword = '••••••••••••';
 
 var allRoles = [
     {text: 'View Products', value: 'ViewProducts'},
@@ -94,8 +94,8 @@ dataSource = new DelegateDataSource();
 function showItem(d) {
     $('#delegateName').val(d.name);
     $('#delegatePassword').val(fakePassword);
-    $delegateFeatureSelect[0].selectize.setValue(d.allowed);
     $('#delegateForm').data('bootstrapValidator').resetForm();
+    $delegateFeatureSelect[0].selectize.setValue(d.allowed);
     $('#deleteDelegate').show();
     $('#delegateModal').modal();
 }
@@ -315,4 +315,43 @@ $(document).ready(function () {
                 l.stop();
             });
     });
+
+    $('#hardwareGrid').on('click', 'table>tbody>tr', function () {
+        var $this = $(this);
+        // Undo selection UI
+        $this.removeClass('selected');
+        $this.find('.repeater-list-check').remove();
+        selectedDevice = $(this).data("item_data");
+        showDevice(selectedDevice);
+    });
+
+    $('#saveDeviceInfo').on('click', function (e) {
+        e.preventDefault();
+        var l = Ladda.create(this);
+        l.start();
+        $.post('/devices/preferences/' + selectedDevice._id,
+            {name:$('#deviceName').val(),_csrf:_csrf})
+            .done(function (data) {
+                l.stop();
+                selectedDevice.name = $('#deviceName').val();
+                $('#hardwareGrid').repeater('render');
+                $('#hardwareEditModal').modal('hide');
+            })
+            .fail(function (xhr, e) {
+                alert("Failed! " + e.toString());
+                l.stop();
+            });
+    });
+
+    $('#hardwareEditModal').on('shown.bs.modal', function () {
+        $('#deviceName').focus();
+    });
 });
+
+function showDevice(d) {
+    $('#deviceName').val(d.name);
+    $('#deviceId').val(d.id);
+    $('#deviceHost').val(d.host);
+    $('#hardwareEditModal').modal();
+}
+

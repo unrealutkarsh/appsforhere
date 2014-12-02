@@ -35,6 +35,7 @@
 
 {<bodyElements}
     {>"settings/partials/hardwareModal"/}
+    {>"settings/partials/hardwareEditModal"/}
     {>"settings/partials/delegateModal"/}
     {>"settings/partials/delegationUrlModal"/}
     {>"partials/progressModal"/}
