@@ -629,6 +629,9 @@ function realInit() {
             doCheckinPayment();
             return;
         }
+        if (socket) {
+            socket.emit('deviceSubscribe',  {id: hardwareDevice._id});
+        }
         $('#checkinGrid2').repeater('render');
         if (!paymentTypeView) {
             paymentTypeView = $('#noEntry');

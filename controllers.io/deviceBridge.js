@@ -29,7 +29,7 @@ module.exports = function (io, socket) {
                     req.deviceRooms = req.deviceRooms || {};
                     var roomName = 'device:' + dc.id;
                     req.deviceRooms[device.id] = roomName;
-                    socket.emit('deviceRoom', {id:device.id,room:roomName});
+                    socket.emit('deviceRoom', {id: device.id, room: roomName});
                     socket.join(roomName, function (err) {
                         if (err) {
                             logger.error('%s\n%s', err.message, err.stack);
@@ -42,7 +42,7 @@ module.exports = function (io, socket) {
                                 deviceId: dc.deviceid,
                                 host: dc.host,
                                 support: dc.support,
-                                room: 'device:'+dc.id
+                                room: 'device:' + dc.id
                             });
                         }
                     });
@@ -62,7 +62,7 @@ module.exports = function (io, socket) {
                 socket.emit('error', {message: 'Device not found'});
                 return;
             }
-            Device.find({profileId:req.user.profileId,key: d.key}, req.$eat(function (perm) {
+            Device.find({profileId: req.user.profileId, key: d.key}, req.$eat(function (perm) {
                 if (!perm) {
                     socket.emit('error', {message: 'Access denied'});
                     return;
@@ -80,7 +80,7 @@ module.exports = function (io, socket) {
                             deviceId: dev.deviceid,
                             host: dev.host,
                             support: dev.support,
-                            room: 'device:'+dev.id
+                            room: 'device:' + dev.id
                         });
                     }
                 })
@@ -88,19 +88,40 @@ module.exports = function (io, socket) {
         }));
     });
 
+    socket.on('deviceSubscribe', function (d) {
+        var req = socket.request;
+        if (!req.user || !req.user.profileId) {
+            socket.emit('error', {message: 'Access denied'});
+            return;
+        }
+        Device.findById(d.id, req.$eat(function (dev) {
+            if (!dev) {
+                socket.emit('error', {message: 'Device not found'});
+                return;
+            }
+            Device.find({profileId: req.user.profileId, key: d.key}, req.$eat(function (perm) {
+                if (!perm) {
+                    socket.emit('error', {message: 'Access denied'});
+                    return;
+                }
+                socket.to('device:'+dev._id).emit('deviceSubscribe',{});
+            }));
+        }));
+    });
+
     socket.on('devicePing', function (d) {
-        socket.to(d.room).emit('devicePing',d);
+        socket.to(d.room).emit('devicePing', d);
     });
 
     socket.on('devicePong', function (d) {
-        socket.to(d.room).emit('devicePong',d);
+        socket.to(d.room).emit('devicePong', d);
     });
 
     socket.on('deviceEvent', function (d) {
         var req = socket.request;
         if (req.deviceRooms && req.deviceRooms[d.id]) {
             logger.info('Forward deviceEvent %s for %s (%s)', d.type, d.id, req.deviceRooms[d.id]);
-            socket.to(req.deviceRooms[d.id]).emit('deviceEvent',d);
+            socket.to(req.deviceRooms[d.id]).emit('deviceEvent', d);
         } else {
             logger.error('Received deviceEvent for unregistered device %s', d.id);
         }
