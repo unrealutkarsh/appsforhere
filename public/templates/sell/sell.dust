@@ -24,6 +24,7 @@
     {>"sell/partials/paymentComplete"/}
     {>"sell/partials/customerInfo"/}
     {>"sell/partials/checkedIn"/}
+    {>"sell/partials/hardwareSelect"/}
     <div class="modal fade" aria-hidden="true" role="dialog" tabindex="-1" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -185,6 +186,7 @@
     <script type="text/javascript" src="/components/bootstrapValidator/dist/js/bootstrapValidator.min.js"></script>
     <script type="text/javascript" src="/components/ladda/dist/spin.min.js"></script>
     <script type="text/javascript" src="/components/ladda/dist/ladda.min.js"></script>
+    <script type="text/javascript" src="/components/socket.io-client/socket.io.js"></script>
     <script src="/js/ppinvoice/paypal-invoice.js"></script>
     <script type="text/javascript" src="/js/sell/sell.js"></script>
 {/scripts}

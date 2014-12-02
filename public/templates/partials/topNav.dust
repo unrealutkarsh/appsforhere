@@ -26,6 +26,8 @@
             {/eq}
 
             <div class="nav navbar-nav navbar-right">
+            <div id="navbar-right" style="display:inline; padding-right: 10px;">
+            </div>
             <div class="btn-group">
                 <button type="button" class="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
                     {?userEmail}{userEmail}{:else}Account{/userEmail} <span class="caret"></span>

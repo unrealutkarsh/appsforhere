@@ -1,0 +1,9 @@
+<div style="display:none;">
+<div class="btn-group" id="hardwareSelect">
+    <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+        <span class="selectedDevice">Hardware Device</span> <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" role="menu">
+    </ul>
+</div>
+</div>

@@ -20,6 +20,16 @@ module.exports = function (router) {
             });
         });
 
+    router.route('/all/:locationId')
+        .all(appUtils.auth)
+        .all(appUtils.hasRoles(appUtils.ROLES.ManageHardware))
+        .get(function (req, res) {
+            // Right now we don't support location-specific hardware anyways
+            devicesForUser(req, req.user.profileId, function (devs) {
+                res.json({devices:devs});
+            });
+        });
+
     router.route('/add')
         .all(appUtils.auth)
         .all(appUtils.hasRoles(appUtils.ROLES.ManageHardware))
@@ -101,7 +111,6 @@ function preferenceMap(perms, prefs) {
             ret[prefs[i].deviceId] = prefs[i];
         }
     }
-    console.log("PMAP",ret);
     return ret;
 }
 

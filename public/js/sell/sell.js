@@ -1,6 +1,6 @@
 var selectedModel = '_', locationId, categoryFilter, filterAny = true, inv = new Invoice('USD'), model;
-var editingItem, paymentTypeView, paymentRequest, coords, tabs, selectedTab;
-var locationSelectize, categorySelectize, locations;
+var editingItem, paymentTypeView, paymentRequest, coords, tabs, selectedTab, hardwareDevice, hwDevices;
+var locationSelectize, categorySelectize, locations, socket;
 
 var storageKey = _email.replace('.','');
 var prefs = $.localStorage.get(storageKey);
@@ -11,7 +11,11 @@ if (prefs) {
     if (prefs.locationId) {
         locationId = prefs.locationId;
     }
+    if (prefs.hardware) {
+        hardwareDevice = prefs.hardware;
+    }
 }
+
 var CheckinDataSource = function () {
     var cols = [
         {
@@ -96,6 +100,9 @@ var CartDataSource = function () {
             $('#charge').prop('disabled', false);
         }
         $('#chargeBtnAmount').text(m$(tots.total.toString()));
+        if (socket) {
+            socket.emit('activeOrder', {inv:deepFreeze(inv),tot:tots});
+        }
         cb(r);
     }
 };
@@ -517,6 +524,7 @@ function realInit() {
                             for (var i = 0; i < res.locations.length; i++) {
                                 if (res.locations[i].id === locationId) {
                                     s.setValue(locationId);
+                                    findHardware();
                                     pollTabs();
                                     return;
                                 }
@@ -525,6 +533,7 @@ function realInit() {
                         // Oh well, pick the first one.
                         s.setValue(res.locations[0].id);
                         pollTabs();
+                        findHardware();
                     }
                 }
             });
@@ -537,7 +546,7 @@ function realInit() {
             prefs = prefs || {};
             prefs.locationId = loc.id;
             $.localStorage.set(storageKey, prefs);
-            pollOnce();
+            pollOnce(true);
         }
     });
 
@@ -930,6 +939,7 @@ function realInit() {
 
     updateCartCustomerInfo();
     setupCardEntry();
+    setupHardware();
 
     $('[data-toggle="tooltip"]').tooltip();
 }
@@ -1249,25 +1259,27 @@ function readSerialIdTech(parsed, info, cardData) {
     parsed.ksn = cardData.substring(encEnd + 20, encEnd + 40);
 }
 
-function pollOnce() {
-    var loc = getCurrentLocation();
-    if (loc) {
-        $.ajax({
-            url: '/locations/api/'+loc.id+'/tabs',
-            type: 'GET',
-            error: function(r, msg, e) {
-                console.log('Location poll error', e);
-            },
-            success: function(res) {
-                if (res && res.tabs && res.tabs.length) {
-                    tabs = res.tabs;
-                    $('#checkedInCount').text(res.tabs.length).show();
-                } else {
-                    tabs = null;
-                    $('#checkedInCount').hide();
+function pollOnce(force) {
+    if (force || inv.items.length) {
+        var loc = getCurrentLocation();
+        if (loc) {
+            $.ajax({
+                url: '/locations/api/' + loc.id + '/tabs',
+                type: 'GET',
+                error: function (r, msg, e) {
+                    console.log('Location poll error', e);
+                },
+                success: function (res) {
+                    if (res && res.tabs && res.tabs.length) {
+                        tabs = res.tabs;
+                        $('#checkedInCount').text(res.tabs.length).show();
+                    } else {
+                        tabs = null;
+                        $('#checkedInCount').hide();
+                    }
                 }
-            }
-        })
+            });
+        }
     }
 }
 
@@ -1283,4 +1295,84 @@ function deepFreeze(invoice) {
         delete frozen.items[i]._options;
     }
     return frozen;
+}
+
+function findHardware() {
+    var loc = getCurrentLocation();
+    if (loc) {
+        $.ajax({
+            url: '/devices/all/' + loc.id,
+            type: 'GET',
+            error: function (r, msg, e) {
+                console.log('Hardware lookup error', e);
+            },
+            success: function (res) {
+                if (res && res.devices && res.devices.length) {
+                    hwDevices = res.devices;
+                    var hsel = $('#hardwareSelect');
+                    if (!hsel.data('moved')) {
+                        hsel.appendTo('#navbar-right');
+                    }
+                    for (var i = 0; i < res.devices.length; i++) {
+                        var d = res.devices[i];
+                        if ($('#'+ d._id).length === 0) {
+                            var li = $('<li/>');
+                            var a = $('<a/>', {text: d.name|| d.id,id: d._id});
+                            if (hardwareDevice && hardwareDevice._id === d._id) {
+                                li.addClass('active');
+                                $('span.selectedDevice',hsel).text(hardwareDevice.name||hardwareDevice.deviceId);
+                                if (!socket) {
+                                    connectSocket();
+                                }
+                            }
+                            li.append(a);
+                            $('ul',hsel).append(li);
+                        }
+                    }
+                }
+            }
+        });
+    }
+}
+
+function setupHardware() {
+    var hsel = $('#hardwareSelect');
+    hsel.on('click', 'li>a', function (e) {
+        e.preventDefault();
+        $('li',hsel).removeClass('active');
+        $(this).addClass('active');
+        $('span.selectedDevice', hsel).text($(this).text());
+        for (var i = 0; i < hwDevices.length; i++) {
+            if (hwDevices[i]._id === this.id) {
+                hardwareDevice = hwDevices[i];
+                prefs = prefs || {};
+                prefs.hardware = hardwareDevice;
+                $.localStorage.set(storageKey, prefs);
+                break;
+            }
+        }
+        if (!socket) {
+            connectSocket();
+        }
+    });
+}
+
+function connectSocket() {
+    var room;
+    socket = io();
+    socket.on('connect', function () {
+        if (hardwareDevice) {
+            socket.emit('deviceAttach', {id: hardwareDevice._id});
+        }
+    });
+    socket.on('deviceUpdate', function (e) {
+        room = e.room;
+        socket.emit('devicePing', {room: e.room});
+    });
+    socket.on('devicePong', function (e) {
+        console.log(e);
+    });
+    socket.on('deviceEvent', function (e) {
+        console.log(e);
+    })
 }
