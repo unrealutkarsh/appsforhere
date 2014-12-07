@@ -1,7 +1,7 @@
 <div style="display:none;">
-<div class="btn-group" id="hardwareSelect">
-    <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
-        <span class="selectedDevice">Hardware Device</span> <span class="caret"></span>
+<div class="btn-group" id="hardwareSelect" style="padding-right:10px;">
+    <button type="button" class="btn btn-warning dropdown-toggle ladda-button" data-style="expand-left" data-toggle="dropdown" aria-expanded="false">
+        <span class="selectedDevice ladda-label">Hardware Device</span> <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" role="menu">
     </ul>

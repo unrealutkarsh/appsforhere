@@ -29,6 +29,7 @@
                         <!--
                         <button type="button" class="btn btn-default" data-value="invoiceEntry">Invoice</button>
                         -->
+                        <button type="button" class="btn btn-default" data-value="saveForLater">Save</button>
                     </div>
                     <div style="margin-top: 20px;">
                         <div id="noEntry" style="display:none;">
@@ -53,7 +54,7 @@
                                     </div>
                                 </div>
 
-                                <button type="submit" class="btn btn-primary text-right ladda-button" data-style="expand-left" id="doCashPayment" data-autofocus="1">Complete Payment</button>
+                                <button type="submit" class="btn btn-primary text-right ladda-button" data-style="expand-left" id="doCashPayment">Complete Payment</button>
                             </form>
                         </div>
                         <div id="cardEntry" style="display:none;">
@@ -141,11 +142,26 @@
                                     </div>
                                 </div>
 
-                                <button type="submit" class="btn btn-primary text-right ladda-button" data-style="expand-left" id="doCheckPayment" data-autofocus="1">Complete Payment</button>
+                                <button type="submit" class="btn btn-primary text-right ladda-button" data-style="expand-left" id="doCheckPayment">Complete Payment</button>
                             </form>
                         </div>
                         <div id="invoiceEntry" style="display:none;">
                             Coming soon.
+                        </div>
+                        <div id="saveForLater" style="display:none;">
+                            <form role="form" id="saveforlater-form" class="form-horizontal">
+
+                                <div class="form-group">
+                                    <label class="col-sm-3 text-right">Order Name</label>
+
+                                    <div class="col-sm-8">
+                                        <input class="form-control" id="orderName" placeholder="e.g. table name or customer name" data-autofocus="1"/>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary text-right ladda-button" data-style="expand-left" id="doSaveForLater">Save Order</button>
+                            </form>
+
                         </div>
                     </div>
                 </div>

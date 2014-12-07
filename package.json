@@ -1,6 +1,6 @@
 {
   "name": "appsforhere",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Enhancements and applications for PayPal Here and PayPal in Retail",
   "author": "Max Metral",
   "main": "index.js",
@@ -26,12 +26,14 @@
     "findit": "^2.0.0",
     "form-data": "^0.1.4",
     "kraken-devtools": "^1.0.0",
+    "kraken-devtools-browserify": "0.0.1",
     "kraken-js": "^1.0.1",
     "less": "^1.7.4",
     "localizr": "^0.1.0",
     "marked": "^0.3.2",
     "mongodb-queue": "^0.9.1",
     "mongoose-findorcreate": "^0.1.2",
+    "morgan": "^1.5.0",
     "newrelic": "^1.14.0",
     "newrelicbuster": "^1.0.3",
     "node-forge": "^0.6.14",
@@ -50,8 +52,7 @@
     "winston": "^0.7.3",
     "winston-mongodb": "^0.5.2",
     "wreck": "^5.0.1",
-    "xlsx": "^0.7.10",
-    "morgan": "^1.5.0"
+    "xlsx": "^0.7.10"
   },
   "devDependencies": {
     "mocha": "^1.18.0",

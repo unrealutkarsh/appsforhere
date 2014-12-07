@@ -88,7 +88,15 @@ module.exports = function (io, socket) {
         }));
     });
 
+    socket.on('deviceSubscribed', function (d) {
+        var req = socket.request;
+        if (req.deviceRooms && req.deviceRooms[d.id]) {
+            socket.to(req.deviceRooms[d.id]).emit('deviceSubscribed',d);
+        }
+    });
+
     socket.on('deviceSubscribe', function (d) {
+        logger.debug('deviceSubscribe',d);
         var req = socket.request;
         if (!req.user || !req.user.profileId) {
             socket.emit('error', {message: 'Access denied'});
@@ -104,7 +112,10 @@ module.exports = function (io, socket) {
                     socket.emit('error', {message: 'Access denied'});
                     return;
                 }
-                socket.to('device:'+dev._id).emit('deviceSubscribe',{});
+                socket.to('device:'+dev._id).emit('deviceSubscribe',{
+                    id: dev.deviceId,
+                    subscription: d.subscription
+                });
             }));
         }));
     });

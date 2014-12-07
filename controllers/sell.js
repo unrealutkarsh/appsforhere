@@ -3,6 +3,7 @@
 var log = require('pine')();
 var PayPalUser = require('../models/payPalUser');
 var PayPalDelegatedUser = require('../models/payPalDelegatedUser');
+var SavedOrder = require('../models/savedOrder');
 var appUtils = require('appUtils');
 
 module.exports = function (router) {
@@ -35,8 +36,13 @@ module.exports = function (router) {
                     payResult.ok = false;
                     res.status(500).json(payResult);
                 } else {
-                    payResult.ok = true;
-                    res.json(payResult);
+                    SavedOrder.remove({
+                        profileId: req.user.profileId,
+                        invoiceId: payResult.invoiceID||paymentRequest.invoice.invoiceID
+                    }, function () {
+                        payResult.ok = true;
+                        res.json(payResult);
+                    });
                 }
             }));
         });
@@ -68,6 +74,80 @@ module.exports = function (router) {
                     res.json(result);
                 }
             }));
+        });
+
+    router.route('/load/:invoiceId')
+        .all(appUtils.auth)
+        .get(function (req, res) {
+           var url = req.hereApiUrl('invoices/'+req.params.invoiceId);
+            console.log(req.params.invoiceId);
+            req.hereApi().get({
+                url: url,
+                json: true,
+                tokens: req.user
+            }, req.$eat(function (invoice) {
+                console.log(invoice);
+                res.json(invoice);
+            }));
+        });
+
+    router.route('/saved/:locationId')
+        .all(appUtils.auth)
+        .get(function (req, res) {
+            SavedOrder.find({
+                locationId: req.params.locationId,
+                profileId: req.user.profileId
+            }, req.$eat(function (docs) {
+                var ret = [];
+                if (docs) {
+                    docs.forEach(function (d) {
+                        ret.push({
+                            name: d.name,
+                            invoiceId: d.invoiceId
+                        });
+                    });
+                    res.json({orders:ret});
+                }
+            }));
+        })
+        .post(function (req, res) {
+            var url, method = 'post';
+            if (req.body.invoice.invoiceID) {
+                url = req.hereApiUrl('invoices/'+req.body.invoice.invoiceID);
+                method = 'put';
+            } else {
+                url = req.hereApiUrl('invoices');
+            }
+            cleanInvoice(req.body.invoice);
+            // TODO probably fill out more stuff on the invoice.
+            // or put that on the client.
+            req.body.invoice.merchantEmail = req.user.email;
+            req.hereApi()[method]({
+                url: url,
+                json: true,
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8'
+                },
+                payload: JSON.stringify(req.body.invoice),
+                tokens: req.user
+            }, req.$eat(function (payResult) {
+                if (payResult.errorCode) {
+                    log.error('Failed to save invoice/order: %s', payResult);
+                    payResult.ok = false;
+                    res.status(500).json(payResult);
+                } else {
+                    payResult.ok = true;
+                    SavedOrder.findOrCreate({
+                        profileId: req.user.profileId,
+                        invoiceId: payResult.invoiceID,
+                        locationId: req.params.locationId,
+                        name: req.body.name
+                    }, req.$eat(function (doc) {
+                        res.json(payResult);
+                    }));
+                }
+            }));
+
         });
 
 };

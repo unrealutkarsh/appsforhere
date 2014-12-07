@@ -9,7 +9,9 @@ module.exports = function browserify(grunt) {
 	return {
 		build: {
 			files: {
-                '.build/js/app.js': ['public/js/app.js']
+		    // This is run after uglify, so they're already in the target dir.
+		    '.build/js/app.js': ['.build/js/app.js'],
+		    '.build/js/sell/sell.js': ['.build/js/sell/sell.js']
             },
 			options: {}
 		}
