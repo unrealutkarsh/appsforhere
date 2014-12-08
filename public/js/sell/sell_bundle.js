@@ -66,14 +66,7 @@ $(function () {
 
     serverSocket.on('deviceEvent', function (e, args) {
         if (args.type === 'Swipe') {
-            payment.swipeDetected({
-                ksn: args.data.ksn,
-                serial: args.data.ksn,
-                vendor: args.data.vendor,
-                track1: args.data.track1,
-                track2: args.data.track2,
-                track2Masked: args.data.track2Masked
-            });
+            payment.swipeDetected(args.data);
         }
     });
 
