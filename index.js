@@ -30,9 +30,6 @@ var mongo = require('./lib/mongo'),
     kraken = require('kraken-js'),
     express = require('express'),
     app = require('express')(),
-// These two lines are required to get Socket.io to work properly
-    server = require('http').Server(app),
-    io = require('socket.io')(server),
     passport = require('passport'),
     expressWinston = require('express-winston'),
     PayPalStrategy = require('./lib/payPalStrategy'),
@@ -57,6 +54,9 @@ var mongo = require('./lib/mongo'),
     },
     port = process.env.PORT || 8000,
     mongoReady = false;
+
+// Created when we're the master in the listen function.
+var server;
 
 /**
  * Setup Pasport authentication right after the core session store is setup
@@ -95,16 +95,40 @@ app.use(function (req, res, next) {
 
 app.use(kraken(options));
 
-/**
- * Don't listen until the initial mongo connection is ready
- */
-if (mongoReady) {
-    listen();
-}
+// The kraken generator uses app.listen, but we need to get lower make socket.io work (with sticky cluster routing)
+function listen(config) {
+    var sticky = require('sticky-session');
 
-function listen() {
-    // The kraken generator uses app.listen, but we need server.listen to make socket.io work
-    server.listen(port, function (err) {
+    function clusterStart() {
+        server = require('http').Server(app);
+        var io = require('socket.io')(server);
+
+        var mubsub = require('mubsub')(config.get('mongoUrl'), {
+            auto_reconnect: true
+        });
+        // Create the mubsub channel for socket.io with the configured settings
+        mubsub.channel('socket.io', config.get('socket.io').mubsub);
+        io.adapter(require('socket.io-adapter-mongo')({
+            client: mubsub
+        }));
+        // There's a problem with socket.io-adapter-mongo in that it doesn't catch channel errors
+        // and that brings down the server. They can happen in 'normal operation' for temporary network issues
+        mubsub.channels['socket.io'].on('error', function (e) {
+            logger.warn('Mubsub error: %s\n%s', e.message, e.stack);
+        });
+        require('./lib/controllers.io')(io);
+
+        return server;
+    }
+
+    var stickyServer, workerCount;
+    if (config.get('cluster') && (workerCount = config.get('cluster').workers)) {
+        logger.info('Using %d cluster workers', workerCount);
+        stickyServer = sticky(workerCount, clusterStart);
+    } else {
+        stickyServer = sticky(clusterStart);
+    }
+    stickyServer.listen(port, function (err) {
         logger.info('[%s] Listening on http://localhost:%d', app.settings.env, port);
     });
 }
@@ -163,24 +187,10 @@ function configureMongo(config) {
         if (GLOBAL._hasShutdown) {
             return;
         }
-        // This infra needs a mongo connection for session data, so wait...
-        var mubsub = require('mubsub')(config.get('mongoUrl'), {
-            auto_reconnect: true
-        });
-        // Create the mubsub channel for socket.io with the configured settings
-        mubsub.channel('socket.io', config.get('socket.io').mubsub);
-        io.adapter(require('socket.io-adapter-mongo')({
-            client: mubsub
-        }));
-        // There's a problem with socket.io-adapter-mongo in that it doesn't catch channel errors
-        // and that brings down the server. They can happen in 'normal operation' for temporary network issues
-        mubsub.channels['socket.io'].on('error', function (e) {
-            logger.warn('Mubsub error: %s\n%s', e.message, e.stack);
-        });
-        require('./lib/controllers.io')(io);
+        // This infra needs a mongo connection for session data, so we don't listen until it's up...
         if (!mongoReady) {
             mongoReady = true;
-            listen();
+            listen(config);
         }
     });
 }
