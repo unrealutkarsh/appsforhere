@@ -1,5 +1,7 @@
 {
-
+    "cluster": {
+        "workers": 2
+    },
     "express": {
         "view cache": false,
         "view engine": "dust",
@@ -12,7 +14,9 @@
             "renderer": {
                 "method": "dust",
                 "arguments": [
-                    { "cache": false },
+                    {
+                        "cache": false
+                    },
                     {
                         "views": "config:express.views",
                         "view engine": "config:express.view engine",
