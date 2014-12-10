@@ -4,7 +4,7 @@ var log = require('pine')();
 var PayPalUser = require('../models/payPalUser');
 var PayPalDelegatedUser = require('../models/payPalDelegatedUser');
 var SavedOrder = require('../models/savedOrder');
-var appUtils = require('appUtils');
+var appUtils = require('../lib/appUtils');
 
 module.exports = function (router) {
 

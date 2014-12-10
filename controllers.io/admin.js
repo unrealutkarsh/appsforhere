@@ -1,7 +1,7 @@
 'use strict';
 var logger = require('pine')(),
     LogModel = require('../models/log'),
-    appUtils = require('appUtils');
+    appUtils = require('../lib/appUtils');
 
 module.exports = function (io, socket) {
     /**

@@ -1,5 +1,5 @@
 'use strict';
-var appUtils = require('appUtils');
+var appUtils = require('../lib/appUtils');
 var wreck = require('wreck');
 var FormData = require('form-data');
 var Image = require('../models/image');
@@ -60,7 +60,7 @@ module.exports = function (router) {
     router.post('/api/image', appUtils.apiAuth, hasEditRole, function (req, res) {
         fs.readFile(req.files.imageupload.path, req.$eat(function (data) {
             imgHelper.resize(data, 200, 200, req.$eat(function (thumb) {
-                thumb.toBuffer(req.$eat(function (thumbBuffer) {
+                thumb.toBuffer('png', req.$eat(function (thumbBuffer) {
                     var hash = require('crypto').createHash('sha512').update(data).digest('hex');
                     Image.findOrCreate({ hash: hash },
                         {

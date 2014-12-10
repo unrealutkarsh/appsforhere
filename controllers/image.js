@@ -1,5 +1,5 @@
 'use strict';
-var appUtils = require('appUtils');
+var appUtils = require('../lib/appUtils');
 var Image = require('../models/image');
 
 module.exports = function (router) {

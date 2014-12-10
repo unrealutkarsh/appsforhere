@@ -32,6 +32,18 @@ module.exports = function copyto(grunt) {
                     './start.sh'
                 ]
             }
+        },
+        heroku: {
+            files: [{
+                cwd: '.',
+                src: ['**/*','.build/**','!node_modules/**'],
+                dest: '.heroku/'
+            }],
+            options: {
+                ignore: [
+                    './start.sh'
+                ]
+            }
         }
     };
 };

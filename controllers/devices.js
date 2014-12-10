@@ -1,7 +1,7 @@
 'use strict';
 
 var logger = require('pine')();
-var appUtils = require('appUtils');
+var appUtils = require('../lib/appUtils');
 var Device = require('../models/device/device');
 var DevicePermission = require('../models/device/devicePermission');
 var DevicePreference = require('../models/device/devicePreference');

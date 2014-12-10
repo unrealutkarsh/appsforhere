@@ -1,7 +1,7 @@
 'use strict';
 
 var logger = require('pine')();
-var appUtils = require('appUtils');
+var appUtils = require('../lib/appUtils');
 
 module.exports = function (router) {
 

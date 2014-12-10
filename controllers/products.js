@@ -1,7 +1,7 @@
 'use strict';
 
 var logger = require('pine')();
-var appUtils = require('appUtils');
+var appUtils = require('../lib/appUtils');
 var ProductModel = require('../models/products');
 var ImageModel = require('../models/image');
 var async = require('async');
@@ -158,7 +158,7 @@ module.exports = function (router) {
     router.post('/image', appUtils.auth, appUtils.hasRoles(appUtils.ROLES.EditProducts), function (req, res, next) {
         fs.readFile(req.files.imageupload.path, req.$eat(function (data) {
             imgHelper.resize(data, 200, 200, req.$eat(function (thumb) {
-                thumb.toBuffer(req.$eat(function (thumbBuffer) {
+                thumb.toBuffer('png', req.$eat(function (thumbBuffer) {
                     var hash = require('crypto').createHash('sha512').update(data).digest('hex');
                     ImageModel.findOrCreate({ hash: hash },
                         {

@@ -124,13 +124,21 @@ function listen(config) {
     var stickyServer, workerCount;
     if (config.get('cluster') && (workerCount = config.get('cluster').workers)) {
         logger.info('Using %d cluster workers', workerCount);
-        stickyServer = sticky(workerCount, clusterStart);
     } else {
-        stickyServer = sticky(clusterStart);
+        workerCount = Math.min(6, require('os').cpus().length);
+        logger.info('Defaulting to %d cluster workers (%d cpus)', workerCount, require('os').cpus().length);
     }
-    stickyServer.listen(port, function (err) {
-        logger.info('[%s] Listening on http://localhost:%d', app.settings.env, port);
-    });
+    if (workerCount > 1) {
+        stickyServer = sticky(workerCount, clusterStart);
+        stickyServer.listen(port, function (err) {
+            logger.info('[%s] Sticky server listening on http://localhost:%d', app.settings.env, port);
+        });
+    } else {
+        clusterStart();
+        server.listen(port, function (err) {
+            logger.info('[%s] Standard server listening on http://localhost:%d', app.settings.env, port);
+        });
+    }
 }
 
 /**

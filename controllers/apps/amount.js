@@ -1,6 +1,6 @@
 'use strict';
 var logger = require('pine')(),
-    appUtils = require('appUtils'),
+    appUtils = require('../../lib/appUtils'),
     accounting = require('accounting'),
     checkinUtils = require('../../lib/apps/utils'),
     App = require('../../models/app'),

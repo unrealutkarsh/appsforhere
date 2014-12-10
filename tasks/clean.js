@@ -9,6 +9,7 @@ module.exports = function clean(grunt) {
 	return {
 	    tmp: 'tmp',
 	    build: '.build/templates',
-        package: ['.package/*','!.package/.git','!.package/process.json']
+        package: ['.package/*','!.package/.git','!.package/process.json'],
+        heroku: ['.heroku/*','!.heroku/.git','!.heroku/process.json','!.heroku/config/production.*']
 	};
 };

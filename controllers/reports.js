@@ -1,7 +1,7 @@
 'use strict';
 
 var logger = require('pine')();
-var appUtils = require('appUtils');
+var appUtils = require('../lib/appUtils');
 var reportLib = require('../lib/reports/payPalSalesReportsApi');
 var querystring = require('querystring');
 var csv = require('csv');

@@ -278,6 +278,8 @@ Payment.prototype.swipeDetected = function (data) {
             }
             this.confirm('to the card ending in ' + card);
         }
+    } else if (data.maskedPan) {
+        this.confirm('to the card ending in ' + data.maskedPan.substring(data.maskedPan.length - 4));
     }
 };
 

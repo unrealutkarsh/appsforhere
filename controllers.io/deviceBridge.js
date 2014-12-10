@@ -1,6 +1,6 @@
 'use strict';
 var logger = require('pine')(),
-    appUtils = require('appUtils'),
+    appUtils = require('../lib/appUtils'),
     Device = require('../models/device/device');
 
 module.exports = function (io, socket) {
