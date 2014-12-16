@@ -99,7 +99,7 @@
         },
 
         "appsec": {
-            "route": "/:route((?!vault/session/complete/\\S+)(*))"
+            "route": "/:route((?!devices/activate/\\S+)(?!vault/session/\\S+)(*))"
         },
 
         "expressView": {
