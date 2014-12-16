@@ -206,4 +206,7 @@
     <script type="text/javascript" src="/components/socket.io-client/socket.io.js"></script>
     <script src="/js/ppinvoice/paypal-invoice.js"></script>
     <script type="text/javascript" src="/js/sell/sell_bundle.js"></script>
+    <script type="text/javascript">
+        initialize_appsforhere_sell();
+    </script>
 {/scripts}

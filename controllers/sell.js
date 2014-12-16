@@ -14,7 +14,7 @@ module.exports = function (router) {
     router.route('/')
         .all(appUtils.auth)
         .get(function (req, res) {
-            res.render('sell/sell');
+            res.render('sell/sell', req.query);
         })
         .post(function (req, res) {
             var paymentRequest = req.body.payload;
