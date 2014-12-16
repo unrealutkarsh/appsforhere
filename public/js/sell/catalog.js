@@ -5,7 +5,7 @@ var Catalog = function (invoiceManager) {
 
     var self = this;
     AjaxDataSource.call(this, function () {
-        return '/products/api/model/' + self.selectedModel + '?format=json';
+        return ajaxRoot + '/products/api/model/' + self.selectedModel + '?format=json';
     });
     this.searchProperties = ['name','displayTags','description'];
     this._columns = [
@@ -258,7 +258,7 @@ Catalog.prototype.formatter = function (index, item) {
     }
     // TODO not sure this is sufficient escaping even though it's coming from our server.
     item.imageTag = "<img src=\"" +
-    (item.photoUrl || '/media/image_default_138.png').replace("\"", "") +
+    (item.photoUrl || (window.scriptBase+'media/image_default_138.png')).replace("\"", "") +
     "\" width=\"60\" height=\"60\"/>";
     if (item.tags) {
         item.displayTags = item.tags.join(', ');

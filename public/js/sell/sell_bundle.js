@@ -1,10 +1,13 @@
-window['initialize_appsforhere_sell'] = function () {
+window['initialize_appsforhere_sell'] = function (options) {
+
+    options = $.extend({}, options);
+
     var storage = new (require('./storage'))(_email.replace('.', ''));
     var locationManager = new (require('./location'))();
     var invoiceManager = new (require('./invoiceManager'))(locationManager);
     var orderManager = new (require('./savedOrders'))(locationManager, invoiceManager);
     var checkin = new (require('./checkin'))(locationManager, invoiceManager);
-    var hardware = new (require('./hardware'))(locationManager);
+    var hardware = options.hardware === false ? null : new (require('./hardware'))(locationManager);
     var serverSocket = new (require('./serverSocket'))(hardware);
     var catalog = new (require('./catalog'))(invoiceManager);
     var payment = new (require('./payment'))(locationManager, invoiceManager, checkin);
@@ -32,16 +35,20 @@ window['initialize_appsforhere_sell'] = function () {
             customerInfo,
             receipt
         ].forEach(function (m) {
-                m.setup(storage);
+                if (m) {
+                    m.setup(storage);
+                }
             });
 
         // Wire up event routing
 
         // When there is a hardware device selected, we need the web socket up
-        hardware.on('changed', function (e, device) {
-            serverSocket.attach(device);
-            serverSocket.connect();
-        });
+        if (hardware) {
+            hardware.on('changed', function (e, device) {
+                serverSocket.attach(device);
+                serverSocket.connect();
+            });
+        }
 
         // Let the server know about order changes when the socket is up
         cart.on('render', function () {
@@ -50,7 +57,7 @@ window['initialize_appsforhere_sell'] = function () {
 
         // When we're ready to take payment
         cart.on('selectingPaymentType', function (e, totals) {
-            if (hardware.device) {
+            if (hardware && hardware.device) {
                 serverSocket.subscribe(totals.total.toString());
             }
         });
@@ -60,7 +67,9 @@ window['initialize_appsforhere_sell'] = function () {
         });
 
         locationManager.on('selected', function () {
-            hardware.load();
+            if (hardware) {
+                hardware.load();
+            }
             checkin.ensurePolling();
             orderManager.update();
         });

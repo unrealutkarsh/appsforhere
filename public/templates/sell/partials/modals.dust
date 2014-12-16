@@ -1,0 +1,42 @@
+{>"sell/partials/cartItemModal"/}
+{>"sell/partials/variantOptionModal"/}
+{>"sell/partials/paymentTypeModal"/}
+{>"sell/partials/paymentComplete"/}
+{>"sell/partials/customerInfo"/}
+{>"sell/partials/checkedIn"/}
+{>"sell/partials/hardwareSelect"/}
+{>"sell/partials/savedOrderSelect"/}
+<div class="modal fade" aria-hidden="true" role="dialog" tabindex="-1" id="pleaseWaitDialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1>Location Required</h1>
+            </div>
+            <div class="modal-body">
+                <p>For regulatory compliance, your geographic location is required. We are requesting your location from{~n}
+                    the browser, please grant access in order to continue.</p>
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                        &nbsp;
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" aria-hidden="true" role="dialog" tabindex="-1" id="savedOrderDialog" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1>Loading Saved Order</h1>
+            </div>
+            <div class="modal-body">
+                <div class="progress">
+                    <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+                        &nbsp;
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

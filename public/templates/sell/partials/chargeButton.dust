@@ -1,0 +1,7 @@
+<div id="chargeContainer">
+    <button id="charge">
+        <div style="float:left;padding-left:10px;">Charge</div>
+        <div style="float:right;padding-right:10px;" id="chargeBtnAmount">$0.00</div>
+        <div>&nbsp;</div>
+    </button>
+</div>

@@ -1,0 +1,7 @@
+<div id="sidebar">
+    {>"sell/partials/cart"/}
+    {>"sell/partials/chargeButton"/}
+</div>
+<div id="main">
+    {>"sell/partials/productLibrary"/}
+</div>

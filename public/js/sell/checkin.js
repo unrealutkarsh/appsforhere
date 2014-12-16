@@ -120,7 +120,7 @@ Checkin.prototype.checkinSelection = function (e,row) {
         $('#customerPhoto').attr('src', this.selectedTab.photoUrl);
     } else {
         this.selectedTab = null;
-        $('#customerPhoto').attr('src','/media/small_avatar.png')
+        $('#customerPhoto').attr('src',window.scriptBase+'media/small_avatar.png')
     }
 };
 
