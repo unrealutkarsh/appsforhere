@@ -13,7 +13,20 @@ module.exports = function (router) {
 
     router.use(appUtils.domain);
 
+    router.get('/profileId', function (req, res, next) {
+        console.log(req.user);
+       if (!req.user || !req.user.profileId) {
+           res.status(401).json({logged_in:false});
+       } else {
+           res.json({logged_in:true,profileId:req.user.profileId,email:req.user.email});
+       }
+    });
+
     router.get('/login', function (req, res, next) {
+        if (req.query.returnUrl) {
+            logger.info('Login setting returnUrl to %s', req.query.returnUrl);
+            req.session.redirectUrl = req.query.returnUrl;
+        }
         req.session.environment = 'live';
         passport.authenticate('paypal', {
             scope: appScopes

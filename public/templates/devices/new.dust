@@ -1,0 +1,73 @@
+{>"layouts/loggedIn"/}
+
+{<body}
+
+    <div id="wrapper">
+        <div class="container">
+            <div class="row">
+
+                <div class="jumbotron">
+                    <h1>Device Activation</h1>
+                    <p>To activate your new device you will enter the code displayed on the device, configure{~n}
+                        the payment application, and then we will give you a code to enter on your device{~n}
+                        and you're ready to charge!</p>
+
+                    <form role="form" method="POST" action="/devices/activate">
+                        <input type="hidden" name="_csrf" value="{_csrf}"/>
+
+                        <div class="form-group">
+                            <label for="deviceCode">Terminal Code</label>
+                            <input type="text" class="form-control" id="deviceCode" name="deviceCode"
+                                   placeholder="Enter the code displayed on the terminal">
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label for="deviceCode">Terminal Application</label>
+                                    <select class="form-control" id="application" name="application">
+                                        <option value="amount">Enter amounts and charge</option>
+                                        <option value="items">Enter items or amounts</option>
+                                        <option value="paddle">Auction Paddle</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="form-group">
+                                    <label for="deviceCode">Choose Your Location</label>
+                                    <input type="text" class="form-control" id="location" name="location"
+                                           placeholder="Choose an existing location (use the location tab to add more)">
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </form>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+{/body}
+
+{<head}
+    <link href="/components/selectize/dist/css/selectize.bootstrap3.css" rel="stylesheet">
+    <link href="/components/bootstrapValidator/dist/css/bootstrapValidator.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/components/ladda/dist/ladda-themeless.min.css">
+{/head}
+
+{<bodyElements}
+    {>"partials/progressModal"/}
+{/bodyElements}
+
+{<scripts}
+    <script type="text/javascript" src="/components/ladda/dist/spin.min.js"></script>
+    <script type="text/javascript" src="/components/ladda/dist/ladda.min.js"></script>
+    <script type="text/javascript" src="/components/selectize/dist/js/standalone/selectize.min.js"></script>
+    <script type="text/javascript" src="/js/common-addons.js"></script>
+    <script type="text/javascript" src="/js/devices/devices.js"></script>
+    <script type="text/javascript">
+        var _csrf = '{_csrf}';
+    </script>
+{/scripts}
+

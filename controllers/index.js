@@ -19,4 +19,8 @@ module.exports = function (router) {
 
     });
 
+    router.get('/new', appUtils.auth, function (req, res) {
+       res.render('devices/new');
+    });
+
 };

@@ -14,6 +14,7 @@ var appModel = function () {
         encryptedConfiguration: Buffer
     });
 
+    // TODO replace with secureConfig
     appSchema.methods.encryptSecureConfiguration = function (config, key, cb) {
         var self = this;
         crypto.encryptToken(JSON.stringify(config), key, function (err, enc) {
