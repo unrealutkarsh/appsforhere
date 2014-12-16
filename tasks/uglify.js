@@ -14,6 +14,19 @@ module.exports = function uglify(grunt) {
                 src: ['js/**/*.js'],
                 dest: '.build'
             }]
+        },
+        debug: {
+            options: {
+                mangle: false,
+                compress: false,
+                beautify: true,
+            },
+            files: [{
+                expand: true,
+                cwd: 'public',
+                src: ['js/**/*.js'],
+                dest: '.build'
+            }]
         }
     };
 };

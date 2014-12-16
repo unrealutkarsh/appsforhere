@@ -19,6 +19,7 @@ module.exports = function (grunt) {
 
     // Register group tasks
     grunt.registerTask('build', [ 'jshint', 'less', 'uglify', 'browserify', 'i18n', 'copyto:build' ]);
+    grunt.registerTask('debug', [ 'jshint', 'less', 'uglify:debug', 'browserify', 'i18n', 'copyto:build' ]);
     grunt.registerTask('test', [ 'jshint', 'mochacli' ]);
     grunt.registerTask('package', [ 'clean:package', 'build', 'copyto:package' ]);
     grunt.registerTask('heroku', [ 'clean:heroku', 'build', 'copyto:heroku', 'native-deps' ]);
