@@ -558,7 +558,7 @@ function setDatePart() {
             start.startOf('week');
             break;
         case "last30":
-            start = start.subtract('day',30);
+            start = start.subtract(30, 'day');
             if (grouping == 'weekly') {
                 start.startOf('week');
             }
@@ -569,22 +569,22 @@ function setDatePart() {
             break;
         case "yes":
             forcePeriod = 'daily';
-            start = start.subtract('day', 1).startOf('day');
-            end = end.subtract('day', 1).endOf('day');
+            start = start.subtract(1, 'day').startOf('day');
+            end = end.subtract(1, 'day').endOf('day');
             break;
         case "last3m":
-            start.subtract('month', 3).startOf('month');
+            start.subtract(3, 'month').startOf('month');
             break;
         case "last6m":
-            start.subtract('month', 6).startOf('month');
+            start.subtract(6, 'month').startOf('month');
             break;
         case "prev3":
-            start.subtract('month', 4).startOf('month');
-            end.subtract('month', 1).endOf('month');
+            start.subtract(4, 'month').startOf('month');
+            end.subtract(1, 'month').endOf('month');
             break;
         case "lastmonth":
-            start.subtract('month', 1).startOf('month');
-            end.subtract('month', 1).endOf('month');
+            start.subtract(1, 'month').startOf('month');
+            end.subtract(1, 'month').endOf('month');
             break;
     }
     dateStart = start.toDate();
@@ -601,7 +601,7 @@ function setDatePart() {
             switch (datePeriod) {
                 case "ytd":
                     cmpStart.subtract('year', cmpMultiple);
-                    cmpEnd.subtract('day', 1);
+                    cmpEnd.subtract(1, 'day');
                     break;
                 case "mtd":
                     cmpStart.subtract('month', cmpMultiple);
@@ -610,22 +610,22 @@ function setDatePart() {
                     cmpStart.subtract('week', cmpMultiple);
                     break;
                 case "last30":
-                    cmpStart.subtract('day', 30 * cmpMultiple);
+                    cmpStart.subtract(30 * cmpMultiple, 'day');
                     if (grouping == 'weekly') {
                         cmpStart.startOf('week');
                     }
                     break;
                 case "tod":
                 case "yes":
-                    cmpStart.subtract('day', cmpMultiple);
+                    cmpStart.subtract(cmpMultiple, 'day');
                     break;
                 case "last3m":
                 case "prev3":
                 case "lastmonth":
-                    cmpStart.subtract('month', 3*cmpMultiple);
+                    cmpStart.subtract(3*cmpMultiple, 'month');
                     break;
                 case "last6m":
-                    cmpStart.subtract('month', 6*cmpMultiple);
+                    cmpStart.subtract(6*cmpMultiple, 'month');
                     break;
             }
             break;
@@ -688,7 +688,7 @@ ProductDataSource.prototype.formatter = function (index, item) {
 
 var productSource = new ProductDataSource();
 
-function prodcutCsv(rows) {
+function productCsv(rows) {
     var csv = [["Product,Quantity Sold,Total Sales"]];
 
     for (var i = 0; i < rows.length; i++) {
@@ -702,7 +702,8 @@ function prodcutCsv(rows) {
     }
     var link = 'data:text/csv;charset=utf-8,'+encodeURIComponent(csv.join('\n'));
     $('#productExport').attr({
-        'href': link
+        href: link,
+        download: 'appsforhere-product-report.csv'
     });
 }
 
@@ -834,7 +835,8 @@ function empCsv(rows) {
     }
     var link = 'data:text/csv;charset=utf-8,'+encodeURIComponent(csv.join('\n'));
     $('#empExport').attr({
-        'href': link
+        'href': link,
+        download: 'appsforhere-employee-report.csv'
     });
 }
 
@@ -858,7 +860,8 @@ function chartCsv(rows) {
     }
     var link = 'data:text/csv;charset=utf-8,'+encodeURIComponent(csv.join('\n'));
     $('#summaryCsvExport').attr({
-        'href': link
+        'href': link,
+        download: 'appsforhere-summary-report.csv'
     });
 }
 
