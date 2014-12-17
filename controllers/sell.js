@@ -30,7 +30,7 @@ module.exports = function (router) {
                     'Content-Type': 'application/json; charset=utf-8'
                 },
                 payload: JSON.stringify(paymentRequest),
-                tokens: req.user
+                tokens: req.user.token
             }, req.$eat(function (payResult) {
                 if (payResult.errorCode) {
                     payResult.ok = false;
@@ -63,7 +63,7 @@ module.exports = function (router) {
                     'Content-Type': 'application/json; charset=utf-8'
                 },
                 payload: JSON.stringify(data),
-                tokens: req.user
+                tokens: req.user.token
             }, req.$eat(function (result) {
                 console.log(result);
                 if (result.errorCode) {
@@ -84,7 +84,7 @@ module.exports = function (router) {
             req.hereApi().get({
                 url: url,
                 json: true,
-                tokens: req.user
+                tokens: req.user.token
             }, req.$eat(function (invoice) {
                 console.log(invoice);
                 res.json(invoice);
@@ -129,7 +129,7 @@ module.exports = function (router) {
                     'Content-Type': 'application/json; charset=utf-8'
                 },
                 payload: JSON.stringify(req.body.invoice),
-                tokens: req.user
+                tokens: req.user.token
             }, req.$eat(function (payResult) {
                 if (payResult.errorCode) {
                     log.error('Failed to save invoice/order: %s', payResult);

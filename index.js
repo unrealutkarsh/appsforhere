@@ -32,12 +32,11 @@ var mongo = require('./lib/mongo'),
     app = require('express')(),
     passport = require('passport'),
     expressWinston = require('express-winston'),
-    PayPalStrategy = require('./lib/payPalStrategy'),
+    configurePassport = require('./lib/passportSetup'),
     PayPalUser = require('./models/payPalUser'),
     PayPalDelegatedUser = require('./models/payPalDelegatedUser'),
     Queue = require('./lib/queue'),
     appUtils = require('./lib/appUtils'),
-    Liwp = require('./lib/loginWithPayPal'),
     options = {
         onconfig: function appsforhereConfiguration(config, next) {
             if (GLOBAL._hasShutdown) {
@@ -199,94 +198,6 @@ function configureMongo(config) {
         if (!mongoReady) {
             mongoReady = true;
             listen(config);
-        }
-    });
-}
-
-/**
- * Configure the passport strategies for live and for sandbox
- * @param config from Kraken/confit
- */
-function configurePassport(config) {
-    passport.use(new PayPalStrategy({
-            clientID: config.get('loginWithPayPal').live.client_id,
-            clientSecret: config.get('loginWithPayPal').live.secret,
-            callbackURL: config.get('loginWithPayPal').live.return_url || 'https://appsforhere.ebayc3.com/oauth/return',
-            passReqToCallback: true
-        },
-        function savePassportUserToMongo(req, accessToken, refreshToken, profile, done) {
-            PayPalUser.encryptRefreshToken(refreshToken, req.res, function (error, enc_token) {
-                if (error) {
-                    done(error);
-                    return;
-                }
-                PayPalUser.findOrCreate({ profileId: profile.id },
-                    {
-                        access_token: accessToken,
-                        encrypted_refresh_token: enc_token,
-                        email: profile.emails[0].value,
-                        currency: profile.currency,
-                        country: profile.country
-                    },
-                    { upsert: true },
-                    function (err, user) {
-                        return done(err, user);
-                    });
-            });
-        }
-    ));
-
-    passport.use(new PayPalStrategy({
-            name: 'sandbox',
-            clientID: config.get('loginWithPayPal').sandbox.client_id,
-            clientSecret: config.get('loginWithPayPal').sandbox.secret,
-            callbackURL: config.get('loginWithPayPal').sandbox.return_url || 'https://appsforhere.ebayc3.com/oauth/return',
-            authorizationURL: 'https://www.sandbox.paypal.com/webapps/auth/protocol/openidconnect/v1/authorize',
-            tokenURL: 'https://api.sandbox.paypal.com/v1/identity/openidconnect/tokenservice',
-            profileURL: 'https://api.sandbox.paypal.com/v1/identity/openidconnect/userinfo/?schema=openid',
-            statusURL: 'https://api.sandbox.paypal.com/retail/merchant/v1/status',
-            hereApi: appUtils.hereApis.sandbox,
-            passReqToCallback: true
-        },
-        function saveSandboxPassportUserToMongo(req, accessToken, refreshToken, profile, done) {
-            PayPalUser.encryptRefreshToken(refreshToken, req.res, function (error, enc_token) {
-                if (error) {
-                    done(error);
-                    return;
-                }
-                PayPalUser.findOrCreate({ profileId: 'sandbox-' + profile.id },
-                    {
-                        access_token: accessToken,
-                        encrypted_refresh_token: enc_token,
-                        email: profile.emails[0].value,
-                        currency: profile.currency,
-                        country: profile.country,
-                        environment: 'sandbox'
-                    },
-                    { upsert: true },
-                    function (err, user) {
-                        return done(err, user);
-                    });
-            });
-        }));
-
-    passport.serializeUser(function serializePassportUser(user, done) {
-        if (user._isDelegatedUser) {
-            done(null, 'delegated_' + user.id);
-        } else {
-            done(null, user.id);
-        }
-    });
-
-    passport.deserializeUser(function deserializePassportUser(id, done) {
-        if (id.indexOf('delegated_') == 0) {
-            PayPalDelegatedUser.findOne({_id: id.substring('delegated_'.length)}, function (err, user) {
-                done(null, user);
-            });
-        } else {
-            PayPalUser.findOne({_id: id}, function (err, user) {
-                done(null, user);
-            });
         }
     });
 }

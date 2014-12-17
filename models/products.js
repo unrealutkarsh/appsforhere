@@ -217,7 +217,7 @@ var productModel = function () {
     modelSchema.statics.getHereApiModel = function (req, next) {
         var url = req.hereApiUrl('products');
         req.hereApi().get({
-            tokens: req.user,
+            tokens: req.user.token,
             url: url,
             json: true,
             headers: {

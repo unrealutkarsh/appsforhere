@@ -32,7 +32,7 @@ module.exports = function (router) {
     router.get('/:modelId/xls', appUtils.auth, appUtils.hasRoles(appUtils.ROLES.ViewProducts), function (req, res) {
         if (req.params.modelId === '_') {
             req.user.hereApi().get({
-                tokens: req.user,
+                tokens: req.user.token,
                 url: req.user.hereApiUrl('products'),
                 json: true,
                 headers: {
@@ -180,7 +180,7 @@ module.exports = function (router) {
 
     router.post('/webhooks', appUtils.auth, appUtils.hasRoles(appUtils.ROLES.EditProducts), function (req, res, next) {
         req.user.hereApi().get({
-            tokens: req.user,
+            tokens: req.user.token,
             url: req.user.hereApiUrl('notifications/webhooks'),
             json: true,
             headers: {
@@ -248,7 +248,7 @@ function getModelByNameOrId(req, res, modelNameOrId, successCallback) {
 function putModel(req, model, fn) {
     var url = req.user.hereApiUrl('products');
     req.user.hereApi().put({
-        tokens: req.user,
+        tokens: req.user.token,
         url: url,
         json: true,
         headers: {

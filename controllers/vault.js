@@ -237,7 +237,7 @@ module.exports = function (router) {
         var url = req.hereApiUrl('vault/credit-card', 'ppaas');
         req.hereApi().post({
             url: url,
-            tokens: req.user,
+            tokens: req.user.token,
             json: true,
             headers: {
                 'content-type': 'application/json'

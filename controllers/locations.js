@@ -27,7 +27,7 @@ module.exports = function (router) {
      */
     router.get('/api', appUtils.apiAuth, hasViewRole, function (req, res) {
         req.user.hereApi().get({
-            tokens: req.user,
+            tokens: req.user.token,
             url: req.user.hereApiUrl('locations'),
             json: true,
             headers: {
@@ -43,7 +43,7 @@ module.exports = function (router) {
      */
     router.get('/api/:id/tabs', appUtils.apiAuth, hasViewRole, function (req, res) {
         req.user.hereApi().get({
-            tokens: req.user,
+            tokens: req.user.token,
             url: req.user.hereApiUrl('locations/'+req.params.id+'/tabs'),
             json: true,
             headers: {
@@ -101,7 +101,7 @@ module.exports = function (router) {
         updates.tabExtensionType = req.body.type;
 
         req.user.hereApi().post({
-            tokens: req.user,
+            tokens: req.user.token,
             url: req.user.hereApiUrl('locations/'+req.params.id),
             json: true,
             headers: {
@@ -119,7 +119,7 @@ module.exports = function (router) {
     router.delete('/api/:id', appUtils.apiAuth, hasEditRole, function (req, res) {
         var url = req.user.hereApiUrl('locations/' + req.params.id);
         req.user.hereApi().delete({
-            tokens: req.user,
+            tokens: req.user.token,
             url: url,
             json: true,
             headers: {
@@ -167,7 +167,7 @@ module.exports = function (router) {
                         req.user.hereApi().post({
                             url: req.user.hereApiUrl('locations/' + loc.id + '/logo'),
                             body: body,
-                            tokens: req.user,
+                            tokens: req.user.token,
                             headers: headers
                         }, req.$eat(function (body, response) {
                             if (response.statusCode === 201) {
@@ -224,7 +224,7 @@ function saveLocation(req, model, cb) {
     if (model.id) {
         logger.debug('Calling hereapi PUT location');
         req.user.hereApi().put({
-            tokens: req.user,
+            tokens: req.user.token,
             json: true,
             url: url + '/' + model.id,
             payload: JSON.stringify(model),
@@ -235,7 +235,7 @@ function saveLocation(req, model, cb) {
     } else {
         logger.debug('Calling hereapi POST location');
         req.user.hereApi().post({
-            tokens: req.user,
+            tokens: req.user.token,
             json: true,
             url: url,
             payload: JSON.stringify(model),
