@@ -139,7 +139,7 @@ Payment.prototype.setup = function () {
         $.ajax({
             dataType: 'json',
             data: {invoice: frozen, name: $('#orderName').val(), _csrf: _csrf},
-            url: '/sell/saved/' + loc.id,
+            url: window.ajaxRoot+'/sell/saved/' + loc.id,
             type: 'POST',
             cache: false,
             success: function (data) {
@@ -337,7 +337,7 @@ Payment.prototype.sendRequest = function (button, fromModal) {
     $.ajax({
         dataType: 'json',
         data: {payload: this.paymentRequest, _csrf: _csrf},
-        url: '/sell',
+        url: window.ajaxRoot+'/sell',
         type: 'POST',
         cache: false,
         success: function (data) {

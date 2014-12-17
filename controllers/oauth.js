@@ -14,11 +14,15 @@ module.exports = function (router) {
     router.use(appUtils.domain);
 
     router.get('/profileId', function (req, res, next) {
-        console.log(req.user);
        if (!req.user || !req.user.profileId) {
            res.status(401).json({logged_in:false});
        } else {
-           res.json({logged_in:true,profileId:req.user.profileId,email:req.user.email});
+           res.json({
+               logged_in:true,
+               profileId:req.user.profileId,
+               email:req.user.email,
+               _csrf:res.locals._csrf
+           });
        }
     });
 

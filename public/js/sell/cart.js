@@ -155,7 +155,7 @@ Cart.prototype.getData = function (opt, cb) {
     var data = [], self = this, inv = this.invoiceManager.invoice;
     data.push({
         special: 'add',
-        imageTag: '<img src="/media/image_default_138.png" height="40" width="40"/>',
+        imageTag: '<img src="'+window.scriptBase+'media/image_default_138.png" height="40" width="40"/>',
         nameDesc: 'New item...',
         qtyPrice: accounting.formatMoney(0)
     });
@@ -172,20 +172,20 @@ Cart.prototype.getData = function (opt, cb) {
             nameDesc: nd,
             qtyPrice: qtyPrice,
             imageTag: "<img src=\"" +
-            (i.photoUrl || '/media/image_default_138.png').replace("\"", "") +
+            (i.photoUrl || (window.scriptBase+'media/image_default_138.png')).replace("\"", "") +
             "\" width=\"40\" height=\"40\"/>"
         });
     });
     var tots = inv.calculate();
     data.push({
         special: 'discount',
-        imageTag: '<img src="/media/ic_sale_discount.png" height="40" width="40"/>',
+        imageTag: '<img src="'+window.scriptBase+'media/ic_sale_discount.png" height="40" width="40"/>',
         nameDesc: 'Discount',
         qtyPrice: accounting.formatMoney('0')
     });
     data.push({
         special: 'tax',
-        imageTag: '<img src="/media/ic_sale_percentage.png" height="40" width="40"/>',
+        imageTag: '<img src="'+window.scriptBase+'media/ic_sale_percentage.png" height="40" width="40"/>',
         nameDesc: 'Tax',
         qtyPrice: accounting.formatMoney((tots.itemTax || 0).toString())
     });

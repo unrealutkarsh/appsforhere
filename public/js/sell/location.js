@@ -20,7 +20,7 @@ Location.prototype.setup = function (prefs) {
         preload: true,
         load: function (query, callback) {
             $.ajax({
-                url: '/locations/api?format=json',
+                url: window.ajaxRoot + '/locations/api?format=json',
                 type: 'GET',
                 error: function() {
                     callback();

@@ -51,7 +51,7 @@ Checkin.prototype.pollOnce = function (force) {
         var loc = this.locationManager.getCurrentLocation();
         if (loc) {
             $.ajax({
-                url: '/locations/api/' + loc.id + '/tabs',
+                url: window.ajaxRoot+'/locations/api/' + loc.id + '/tabs',
                 type: 'GET',
                 error: function (r, msg, e) {
                     console.log('Location poll error', e);
@@ -120,7 +120,7 @@ Checkin.prototype.checkinSelection = function (e,row) {
         $('#customerPhoto').attr('src', this.selectedTab.photoUrl);
     } else {
         this.selectedTab = null;
-        $('#customerPhoto').attr('src','/media/small_avatar.png')
+        $('#customerPhoto').attr('src',window.scriptBase+'media/small_avatar.png')
     }
 };
 

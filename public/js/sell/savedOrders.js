@@ -18,7 +18,7 @@ SavedOrder.prototype.setup = function () {
         var name = $(this).text();
         $('#savedOrderDialog').modal();
         $.ajax({
-            url: '/sell/load/' + this.parentNode.id,
+            url: window.ajaxRoot + '/sell/load/' + this.parentNode.id,
             type: 'GET',
             error: function (r, msg, e) {
                 $('#savedOrderDialog').modal('hide');
@@ -40,7 +40,7 @@ SavedOrder.prototype.update = function () {
     var loc = this.locationManager.getCurrentLocation(), self = this;
     if (loc) {
         $.ajax({
-            url: '/sell/saved/' + loc.id,
+            url: window.ajaxRoot + '/sell/saved/' + loc.id,
             type: 'GET',
             error: function (r, msg, e) {
                 console.log('Saved order lookup error', e);

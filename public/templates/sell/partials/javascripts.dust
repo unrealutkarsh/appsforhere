@@ -1,0 +1,11 @@
+<script type="text/javascript" src="{scriptBase}components/jQuery-Storage-API/jquery.storageapi.min.js"></script>
+<script type="text/javascript" src="{scriptBase}components/bignumber.js/bignumber.min.js"></script>
+<script type="text/javascript" src="{scriptBase}components/selectize/dist/js/standalone/selectize.min.js"></script>
+<script type="text/javascript" src="{scriptBase}js/common-addons.js"></script>
+<script type="text/javascript" src="{scriptBase}components/jquery.payment/lib/jquery.payment.js"></script>
+<script type="text/javascript" src="{scriptBase}components/bootstrapValidator/dist/js/bootstrapValidator.min.js"></script>
+<script type="text/javascript" src="{scriptBase}components/ladda/dist/spin.min.js"></script>
+<script type="text/javascript" src="{scriptBase}components/ladda/dist/ladda.min.js"></script>
+<script type="text/javascript" src="{scriptBase}components/socket.io-client/socket.io.js"></script>
+<script type="text/javascript" src="{scriptBase}js/ppinvoice/paypal-invoice.js"></script>
+<script type="text/javascript" src="{scriptBase}js/sell/sell_bundle.js"></script>

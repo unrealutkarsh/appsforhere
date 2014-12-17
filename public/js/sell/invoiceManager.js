@@ -12,7 +12,7 @@ InvoiceManager.prototype.setup = function () {
 InvoiceManager.prototype.newOrder = function (inv) {
     this.invoice = inv || new Invoice(this.currency);
     this.emit('clear');
-    $('#customerPhoto').attr('src', '/media/small_avatar.png')
+    $('#customerPhoto').attr('src', window.scriptBase+'media/small_avatar.png')
     var rd = $('#receiptDestination');
     rd.val('');
     if (rd.data('originalph')) {
