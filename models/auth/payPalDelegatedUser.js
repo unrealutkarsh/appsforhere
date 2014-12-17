@@ -3,8 +3,9 @@
 var mongoose = require('mongoose'),
     findOrCreate = require('mongoose-findorcreate'),
     logger = require('pine')(),
-    crypto = require('../lib/crypto'),
+    crypto = require('../../lib/crypto'),
     uuid = require('node-uuid'),
+    Token = require('./token'),
     payPalUser = require('./payPalUser');
 
 var paypalDelegatedUserModel = function () {
@@ -14,7 +15,6 @@ var paypalDelegatedUserModel = function () {
         profileId: String,
         // Encrypted with a cookie that is only stored on the original delegation link
         encrypted_refresh_token: String,
-        access_token: String,
         email: String,
         currency: String,
         country: String,
@@ -28,31 +28,38 @@ var paypalDelegatedUserModel = function () {
     paypalUserSchema.methods.hereApi = payPalUser.schema.methods.hereApi;
 
     paypalUserSchema.statics.login = function (req, res, info, cb) {
-        mongoose.models.PayPalDelegatedUser.findById(info.id, req.$eat(function (user) {
-            if (!user) {
+        mongoose.models.PayPalDelegatedUser.findById(info.id, req.$eat(function (delegate) {
+            if (!delegate) {
                 logger.error('Delegate login attempted for unknown delegate %s', info.id);
-                cb(new Error('Unknown delegate'));
-                return;
+                return cb(new Error('Unknown delegate'));
             }
-            user.decryptRefreshToken(info.uuid, info.password, function (err, rt, binKey) {
+            delegate.decryptRefreshToken(info.uuid, info.password, function (err, rt, binKey) {
                 if (err) {
-                    cb(new Error('Invalid delegate token'));
-                    return;
+                    return cb(new Error('Invalid delegate credentials.'));
                 }
-                var sk = binKey.toString('base64');
-                res.cookie('sessionkey', sk);
-                user._sessionKey = sk; // For this request, since the cookie didn't come in
-                user._isDelegatedUser = true;
-                req.login(user, function (err) {
-                    if (err) {
-                        cb(err);
-                    } else {
-                        cb(null, {
-                            delegate: user,
-                            key: binKey
-                        });
-                    }
+                // Now make a new token for them
+                var token = new Token({
+                    access_token: delegate.access_token,
+                    last_used: new Date()
                 });
+                Token.encryptRefreshToken(rt, res, req.$eat(function (encToken) {
+                    token.encrypted_refresh_token = encToken;
+                    token.save(req.$eat(function () {
+                        req.login({
+                            delegate: delegate,
+                            token: token
+                        }, function (err) {
+                            if (err) {
+                                cb(err);
+                            } else {
+                                cb(null, {
+                                    delegate: delegate,
+                                    key: binKey
+                                });
+                            }
+                        });
+                    }));
+                }));
             });
         }));
     };
@@ -78,22 +85,6 @@ var paypalDelegatedUserModel = function () {
         } else {
             crypto.decryptToken(this.encrypted_refresh_token, key, function (err,rz,binKey) {
                 cb(err,rz,binKey);
-            });
-        }
-    };
-
-    paypalUserSchema.statics.decryptRefreshTokenWithKey = function (request, cb) {
-        var key = request.cookies.sessionkey||request.user._sessionKey;
-        if (!key) {
-            request.logout();
-            cb(new Error('Invalid session guid during refresh token usage.'));
-        } else {
-            key = new Buffer(key, 'base64');
-            crypto.decryptTokenWithKey(request.user.encrypted_refresh_token, key, function (err,rz) {
-                if (err) {
-                    request.logout();
-                }
-                cb(err,rz);
             });
         }
     };

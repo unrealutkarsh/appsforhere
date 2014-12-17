@@ -8,8 +8,8 @@
                 </div>
                 <div class="modal-body">
 
-                    <p>Delegation allows you to share a working link to various features on this site
-                        without sharing your actual PayPal login information. You may delete or change the
+                    <p>Delegation allows you to share a working link to various features on this site{~n}
+                        without sharing your actual PayPal login information. You may delete or change the{~n}
                         password of previous delegations at any time.</p><br/>
                     {>"partials/textField" id="delegateName" label="Delegate Name" placeholder="Enter a name for this delegate"/}
                     {>"partials/textField" id="delegatePassword" label="Password" placeholder="Enter or change the password for the delegate"/}

@@ -2,8 +2,8 @@
 
 var logger = require('pine')();
 var passport = require('passport');
-var PayPalUser = require('../models/payPalUser');
-var PayPalDelegatedUser = require('../models/payPalDelegatedUser');
+var PayPalUser = require('../models/auth/payPalUser');
+var PayPalDelegatedUser = require('../models/auth/payPalDelegatedUser');
 var appUtils = require('../lib/appUtils');
 
 module.exports = function (router) {

@@ -2,8 +2,8 @@
 
 var logger = require('pine')();
 var passport = require('passport');
-var PayPalUser = require('../models/payPalUser');
-var PayPalDelegatedUser = require('../models/payPalDelegatedUser');
+var PayPalUser = require('../models/auth/payPalUser');
+var PayPalDelegatedUser = require('../models/auth/payPalDelegatedUser');
 var appUtils = require('../lib/appUtils');
 var crypto = require('crypto');
 var cardinfo = require('../lib/cardinfo');
@@ -32,7 +32,7 @@ module.exports = function (router) {
         .get(function (req, res) {
             var model = {
                 host: req.headers.host,
-                hash: codeForId(req.user.profileId),
+                hash: codeForId(req.user.entity.profileId),
                 code: 'CODE_HERE'
             };
             if (req.query.kiosk) {
@@ -167,7 +167,7 @@ module.exports = function (router) {
                 saveCode(req, rz, function (err, doc) {
                     var model = {
                         host: req.headers.host,
-                        hash: codeForId(req.user.profileId),
+                        hash: codeForId(req.user.entity.profileId),
                         code: doc.short_code,
                         number: endOf(doc.number, 4)
                     };
@@ -237,7 +237,7 @@ module.exports = function (router) {
         var url = req.hereApiUrl('vault/credit-card', 'ppaas');
         req.hereApi().post({
             url: url,
-            tokens: req.user.token,
+            tokens: req.user.tokens(),
             json: true,
             headers: {
                 'content-type': 'application/json'
@@ -304,7 +304,7 @@ module.exports = function (router) {
         var doc = new Vault({
             card_id: cardInfo.id,
             short_code: short,
-            profileId: req.user.profileId,
+            profileId: req.user.entity.profileId,
             timestamp: new Date(),
             valid_until: cardInfo.valid_until,
             number: cardInfo.number

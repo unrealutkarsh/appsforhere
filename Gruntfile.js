@@ -18,7 +18,7 @@ module.exports = function (grunt) {
     });
 
     // Register group tasks
-    grunt.registerTask('build', [ 'jshint', 'less', 'uglify', 'browserify', 'i18n', 'copyto:build' ]);
+    grunt.registerTask('build', [ 'jshint', 'less', 'uglify:build', 'browserify:build', 'i18n', 'copyto:build' ]);
     grunt.registerTask('debug', [ 'jshint', 'less', 'uglify:debug', 'browserify:debug', 'i18n', 'copyto:build' ]);
     grunt.registerTask('test', [ 'jshint', 'mochacli' ]);
     grunt.registerTask('package', [ 'clean:package', 'build', 'copyto:package' ]);

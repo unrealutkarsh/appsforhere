@@ -217,7 +217,7 @@ var productModel = function () {
     modelSchema.statics.getHereApiModel = function (req, next) {
         var url = req.hereApiUrl('products');
         req.hereApi().get({
-            tokens: req.user.token,
+            tokens: req.user.tokens(),
             url: url,
             json: true,
             headers: {
@@ -237,7 +237,7 @@ var productModel = function () {
         if (id === '_' || id === '-') {
             module.exports.getHereApiModel(req, cb);
         } else {
-            mongoose.models.ProductModel.findOne({merchantId: req.user._id, _id: new ObjectId(id)}, function (e, d) {
+            mongoose.models.ProductModel.findOne({merchantId: req.user.entity._id, _id: new ObjectId(id)}, function (e, d) {
                 if (d) {
                     d = d.toHereApiModel();
                 }

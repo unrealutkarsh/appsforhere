@@ -9,7 +9,7 @@ module.exports = function (io, socket) {
      */
     socket.on('joinLogs', function (d) {
         var req = socket.request;
-        if (!req.user.groups || req.user.groups.indexOf('admin') < 0) {
+        if (!req.user || !req.user.entity.groups || req.user.entity.groups.indexOf('admin') < 0) {
             socket.emit('error', {message: 'Access denied'});
             return;
         }

@@ -2,8 +2,9 @@
 
 var logger = require('pine')();
 var passport = require('passport');
-var PayPalUser = require('../models/payPalUser');
-var PayPalDelegatedUser = require('../models/payPalDelegatedUser');
+var Token = require('../models/auth/token');
+var PayPalUser = require('../models/auth/payPalUser');
+var PayPalDelegatedUser = require('../models/auth/payPalDelegatedUser');
 var appUtils = require('../lib/appUtils');
 
 var appScopes = 'openid https://uri.paypal.com/services/paypalhere email https://uri.paypal.com/services/paypalattributes profile https://api.paypal.com/v1/vault/credit-card https://api.paypal.com/v1/vault/credit-card/.*';
@@ -14,13 +15,13 @@ module.exports = function (router) {
     router.use(appUtils.domain);
 
     router.get('/profileId', function (req, res, next) {
-       if (!req.user || !req.user.profileId) {
+       if (!req.user || !req.user.entity.profileId) {
            res.status(401).json({logged_in:false});
        } else {
            res.json({
                logged_in:true,
-               profileId:req.user.profileId,
-               email:req.user.email,
+               profileId:req.user.entity.profileId,
+               email:req.user.entity.email,
                _csrf:res.locals._csrf
            });
        }
@@ -74,7 +75,7 @@ module.exports = function (router) {
         .all(appUtils.apiAuth)
         .all(appUtils.hasRoles('NoDelegatesCanUseThis'))
         .get(function (req, res) {
-            PayPalDelegatedUser.find({profileId: req.user.profileId}, req.$eat(function mongoDelegateResult(docs) {
+            PayPalDelegatedUser.find({profileId: req.user.account.profileId}, req.$eat(function mongoDelegateResult(docs) {
                 var ret = {delegates: []};
                 docs.forEach(function delegateTranslation(d) {
                     ret.delegates.push({
@@ -89,7 +90,7 @@ module.exports = function (router) {
             }));
         })
         .post(function (req, res, next) {
-            PayPalUser.decryptRefreshToken(req, function (decryptError, raw_token) {
+            Token.decryptRefreshToken(req, function (decryptError, raw_token) {
                 if (decryptError) {
                     req.logout();
                     next(decryptError);
@@ -97,9 +98,8 @@ module.exports = function (router) {
                     PayPalDelegatedUser.encryptRefreshToken(raw_token, req.body.password, req.$eat(function (tokenInfo) {
                         var delegate = new PayPalDelegatedUser({
                             name: req.body.name,
-                            profileId: req.user.profileId,
-                            access_token: req.user.access_token,
-                            email: req.user.email,
+                            profileId: req.user.account.profileId,
+                            email: req.user.account.email,
                             encrypted_refresh_token: tokenInfo.token,
                             createDate: new Date(),
                             allowedResources: req.body.allowed
@@ -119,7 +119,7 @@ module.exports = function (router) {
         .all(appUtils.apiAuth)
         .all(appUtils.hasRoles('NoDelegatesCanUseThis'))
         .get(function (req, res) {
-            PayPalDelegatedUser.findOneAndRemove({_id: req.params.id, profileId: req.user.profileId}, req.$eat(function (doc) {
+            PayPalDelegatedUser.findOneAndRemove({_id: req.params.id, profileId: req.user.account.profileId}, req.$eat(function (doc) {
                 if (doc) {
                     res.json({success: true});
                 } else {
@@ -145,27 +145,16 @@ module.exports = function (router) {
             });
         })
         .post(function (req, res, next) {
-            PayPalDelegatedUser.findById(req.params.id, req.$eat(function (user) {
-                if (!user) {
-                    logger.error('Delegate login attempted for unknown delegate %s', req.params.id);
-                    failDelegateLogin(req, res);
-                    return;
+            PayPalDelegatedUser.login(req, res, {
+                id: req.params.id,
+                uuid: req.params.uuid,
+                password: req.body.password
+            }, function (err) {
+                if (err) {
+                    next(err);
+                } else {
+                    res.redirect('/');
                 }
-                user.decryptRefreshToken(req.params.uuid, req.body.password, function (err, rt, binKey) {
-                    if (err) {
-                        failDelegateLogin(req, res);
-                        return;
-                    }
-                    res.cookie('sessionkey', binKey.toString('base64'));
-                    user._isDelegatedUser = true;
-                    req.login(user, function (err) {
-                        if (err) {
-                            next(err);
-                        } else {
-                            res.redirect('/');
-                        }
-                    });
-                });
-            }));
+            });
         });
 };

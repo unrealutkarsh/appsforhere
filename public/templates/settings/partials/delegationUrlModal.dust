@@ -9,8 +9,8 @@
                 <div style="padding:10px;">
                     <div class="alert alert-success">
                         <p>
-                            The delegate has been succesfully created. You can send the link below to them via
-                            email or SMS, and you should communicate the password separately (i.e. through some OTHER
+                            The delegate has been succesfully created. You can send the link below to them via{~n}
+                            email or SMS, and you should communicate the password separately (i.e. through some OTHER{~n}
                             channel than the one you sent the link).
                         </p>
                     </div>

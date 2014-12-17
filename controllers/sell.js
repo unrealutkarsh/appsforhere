@@ -1,8 +1,8 @@
 'use strict';
 
 var log = require('pine')();
-var PayPalUser = require('../models/payPalUser');
-var PayPalDelegatedUser = require('../models/payPalDelegatedUser');
+var PayPalUser = require('../models/auth/payPalUser');
+var PayPalDelegatedUser = require('../models/auth/payPalDelegatedUser');
 var SavedOrder = require('../models/savedOrder');
 var appUtils = require('../lib/appUtils');
 
@@ -21,7 +21,7 @@ module.exports = function (router) {
             cleanInvoice(paymentRequest.invoice);
             // TODO probably fill out more stuff on the invoice.
             // or put that on the client.
-            paymentRequest.invoice.merchantEmail = req.user.email;
+            paymentRequest.invoice.merchantEmail = req.user.entity.email;
             var url = req.hereApiUrl('pay');
             req.hereApi().post({
                 url: url,
@@ -30,14 +30,14 @@ module.exports = function (router) {
                     'Content-Type': 'application/json; charset=utf-8'
                 },
                 payload: JSON.stringify(paymentRequest),
-                tokens: req.user.token
+                tokens: req.user.tokens()
             }, req.$eat(function (payResult) {
                 if (payResult.errorCode) {
                     payResult.ok = false;
                     res.status(500).json(payResult);
                 } else {
                     SavedOrder.remove({
-                        profileId: req.user.profileId,
+                        profileId: req.user.entity.profileId,
                         invoiceId: payResult.invoiceID||paymentRequest.invoice.invoiceID
                     }, function () {
                         payResult.ok = true;
@@ -63,7 +63,7 @@ module.exports = function (router) {
                     'Content-Type': 'application/json; charset=utf-8'
                 },
                 payload: JSON.stringify(data),
-                tokens: req.user.token
+                tokens: req.user.tokens()
             }, req.$eat(function (result) {
                 console.log(result);
                 if (result.errorCode) {
@@ -84,7 +84,7 @@ module.exports = function (router) {
             req.hereApi().get({
                 url: url,
                 json: true,
-                tokens: req.user.token
+                tokens: req.user.tokens()
             }, req.$eat(function (invoice) {
                 console.log(invoice);
                 res.json(invoice);
@@ -96,7 +96,7 @@ module.exports = function (router) {
         .get(function (req, res) {
             SavedOrder.find({
                 locationId: req.params.locationId,
-                profileId: req.user.profileId
+                profileId: req.user.entity.profileId
             }, req.$eat(function (docs) {
                 var ret = [];
                 if (docs) {
@@ -121,7 +121,7 @@ module.exports = function (router) {
             cleanInvoice(req.body.invoice);
             // TODO probably fill out more stuff on the invoice.
             // or put that on the client.
-            req.body.invoice.merchantEmail = req.user.email;
+            req.body.invoice.merchantEmail = req.user.entity.email;
             req.hereApi()[method]({
                 url: url,
                 json: true,
@@ -129,7 +129,7 @@ module.exports = function (router) {
                     'Content-Type': 'application/json; charset=utf-8'
                 },
                 payload: JSON.stringify(req.body.invoice),
-                tokens: req.user.token
+                tokens: req.user.tokens()
             }, req.$eat(function (payResult) {
                 if (payResult.errorCode) {
                     log.error('Failed to save invoice/order: %s', payResult);
@@ -138,7 +138,7 @@ module.exports = function (router) {
                 } else {
                     payResult.ok = true;
                     SavedOrder.findOrCreate({
-                        profileId: req.user.profileId,
+                        profileId: req.user.entity.profileId,
                         invoiceId: payResult.invoiceID,
                         locationId: req.params.locationId,
                         name: req.body.name

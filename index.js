@@ -33,8 +33,8 @@ var mongo = require('./lib/mongo'),
     passport = require('passport'),
     expressWinston = require('express-winston'),
     configurePassport = require('./lib/passportSetup'),
-    PayPalUser = require('./models/payPalUser'),
-    PayPalDelegatedUser = require('./models/payPalDelegatedUser'),
+    PayPalUser = require('./models/auth/payPalUser'),
+    PayPalDelegatedUser = require('./models/auth/payPalDelegatedUser'),
     Queue = require('./lib/queue'),
     appUtils = require('./lib/appUtils'),
     options = {
@@ -65,8 +65,8 @@ app.on('middleware:after:session', function addPassportToSession(eventargs) {
     app.use(passport.session());
     // Put some common things for all dust templates to use
     app.use(function (req, res, next) {
-        res.locals.userEmail = req.user ? req.user.email : null;
-        res.locals.userEnvironment = req.user ? req.user.environment : null;
+        res.locals.userEmail = req.user ? req.user.entity.email : null;
+        res.locals.userEnvironment = req.user ? req.user.entity.environment : null;
         next();
     });
 });

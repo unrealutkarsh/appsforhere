@@ -32,7 +32,7 @@ module.exports = function (router) {
     router.get('/:modelId/xls', appUtils.auth, appUtils.hasRoles(appUtils.ROLES.ViewProducts), function (req, res) {
         if (req.params.modelId === '_') {
             req.user.hereApi().get({
-                tokens: req.user.token,
+                tokens: req.user.tokens(),
                 url: req.user.hereApiUrl('products'),
                 json: true,
                 headers: {
@@ -55,11 +55,11 @@ module.exports = function (router) {
 
     router.get('/api/model/:id', appUtils.auth, appUtils.hasRoles('ViewProducts'), function (req, res, next) {
         if (req.params.id && req.params.id !== '_') {
-            ProductModel.findOne({merchantId: req.user._id, _id: new ObjectId(req.params.id)}, req.$eat(function (doc) {
+            ProductModel.findOne({merchantId: req.user.entity._id, _id: new ObjectId(req.params.id)}, req.$eat(function (doc) {
                 if (!doc) {
                     res.send({success: false}, 404);
                 } else {
-                    ProductModel.find({merchantId: req.user._id}).select('name').exec(req.$eat(function (docs) {
+                    ProductModel.find({merchantId: req.user.entity._id}).select('name').exec(req.$eat(function (docs) {
                         var json = doc.toHereApiModel();
                         json._savedModels = makeSavedModels(docs);
                         res.send(json);
@@ -72,7 +72,7 @@ module.exports = function (router) {
     });
 
     router.get('/api/catalogs', appUtils.auth, appUtils.hasRoles(appUtils.ROLES.ViewProducts), function (req, res) {
-        ProductModel.find({merchantId: req.user._id}).select('name').exec(req.$eat(function (docs) {
+        ProductModel.find({merchantId: req.user.entity._id}).select('name').exec(req.$eat(function (docs) {
             var rz = {catalogs: [
                 {text: 'PayPal Here', value: '-'}
             ]};
@@ -91,7 +91,7 @@ module.exports = function (router) {
                 res.json({tags: model.tags});
             });
         } else {
-            ProductModel.findOne({merchantId: req.user._id, _id: req.params.id}, req.$eat(function (doc) {
+            ProductModel.findOne({merchantId: req.user.entity._id, _id: req.params.id}, req.$eat(function (doc) {
                 res.json({tags: doc.tags});
             }));
         }
@@ -120,7 +120,7 @@ module.exports = function (router) {
             return;
         }
         var newModel = new ProductModel({
-            merchantId: req.user._id,
+            merchantId: req.user.entity._id,
             name: req.params.modelName
         });
         newModel.save(req.$eat(function () {
@@ -145,7 +145,7 @@ module.exports = function (router) {
         }
         var model = JSON.parse(req.body.model);
         ProductModel.findOrCreate({
-            merchantId: req.user._id,
+            merchantId: req.user.entity._id,
             name: req.body.name
         }, {}, req.$eat(function (doc) {
             doc.fromHereAPIModel(model);
@@ -180,7 +180,7 @@ module.exports = function (router) {
 
     router.post('/webhooks', appUtils.auth, appUtils.hasRoles(appUtils.ROLES.EditProducts), function (req, res, next) {
         req.user.hereApi().get({
-            tokens: req.user.token,
+            tokens: req.user.tokens(),
             url: req.user.hereApiUrl('notifications/webhooks'),
             json: true,
             headers: {
@@ -208,7 +208,7 @@ function makeSavedModels(docs) {
 }
 
 function getModel(req, res, next) {
-    ProductModel.find({merchantId: req.user._id}).select('name').exec(req.$eat(function (docs) {
+    ProductModel.find({merchantId: req.user.entity._id}).select('name').exec(req.$eat(function (docs) {
         ProductModel.getHereApiModel(req, function (err, model) {
             if (err) {
                 next(err);
@@ -222,7 +222,7 @@ function getModel(req, res, next) {
 
 function getModelByNameOrId(req, res, modelNameOrId, successCallback) {
     var byName = function () {
-        ProductModel.findOne({merchantId: req.user._id, name: modelNameOrId}, req.$eat(function (doc) {
+        ProductModel.findOne({merchantId: req.user.entity._id, name: modelNameOrId}, req.$eat(function (doc) {
             if (!doc) {
                 logger.warn('Attempted to access unknown model by name ' + modelNameOrId);
                 res.render('errors/404', 404);
@@ -232,7 +232,7 @@ function getModelByNameOrId(req, res, modelNameOrId, successCallback) {
         }));
     };
     if (ObjectId.isValid(modelNameOrId)) {
-        ProductModel.findOne({merchantId: req.user._id, _id: new ObjectId(modelNameOrId)}, req.$eat(function (doc) {
+        ProductModel.findOne({merchantId: req.user.entity._id, _id: new ObjectId(modelNameOrId)}, req.$eat(function (doc) {
             if (!doc) {
                 byName();
             } else {
@@ -248,7 +248,7 @@ function getModelByNameOrId(req, res, modelNameOrId, successCallback) {
 function putModel(req, model, fn) {
     var url = req.user.hereApiUrl('products');
     req.user.hereApi().put({
-        tokens: req.user.token,
+        tokens: req.user.tokens(),
         url: url,
         json: true,
         headers: {

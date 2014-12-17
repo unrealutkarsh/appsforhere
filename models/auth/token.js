@@ -1,9 +1,9 @@
 'use strict';
 
 var mongoose = require('mongoose'),
-    appUtils = require('../lib/appUtils'),
+    appUtils = require('../../lib/appUtils'),
     findOrCreate = require('mongoose-findorcreate'),
-    crypto = require('../lib/crypto'),
+    crypto = require('../../lib/crypto'),
     uuid = require('node-uuid');
 
 var tokenModel = function () {
@@ -11,8 +11,6 @@ var tokenModel = function () {
     var tokenSchema = mongoose.Schema({
         // Encrypted with a cookie that is only stored on the browser
         encrypted_refresh_token: String,
-        // TODO consider putting this in session and just dumping it from our mainline db entirely
-        access_token: String,
         // Expire this entry after two weeks of non-use
         last_used: { type:Date, expires: '14d' }
     });

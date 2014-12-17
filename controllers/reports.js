@@ -6,8 +6,8 @@ var reportLib = require('../lib/reports/payPalSalesReportsApi');
 var querystring = require('querystring');
 var csv = require('csv');
 var async = require('async');
-var PayPalDelegatedUser = require('../models/payPalDelegatedUser');
-var PayPalUser = require('../models/payPalUser');
+var PayPalDelegatedUser = require('../models/auth/payPalDelegatedUser');
+var PayPalUser = require('../models/auth/payPalUser');
 var _ = require('underscore');
 
 module.exports = function (router) {

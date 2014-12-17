@@ -6,7 +6,7 @@ module.exports = function (router) {
     router.use(appUtils.domain);
 
     router.use(function (req, res, next) {
-        if (!req.user || !req.user.groups || req.user.groups.indexOf('admin') < 0) {
+        if (!req.user || !req.user.entity.groups || req.user.entity.groups.indexOf('admin') < 0) {
             res.render('errors/401');
             return;
         }

@@ -17,7 +17,7 @@ module.exports = function (router) {
         .all(appUtils.auth)
         .all(appUtils.hasRoles(appUtils.ROLES.ManageHardware))
         .get(function (req, res) {
-            devicesForUser(req, req.user.profileId, function (devs) {
+            devicesForUser(req, req.user.entity.profileId, function (devs) {
                 res.json({devices: devs});
             });
         });
@@ -27,7 +27,7 @@ module.exports = function (router) {
         .all(appUtils.hasRoles(appUtils.ROLES.ManageHardware))
         .get(function (req, res) {
             // Right now we don't support location-specific hardware anyways
-            devicesForUser(req, req.user.profileId, function (devs) {
+            devicesForUser(req, req.user.entity.profileId, function (devs) {
                 res.json({devices: devs});
             });
         });
@@ -39,7 +39,7 @@ module.exports = function (router) {
             Device.find({key: req.query.uuid}, req.$eat(function (devs) {
                 // Now add this to the permissions list
                 if (devs && devs.length > 0) {
-                    DevicePermission.findOrCreate({profileId: req.user.profileId, key: req.query.uuid},
+                    DevicePermission.findOrCreate({profileId: req.user.entity.profileId, key: req.query.uuid},
                         req.$eat(function () {
                             res.json({
                                 ok: true,
@@ -57,7 +57,7 @@ module.exports = function (router) {
         .all(appUtils.hasRoles(appUtils.ROLES.ManageHardware))
         .post(function (req, res) {
             Device.findById(req.params.id, req.$eat(function (doc) {
-                DevicePermission.findOne({profileId: req.user.profileId, key: doc.key}, req.$eat(function (perm) {
+                DevicePermission.findOne({profileId: req.user.entity.profileId, key: doc.key}, req.$eat(function (perm) {
                     if (!perm) {
                         res.status(401).json({ok: false});
                     } else {
@@ -78,21 +78,21 @@ module.exports = function (router) {
         .post(function (req, res) {
             // Need to get the refresh token to save to the new app. Since it's encrypted,
             // we need the 'middleware' to decrypt it using the uuid key in the session
-            req.user.refresh_token(req.user, req.$eat(function (rt) {
+            req.user.tokens().refresh_token(null, req.$eat(function (rt) {
                 var key = uuid.v4();
                 var activation = new DeviceActivation({
-                    profileId: req.user.profileId,
+                    profileId: req.user.entity.profileId,
                     terminalId: req.body.deviceCode,
                     configuration: {
                         application: req.body.application,
                         location: req.body.location,
-                        access_token: req.user.access_token
+                        access_token: req.user.tokens().access_token
                     }
                 });
                 activation.generateAuthCode(key, req.$eat(function (code) {
                     activation.encryptSecureConfiguration({
                         refresh_token: rt,
-                        email: req.user.email
+                        email: req.user.entity.email
                     }, key, req.$eat(function onEncryptionComplete() {
                         activation.save(req.$eat(function onActivationSaved() {
                             res.render('devices/activate', {

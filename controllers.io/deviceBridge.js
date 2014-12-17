@@ -53,7 +53,7 @@ module.exports = function (io, socket) {
 
     socket.on('deviceAttach', function (d) {
         var req = socket.request;
-        if (!req.user || !req.user.profileId) {
+        if (!req.user || !req.user.entity.profileId) {
             socket.emit('error', {message: 'Access denied'});
             return;
         }
@@ -62,7 +62,7 @@ module.exports = function (io, socket) {
                 socket.emit('error', {message: 'Device not found'});
                 return;
             }
-            Device.find({profileId: req.user.profileId, key: d.key}, req.$eat(function (perm) {
+            Device.find({profileId: req.user.entity.profileId, key: d.key}, req.$eat(function (perm) {
                 if (!perm) {
                     socket.emit('error', {message: 'Access denied'});
                     return;
@@ -98,7 +98,7 @@ module.exports = function (io, socket) {
     socket.on('deviceSubscribe', function (d) {
         logger.debug('deviceSubscribe',d);
         var req = socket.request;
-        if (!req.user || !req.user.profileId) {
+        if (!req.user || !req.user.entity.profileId) {
             socket.emit('error', {message: 'Access denied'});
             return;
         }
@@ -107,7 +107,7 @@ module.exports = function (io, socket) {
                 socket.emit('error', {message: 'Device not found'});
                 return;
             }
-            Device.find({profileId: req.user.profileId, key: d.key}, req.$eat(function (perm) {
+            Device.find({profileId: req.user.entity.profileId, key: d.key}, req.$eat(function (perm) {
                 if (!perm) {
                     socket.emit('error', {message: 'Access denied'});
                     return;

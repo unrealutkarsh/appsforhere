@@ -1,9 +1,9 @@
 'use strict';
 
 var mongoose = require('mongoose'),
-    appUtils = require('../lib/appUtils'),
+    appUtils = require('../../lib/appUtils'),
     findOrCreate = require('mongoose-findorcreate'),
-    crypto = require('../lib/crypto'),
+    crypto = require('../../lib/crypto'),
     uuid = require('node-uuid');
 
 var paypalUserModel = function () {

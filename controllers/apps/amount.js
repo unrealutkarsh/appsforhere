@@ -131,13 +131,13 @@ module.exports = function (router) {
     router.post('/', appUtils.apiAuth, hasEditRole, function (req, res) {
         // Need to get the refresh token to save to the new app. Since it's encrypted,
         // we need the 'middleware' to decrypt it using the uuid key in the session
-        req.user.refresh_token(req.user, req.$eat(function (rt) {
+        req.user.tokens().refresh_token(null, req.$eat(function (rt) {
             var newApp = new App({
                 name: req.body.appName,
-                profileId: req.user.profileId,
+                profileId: req.user.entity.profileId,
                 applicationType: 'amount',
                 configuration: {
-                    access_token: req.user.access_token,
+                    access_token: req.session.access_token,
                     amounts: req.body.amounts ? req.body.amounts.split(',') : null,
                     customAmount: req.body.customAmount,
                     completionType: req.body.completionType,
@@ -149,7 +149,7 @@ module.exports = function (router) {
             var key = uuid.v4();
             newApp.encryptSecureConfiguration({
                 refresh_token: rt,
-                email: req.user.email,
+                email: req.user.entity.email,
                 notification: req.body.notification
             }, key, req.$eat(function () {
                 newApp.save(req.$eat(function () {
@@ -184,7 +184,7 @@ module.exports = function (router) {
             doc.configuration.completionType = req.body.completionType;
             doc.configuration.welcomeMessage = req.body.welcomeMessage;
             doc.configuration.thankyouMessage = req.body.thankyouMessage;
-            doc.configuration.currency = req.user.currency;
+            doc.configuration.currency = req.user.entity.currency;
             doc.configuration.description = req.body.description;
             doc.markModified('configuration');
             doc.save(req.$eat(function () {

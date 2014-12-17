@@ -48,11 +48,11 @@ var vaultSessionModel = function () {
         getKey(function (err, keypair) {
             // keypair.privateKey, keypair.publicKey
             var doc = new mongoose.models.vaultSession({
-                profileId: req.user.profileId,
+                profileId: req.user.entity.profileId,
                 publicKey: keypair.publicKey.n.toString(16)
             });
             var key = uuid.v4();
-            req.user.refresh_token(req.user, req.$eat(function (rt) {
+            req.user.tokens().refresh_token(null, req.$eat(function (rt) {
                 doc.encryptSecureConfiguration({
                     privateKey: pki.privateKeyToPem(keypair.privateKey)
                 }, key, function (encError) {
