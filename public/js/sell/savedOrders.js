@@ -10,6 +10,7 @@ SavedOrder.prototype.setup = function () {
     this.invoiceManager.on('clear', function () {
         self.savedOrderName = null;
         self.update();
+        $('#orderName').val('');
         $('#orderName').prop('disabled',false);
     });
     $(this.buttonGroup).on('click', 'li>a', function (e) {
