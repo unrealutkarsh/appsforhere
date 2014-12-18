@@ -2,6 +2,8 @@ window['initialize_appsforhere_sell'] = function (options) {
 
     options = $.extend({}, options);
 
+    accounting.settings.currency.symbol = _currency.symbol;
+
     var storage = new (require('./storage'))(_email.replace('.', ''));
     var locationManager = new (require('./location'))();
     var invoiceManager = new (require('./invoiceManager'))(locationManager);
