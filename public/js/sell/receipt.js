@@ -1,5 +1,5 @@
 var Receipt = function (invoiceManager) {
-
+    this.invoiceManager = invoiceManager;
 };
 
 Receipt.prototype.setup = function () {

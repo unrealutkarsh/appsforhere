@@ -92,7 +92,7 @@ $('.modal').on('shown.bs.modal', function (event) {
     }
 
     $.fn.money_field = function (opts) {
-        var defaults = { width: null, symbol: '$' };
+        var defaults = { width: null, symbol: _currency?_currency.symbol:'$' };
         var opts = $.extend(defaults, opts);
         return this.each(function () {
             if (opts.width) {

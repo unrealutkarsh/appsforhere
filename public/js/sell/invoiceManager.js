@@ -28,6 +28,24 @@ InvoiceManager.prototype.addMerchantInfo = function (invoice) {
     if (loc) {
         invoice.merchantInfo = invoice.merchantInfo || {};
         invoice.merchantInfo.address = loc.address;
+        // Sometimes addresses don't have the country filled out even though
+        // invoicing wants something there... So do our best.
+        if (!loc.address.country) {
+            switch (invoice.currencyCode) {
+                case 'GBP':
+                    invoice.merchantInfo.address.country = 'GB';
+                    break;
+                case 'USD':
+                    invoice.merchantInfo.address.country = 'US';
+                    break;
+                case 'AUD':
+                    invoice.merchantInfo.address.country = 'AU';
+                    break;
+                default:
+                    invoice.merchantInfo.address.country = '--';
+                    break;
+            }
+        }
         invoice.merchantInfo.businessName = loc.name;
         if (!invoice.logoUrl && loc.logoUrl) {
             invoice.logoUrl = loc.logoUrl;
