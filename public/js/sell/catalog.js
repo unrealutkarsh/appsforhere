@@ -94,7 +94,6 @@ Catalog.prototype.setup = function (prefs) {
     $('#variantDiv').on('click', 'button', function (e) {
         e.preventDefault();
         var parent = $(this).parent('[data-select]');
-        console.log(parent);
 
         if ($(this).hasClass('active')) {
             if (parent.data('select') !== 'exactlyOne') {
