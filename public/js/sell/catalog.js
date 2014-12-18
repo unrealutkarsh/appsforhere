@@ -123,10 +123,10 @@ Catalog.prototype.itemClick = function (elt, e) {
     if ((variations && variations.length) || (options && options.length)) {
         var v = $('#variantDiv');
         v.empty();
+        v.data('product', product);
         if (variations && variations.length) {
             var vG = $('<div class="btn-group variants" role="group"/>');
             vG.attr('data-select', 'exactlyOne');
-            vG.data('product', product);
             for (var i = 0; i < variations.length; i++) {
                 var btn = $('<button>', {class: 'btn btn-default', type: 'button'});
                 btn.append($('<div/>', {text: variations[i].name, class: 'name'}));

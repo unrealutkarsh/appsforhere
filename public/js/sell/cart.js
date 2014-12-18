@@ -30,7 +30,7 @@ $.extend(Cart.prototype, $.eventEmitter);
 
 Cart.prototype.setup = function () {
     var self = this;
-    $('#cartGrid').on('click', 'div.repeater-list-wrapper>table >tbody>tr', function () {
+    $('#cartGrid').on('click', 'div.repeater-list-wrapper>table>tbody>tr', function () {
         var $this = $(this);
         var editingItem = self.editingItem = $this.data("item_data");
         // Undo selection UI
@@ -57,9 +57,9 @@ Cart.prototype.setup = function () {
     $('#saveWithOptions').on('click', function (e) {
         var variant = $('#variantDiv div.variants button.active').data('variant');
         var options = $('#variantDiv div.options button.active');
-        var product = $('#variantDiv div.variants').data('product');
-        var price = variant.price||product.unitPrice;
-        var detailId = [variant||{}], desc = variant.name||"";
+        var product = $('#variantDiv').data('product');
+        var price = (variant?variant.price:null)||product.price;
+        var detailId = [variant||{}], desc = (variant?variant.name:null)||'';
         options.each(function (o) {
             var val = $(this).data('optionValue');
             detailId.push(val);
@@ -99,7 +99,8 @@ Cart.prototype.setup = function () {
     $('#cartItemPrice').zeninput({});
 
     $('#saveCartItem').on('click', function (e) {
-        if (self.editingItem) {
+        e.preventDefault();
+        if (self.editingItem && self.editingItem.item) {
             if (self.editingItem.item.name !== $('#cartItemName').val() ||
                 !self.editingItem.item.unitPrice.equals($('#cartItemPrice').val())) {
                 // Break this item off from its source
@@ -112,7 +113,6 @@ Cart.prototype.setup = function () {
             item.name = $('#cartItemName').val();
             self.invoiceManager.invoice.addItem(item);
         }
-        e.preventDefault();
         $('#cartGrid').repeater('render');
         $('#cartItemModal').modal('hide');
     });
