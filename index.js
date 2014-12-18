@@ -42,6 +42,7 @@ var mongo = require('./lib/mongo'),
             if (GLOBAL._hasShutdown) {
                 return;
             }
+            require('./lib/dust-helpers');
             configureLogging(config);
             configureMongo(config);
             appUtils.configure(config);
@@ -66,6 +67,7 @@ app.on('middleware:after:session', function addPassportToSession(eventargs) {
     // Put some common things for all dust templates to use
     app.use(function (req, res, next) {
         res.locals.userEmail = req.user ? req.user.entity.email : null;
+        res.locals.userCurrency = req.user ? req.user.entity.currency : null;
         res.locals.userEnvironment = req.user ? req.user.entity.environment : null;
         next();
     });

@@ -16,6 +16,7 @@
     <script type="text/javascript">
         var _csrf = '{_csrf}';
         var _email = '{userEmail}';
+        var _currency = {symbol:'{@currencySymbol code=userCurrency/}',code:'{userCurrency}'};
         var scriptBase = '';
         var ajaxRoot = '';
     </script>

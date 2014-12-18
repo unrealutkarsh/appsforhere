@@ -1,6 +1,6 @@
 var InvoiceManager = function (locationManager) {
     this.locationManager = locationManager;
-    this.currency = 'USD';
+    this.currency = _currency ? _currency.code : 'USD';
 };
 
 $.extend(InvoiceManager.prototype, $.eventEmitter);
