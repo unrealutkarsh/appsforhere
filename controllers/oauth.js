@@ -6,6 +6,7 @@ var Token = require('../models/auth/token');
 var PayPalUser = require('../models/auth/payPalUser');
 var PayPalDelegatedUser = require('../models/auth/payPalDelegatedUser');
 var appUtils = require('../lib/appUtils');
+var userDeserialize = require('../lib/passportSetup').deserialize;
 
 var appScopes = 'openid https://uri.paypal.com/services/paypalhere email https://uri.paypal.com/services/paypalattributes profile https://api.paypal.com/v1/vault/credit-card https://api.paypal.com/v1/vault/credit-card/.*';
 var sandboxScopes = 'openid https://uri.paypal.com/services/paypalhere email https://uri.paypal.com/services/paypalattributes profile';
@@ -14,19 +15,51 @@ module.exports = function (router) {
 
     router.use(appUtils.domain);
 
-    router.get('/profileId', function (req, res, next) {
-       if (!req.user || !req.user.entity.profileId) {
-           res.status(401).json({logged_in:false});
-       } else {
-           res.json({
-               logged_in:true,
-               profileId:req.user.entity.profileId,
-               email:req.user.entity.email,
-               _csrf:res.locals._csrf
-           });
-       }
+    function sendVerifyResponse(user, res) {
+        res.json({
+            logged_in: true,
+            profileId: user.entity.profileId,
+            email: user.entity.email,
+            currency: user.entity.currency,
+            country: user.entity.country,
+            _csrf: res.locals._csrf,
+            ticket: user.id
+        });
+    }
+
+    /**
+     * The verify endpoint allows an application in possession of a user ticket (either in session
+     * object or passed explicity via the ticket parameter) and appropriate cookies to verify
+     * basic session validity as well as common user info like email and currency.
+     */
+    router.get('/verify', function (req, res, next) {
+        if (!req.user || !req.user.entity.profileId) {
+            // Check to see if we've got a payload for login
+            if (req.query.ticket) {
+                // Try to log them in.
+                userDeserialize(req.query.ticket, function (err, user) {
+                    if (user) {
+                        req.login({account:user.account,delegate:user.delegate,token:user.token}, function (e) {
+                            if (e) {
+                                return res.status(401).json({logged_in: false});
+                            }
+                            sendVerifyResponse(user, res);
+                        });
+                    } else {
+                        res.status(401).json({logged_in: false});
+                    }
+                });
+            } else {
+                res.status(401).json({logged_in: false});
+            }
+        } else {
+            sendVerifyResponse(req.user, res);
+        }
     });
 
+    /**
+     * Send the user off to PayPal to login.
+     */
     router.get('/login', function (req, res, next) {
         if (req.query.returnUrl) {
             logger.info('Login setting returnUrl to %s', req.query.returnUrl);
@@ -38,6 +71,9 @@ module.exports = function (router) {
         })(req, res, next);
     });
 
+    /**
+     * Send the user off to PayPal Sandbox to login
+     */
     router.get('/login-sandbox', function (req, res, next) {
         req.session.environment = 'sandbox';
         passport.authenticate('sandbox', {
@@ -45,6 +81,10 @@ module.exports = function (router) {
         })(req, res, next);
     });
 
+    /**
+     * After login is complete on PayPal, process the various tokens and setup the req.user
+     * and session for future authentication
+     */
     router.get('/return',
         function (req, res, next) {
             if (req.session.environment === 'sandbox') {
@@ -64,9 +104,13 @@ module.exports = function (router) {
             }
         });
 
+    /**
+     * Clear session and cookies
+     */
     router.get('/logout', function (req, res) {
         delete req.session.redirectUrl;
         req.session.destroy();
+        res.cookie('tokenguid', '');
         req.logout();
         res.redirect('/');
     });
@@ -74,6 +118,9 @@ module.exports = function (router) {
     router.route('/delegates')
         .all(appUtils.apiAuth)
         .all(appUtils.hasRoles('NoDelegatesCanUseThis'))
+        /**
+         * Get a list of the delegates created by the active primary user
+        */
         .get(function (req, res) {
             PayPalDelegatedUser.find({profileId: req.user.account.profileId}, req.$eat(function mongoDelegateResult(docs) {
                 var ret = {delegates: []};
@@ -89,6 +136,9 @@ module.exports = function (router) {
                 res.json(ret);
             }));
         })
+        /**
+         * Create a new delegate with the token information of the active primary account and the specified privileges
+        */
         .post(function (req, res, next) {
             Token.decryptRefreshToken(req, function (decryptError, raw_token) {
                 if (decryptError) {
@@ -115,6 +165,9 @@ module.exports = function (router) {
             });
         });
 
+    /**
+     * Delete a delegate. TODO not a GET.
+     */
     router.route('/delegates/:id')
         .all(appUtils.apiAuth)
         .all(appUtils.hasRoles('NoDelegatesCanUseThis'))
@@ -136,6 +189,9 @@ module.exports = function (router) {
         });
     }
 
+    /**
+     * Handle delegate login form presentation and processing.
+     */
     router.route('/delegates/:id/:uuid')
         .get(function (req, res) {
             req.logout();
