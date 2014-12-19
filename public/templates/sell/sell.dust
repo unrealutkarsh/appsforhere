@@ -22,6 +22,6 @@
     </script>
     {>"sell/partials/javascripts"/}
     <script type="text/javascript">
-        initialize_appsforhere_sell();
+        var pos = new PayPalHerePOS();
     </script>
 {/scripts}

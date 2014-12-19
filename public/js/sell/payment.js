@@ -240,7 +240,6 @@ Payment.prototype.checkKeyboard = function (elt) {
 };
 
 Payment.prototype.swipeDetected = function (data) {
-    console.log(data);
     this.paymentRequest = {
         latitude: this.locationManager.coords.latitude,
         longitude: this.locationManager.coords.longitude,

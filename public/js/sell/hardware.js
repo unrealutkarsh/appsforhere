@@ -7,7 +7,6 @@ $.extend(Hardware.prototype, $.eventEmitter);
 
 Hardware.prototype.setup = function (prefs) {
     var self = this;
-    console.log(prefs);
     if (prefs.get('hardware')) {
         this.device = prefs.get('hardware');
     }
