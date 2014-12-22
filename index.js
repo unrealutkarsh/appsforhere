@@ -17,6 +17,8 @@
 'use strict';
 var logger = require('pine')();
 
+require('https').globalAgent.options.secureProtocol = 'TLSv1_method';
+
 if (process.env.NODE_ENV === 'production') {
     logger.info("Starting newrelic agent.");
     // Temporarily required to fix newrelic's invasive methods.
@@ -66,9 +68,13 @@ app.on('middleware:after:session', function addPassportToSession(eventargs) {
     app.use(passport.session());
     // Put some common things for all dust templates to use
     app.use(function (req, res, next) {
-        res.locals.userEmail = req.user ? req.user.entity.email : null;
-        res.locals.userCurrency = req.user ? req.user.entity.currency : null;
-        res.locals.userEnvironment = req.user ? req.user.entity.environment : null;
+        try {
+            res.locals.userEmail = req.user ? req.user.entity.email : null;
+            res.locals.userCurrency = req.user ? req.user.entity.currency : null;
+            res.locals.userEnvironment = req.user ? req.user.entity.environment : null;
+        } catch (x) {
+            logger.error('Failed to set template helpers', x);
+        }
         next();
     });
 });

@@ -63,7 +63,7 @@ module.exports = function (router) {
             req.session.redirectUrl = req.query.returnUrl;
         }
         req.session.environment = 'live';
-        passport.authenticate('paypal', {
+        passport.authenticate('live', {
             scope: appUtils.hereApi().scopes
         })(req, res, next);
     });
@@ -85,9 +85,10 @@ module.exports = function (router) {
     router.get('/return',
         function (req, res, next) {
             if (!req.session.environment || req.session.environment === 'live') {
-                passport.authenticate('paypal', {failureRedirect: '/oauth/fail'})(req, res, next);
+                logger.info('Processing live login.');
+                passport.authenticate('live', {failureRedirect: '/oauth/fail'})(req, res, next);
             } else {
-                logger.verbose('Using '+req.session.environment+' login.');
+                logger.info('Using '+req.session.environment+' login.');
                 passport.authenticate(req.session.environment, {failureRedirect: '/oauth/fail'})(req, res, next);
             }
         },
