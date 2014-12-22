@@ -21,7 +21,7 @@
         </div>
 
         <div class="text-right">
-            Or you can <a href="/oauth/login-sandbox">login to sandbox</a>.
+            Or you can <a href="/oauth/login/sandbox">login to sandbox</a>.
         </div>
     </div>
 {/body}

@@ -8,9 +8,6 @@ var PayPalDelegatedUser = require('../models/auth/payPalDelegatedUser');
 var appUtils = require('../lib/appUtils');
 var userDeserialize = require('../lib/passportSetup').deserialize;
 
-var appScopes = 'openid https://uri.paypal.com/services/paypalhere email https://uri.paypal.com/services/paypalattributes profile https://api.paypal.com/v1/vault/credit-card https://api.paypal.com/v1/vault/credit-card/.*';
-var sandboxScopes = 'openid https://uri.paypal.com/services/paypalhere email https://uri.paypal.com/services/paypalattributes profile';
-
 module.exports = function (router) {
 
     router.use(appUtils.domain);
@@ -67,17 +64,17 @@ module.exports = function (router) {
         }
         req.session.environment = 'live';
         passport.authenticate('paypal', {
-            scope: appScopes
+            scope: appUtils.hereApi().scopes
         })(req, res, next);
     });
 
     /**
      * Send the user off to PayPal Sandbox to login
      */
-    router.get('/login-sandbox', function (req, res, next) {
-        req.session.environment = 'sandbox';
-        passport.authenticate('sandbox', {
-            scope: sandboxScopes
+    router.get('/login/:env', function (req, res, next) {
+        req.session.environment = req.params.env;
+        passport.authenticate(req.params.env, {
+            scope: appUtils.hereApi(req.params.env).scopes
         })(req, res, next);
     });
 
@@ -87,11 +84,11 @@ module.exports = function (router) {
      */
     router.get('/return',
         function (req, res, next) {
-            if (req.session.environment === 'sandbox') {
-                logger.verbose('Using sandbox login.');
-                passport.authenticate('sandbox', { failureRedirect: '/oauth/fail' })(req, res, next);
+            if (!req.session.environment || req.session.environment === 'live') {
+                passport.authenticate('paypal', {failureRedirect: '/oauth/fail'})(req, res, next);
             } else {
-                passport.authenticate('paypal', { failureRedirect: '/oauth/fail' })(req, res, next);
+                logger.verbose('Using '+req.session.environment+' login.');
+                passport.authenticate(req.session.environment, {failureRedirect: '/oauth/fail'})(req, res, next);
             }
         },
         function (req, res) {
