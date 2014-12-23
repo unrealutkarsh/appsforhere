@@ -37,7 +37,8 @@
     "jquery.payment": "~1.1.4",
     "fuelux": "~3.2.1",
     "jQuery-Storage-API": "~1.7.3",
-    "tracekit": "*"
+    "tracekit": "*",
+    "paypal-invoice": "*"
   },
   "resolutions": {
     "moment": "~2.8.2"

@@ -7,5 +7,5 @@
 <script type="text/javascript" src="{scriptBase}components/ladda/dist/spin.min.js"></script>
 <script type="text/javascript" src="{scriptBase}components/ladda/dist/ladda.min.js"></script>
 <script type="text/javascript" src="{scriptBase}components/socket.io-client/socket.io.js"></script>
-<script type="text/javascript" src="{scriptBase}js/ppinvoice/paypal-invoice.js"></script>
+<script type="text/javascript" src="{scriptBase}components/paypal-invoice/dist/paypal-invoice.min.js"></script>
 <script type="text/javascript" src="{scriptBase}js/sell/sell_bundle.js"></script>
