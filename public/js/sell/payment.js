@@ -239,6 +239,30 @@ Payment.prototype.checkKeyboard = function (elt) {
     }
 };
 
+Payment.prototype.authRequired = function (data) {
+    console.log('AUTH REQUIRED');
+    console.log(data);
+    $('#pinEntryModal').modal('hide');
+    this.paymentRequest = {
+        latitude: this.locationManager.coords.latitude,
+        longitude: this.locationManager.coords.longitude,
+        paymentType: 'card',
+        dateTime: new Date().toISOString(),
+        card: {
+            pinPresent: data.pinVerified,
+            reader: {
+                vendor: data.vendor,
+                readerSerialNumber: data.serial
+            },
+            emvData: data.emv,
+            signatureRequired: data.signatureRequired,
+            inputType: 'chip'
+        },
+        invoice: this.invoiceManager.deepFreeze()
+    };
+    this.doCardRequest(data);
+};
+
 Payment.prototype.swipeDetected = function (data) {
     this.paymentRequest = {
         latitude: this.locationManager.coords.latitude,
@@ -257,6 +281,10 @@ Payment.prototype.swipeDetected = function (data) {
         },
         invoice: this.invoiceManager.deepFreeze()
     };
+    this.doCardRequest(data);
+};
+
+Payment.prototype.doCardRequest = function (data) {
     if (data.track1Masked) {
         var re = /^%([A-Z\*])([0-9\*]{1,19})\^([^\^]{2,26})\^([0-9\*]{4}|\^)([0-9\*]{3}|\^)([^\?]+)\?\*?$/;
         var m = data.track1Masked.match(re);
@@ -279,6 +307,8 @@ Payment.prototype.swipeDetected = function (data) {
         }
     } else if (data.maskedPan) {
         this.confirm('to the card ending in ' + data.maskedPan.substring(data.maskedPan.length - 4));
+    } else {
+        this.confirm('to the card');
     }
 };
 
@@ -327,6 +357,12 @@ Payment.prototype.paycodeDetected = function (data) {
         invoice: this.invoiceManager.deepFreeze()
     };
     this.confirm('using PayPal');
+};
+
+Payment.prototype.pinInProgress = function (data) {
+    console.log(data);
+    $('#paymentTypeModal').modal('hide');
+    $('#pinEntryModal').modal();
 };
 
 Payment.prototype.sendRequest = function (button, fromModal) {

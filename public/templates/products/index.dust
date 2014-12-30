@@ -27,6 +27,7 @@
 {<scripts}
     <script type="text/javascript">
         var _csrf = '{_csrf}';
+        var _currency = {symbol:'{@currencySymbol code=userCurrency/}',code:'{userCurrency}'};
         var selectedModel = '{?modelId}{modelId}{:else}_{/modelId}';
         var selectedModelName = '{?modelName}{modelName}{:else}Default{/modelName}'
     </script>
