@@ -38,11 +38,34 @@ module.exports = function (router) {
                 } else {
                     SavedOrder.remove({
                         profileId: req.user.entity.profileId,
-                        invoiceId: payResult.invoiceID||paymentRequest.invoice.invoiceID
+                        invoiceId: payResult.invoiceID || paymentRequest.invoice.invoiceID
                     }, function () {
                         payResult.ok = true;
                         res.json(payResult);
                     });
+                }
+            }));
+        });
+
+    router.route('/:handle/finalize')
+        .all(appUtils.auth)
+        .post(function (req, res) {
+            var url = req.hereApiUrl('payment/' + req.params.handle);
+            req.hereApi().put({
+                url: url,
+                json: true,
+                headers: {
+                    'Content-Type': 'application/json; charset=utf-8'
+                },
+                payload: JSON.stringify(req.body.payload),
+                tokens: req.user.tokens()
+            }, req.$eat(function (payResult) {
+                if (payResult.errorCode) {
+                    payResult.ok = false;
+                    res.status(500).json(payResult);
+                } else {
+                    payResult.ok = true;
+                    res.json(payResult);
                 }
             }));
         });
@@ -79,7 +102,7 @@ module.exports = function (router) {
     router.route('/load/:invoiceId')
         .all(appUtils.auth)
         .get(function (req, res) {
-           var url = req.hereApiUrl('invoices/'+req.params.invoiceId);
+            var url = req.hereApiUrl('invoices/' + req.params.invoiceId);
             console.log(req.params.invoiceId);
             req.hereApi().get({
                 url: url,
@@ -88,6 +111,28 @@ module.exports = function (router) {
             }, req.$eat(function (invoice) {
                 console.log(invoice);
                 res.json(invoice);
+            }));
+        });
+
+    router.route('/preferences')
+        .all(appUtils.auth)
+        .get(function (req, res) {
+            var url = req.hereApiUrl('profile/preferences');
+            req.hereApi().get({
+                url: url,
+                json: true,
+                tokens: req.user.tokens()
+            }, req.$eat(function (prefs) {
+                // Remove item preferences and tax rates since those come back in the product catalog.
+                // (just to reduce payload for large product catalogs)
+                if (prefs.preferences) {
+                    Object.keys(prefs.preferences).forEach(function (k) {
+                        if (k.indexOf('SellableItem') === 0 || k.indexOf('TaxRate_') === 0) {
+                            delete prefs.preferences[k];
+                        }
+                    });
+                }
+                res.json(prefs);
             }));
         });
 
@@ -106,14 +151,14 @@ module.exports = function (router) {
                             invoiceId: d.invoiceId
                         });
                     });
-                    res.json({orders:ret});
+                    res.json({orders: ret});
                 }
             }));
         })
         .post(function (req, res) {
             var url, method = 'post';
             if (req.body.invoice.invoiceID) {
-                url = req.hereApiUrl('invoices/'+req.body.invoice.invoiceID);
+                url = req.hereApiUrl('invoices/' + req.body.invoice.invoiceID);
                 method = 'put';
             } else {
                 url = req.hereApiUrl('invoices');

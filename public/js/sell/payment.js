@@ -19,11 +19,11 @@ Payment.prototype.setup = function () {
         self.eventCounter = 0;
     });
     $('#paymentTypeModal').on('hidden.bs.modal', function () {
-       self.emit('hidden');
+        self.emit('hidden');
     });
 
     $('#paymentTypeSelector').on('click', 'button', function () {
-        var newView = $('#'+$(this).data('value'));
+        var newView = $('#' + $(this).data('value'));
         if (self.paymentTypeView && self.paymentTypeView != newView) {
             self.paymentTypeView.hide();
         }
@@ -37,7 +37,9 @@ Payment.prototype.setup = function () {
         }
     });
 
-    var check = function () { self.checkKeyboard($(this)); };
+    var check = function () {
+        self.checkKeyboard($(this));
+    };
 
     $('#keyboardWatcher').on('keyup', check).on('change', check)
         .on('blur', function () {
@@ -97,7 +99,7 @@ Payment.prototype.setup = function () {
         if ((num && num.length) || (name && name.length) || (ph && ph.length)) {
             inv.receiptDetails = inv.receiptDetails || {};
             inv.receiptDetails.payment = inv.receiptDetails.payment || {};
-            inv.receiptDetails.payment.check = {num:num,name:name,phone:ph};
+            inv.receiptDetails.payment.check = {num: num, name: name, phone: ph};
         }
         self.otherPayment(this, 'check');
     });
@@ -110,12 +112,12 @@ Payment.prototype.setup = function () {
             longitude: coords.longitude,
             paymentType: 'card',
             card: {
-                inputType:"keyIn",
+                inputType: "keyIn",
                 accountNumber: $('#card-number').val(),
                 expirationMonth: exp.month,
-                expirationYear:exp.year,
-                cvv:$('#card-cvc').val(),
-                postalCode:$('#card-postal').val()
+                expirationYear: exp.year,
+                cvv: $('#card-cvc').val(),
+                postalCode: $('#card-postal').val()
             },
             invoice: this.invoiceManager.deepFreeze()
         };
@@ -139,7 +141,7 @@ Payment.prototype.setup = function () {
         $.ajax({
             dataType: 'json',
             data: {invoice: frozen, name: $('#orderName').val(), _csrf: _csrf},
-            url: window.ajaxRoot+'/sell/saved/' + loc.id,
+            url: window.ajaxRoot + '/sell/saved/' + loc.id,
             type: 'POST',
             cache: false,
             success: function (data) {
@@ -338,12 +340,12 @@ Payment.prototype.checkinPayment = function () {
 };
 
 Payment.prototype.confirm = function (summary) {
-        $('#keyboardWatcher').val('');
-        $('#paymentTypeModal').modal('hide');
-        var tots = this.invoiceManager.invoice.calculate();
-        $('#confirmAmount').text(m$(tots.total.toString()));
-        $('#summary').text(summary);
-        $('#paymentConfirmModal').modal();
+    $('#keyboardWatcher').val('');
+    $('#paymentTypeModal').modal('hide');
+    var tots = this.invoiceManager.invoice.calculate();
+    $('#confirmAmount').text(m$(tots.total.toString()));
+    $('#summary').text(summary);
+    $('#paymentConfirmModal').modal();
 };
 
 Payment.prototype.paycodeDetected = function (data) {
@@ -359,9 +361,70 @@ Payment.prototype.paycodeDetected = function (data) {
 };
 
 Payment.prototype.pinInProgress = function (data) {
-    console.log(data);
     $('#paymentTypeModal').modal('hide');
+    $('#waitEmvModal').modal('hide');
     $('#pinEntryModal').modal();
+};
+
+Payment.prototype.cardInProgress = function (data) {
+    $('#paymentTypeModal').modal('hide');
+    $('#waitEmvModal').modal();
+};
+
+Payment.prototype.finalizeEmvPayment = function (options) {
+    this._emvModal.modal('hide');
+    $('#waitEmvModal').modal();
+    var self = this, finalizeRequest = {
+        invoiceId: this.invoiceManager.invoice.payPalId,
+        emvData: options.emv,
+        responseCode: options.responseCode
+    }, inv = this.invoiceManager.invoice;
+    $.ajax({
+        dataType: 'json',
+        data: {payload: finalizeRequest, _csrf: _csrf},
+        url: window.ajaxRoot + '/sell/' + options.transactionHandle + '/finalize',
+        type: 'POST',
+        cache: false,
+        success: function (data) {
+            inv.transactionId = data.transactionNumber;
+            $('#waitEmvModal').modal('hide');
+            options.response = data;
+            self.emit('transactionComplete', options);
+            console.log(bootbox.alert('Transaction complete, please remove the card.', function () {
+                $('#paymentCompleteModal').modal();
+            }));
+        },
+        error: function (xhr, type, error) {
+            var msg;
+            if (xhr.responseJSON && xhr.responseJSON.developerMessage) {
+                msg = xhr.responseJSON.developerMessage;
+            } else if (xhr.responseJSON && xhr.responseJSON.message) {
+                msg = xhr.responseJSON.message;
+            } else {
+                msg = error;
+            }
+            bootbox.dialog({
+                message: msg,
+                title: 'Transaction Failed',
+                buttons: {
+                    retry: {
+                        label: 'Retry',
+                        className: 'btn-primary',
+                        callback: function () {
+                            self.finalizeEmvPayment(options);
+                        }
+                    },
+                    cancel: {
+                        label: 'Cancel',
+                        className: 'btn-danger',
+                        callback: function () {
+                            // TODO Go back to payment choice?
+                        }
+                    }
+                }
+            })
+        }
+    })
 };
 
 Payment.prototype.sendRequest = function (button, fromModal) {
@@ -371,7 +434,7 @@ Payment.prototype.sendRequest = function (button, fromModal) {
     $.ajax({
         dataType: 'json',
         data: {payload: this.paymentRequest, _csrf: _csrf},
-        url: window.ajaxRoot+'/sell',
+        url: window.ajaxRoot + '/sell',
         type: 'POST',
         cache: false,
         success: function (data) {
@@ -379,7 +442,8 @@ Payment.prototype.sendRequest = function (button, fromModal) {
             inv.payPalId = data.invoiceId;
             if (rq.paymentType && rq.card.inputType === 'chip') {
                 // Two step auth required, but need to talk to the device first.
-                self.emit('emvContinuation', data, self.authPending);
+                self._emvModal = fromModal;
+                self.emit('emvContinuation', {result: data, event: self.authPending});
             } else {
                 inv.transactionId = data.transactionId;
                 fromModal.modal('hide');
