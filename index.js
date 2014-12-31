@@ -17,8 +17,6 @@
 'use strict';
 var logger = require('pine')();
 
-require('https').globalAgent.options.secureProtocol = 'TLSv1_method';
-
 if (process.env.NODE_ENV === 'production') {
     logger.info("Starting newrelic agent.");
     // Temporarily required to fix newrelic's invasive methods.

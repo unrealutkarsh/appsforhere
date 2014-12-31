@@ -240,9 +240,8 @@ Payment.prototype.checkKeyboard = function (elt) {
 };
 
 Payment.prototype.authRequired = function (data) {
-    console.log('AUTH REQUIRED');
-    console.log(data);
     $('#pinEntryModal').modal('hide');
+    this.authPending = data;
     this.paymentRequest = {
         latitude: this.locationManager.coords.latitude,
         longitude: this.locationManager.coords.longitude,
@@ -366,7 +365,7 @@ Payment.prototype.pinInProgress = function (data) {
 };
 
 Payment.prototype.sendRequest = function (button, fromModal) {
-    var l = Ladda.create(button);
+    var l = Ladda.create(button), rq = this.paymentRequest, self = this;
     var inv = this.invoiceManager.invoice;
     l.start();
     $.ajax({
@@ -378,9 +377,14 @@ Payment.prototype.sendRequest = function (button, fromModal) {
         success: function (data) {
             l.stop();
             inv.payPalId = data.invoiceId;
-            inv.transactionId = data.transactionId;
-            fromModal.modal('hide');
-            $('#paymentCompleteModal').modal();
+            if (rq.paymentType && rq.card.inputType === 'chip') {
+                // Two step auth required, but need to talk to the device first.
+                self.emit('emvContinuation', data, self.authPending);
+            } else {
+                inv.transactionId = data.transactionId;
+                fromModal.modal('hide');
+                $('#paymentCompleteModal').modal();
+            }
         },
         error: function (xhr, type, error) {
             l.stop();
