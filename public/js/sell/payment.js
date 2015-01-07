@@ -440,7 +440,7 @@ Payment.prototype.sendRequest = function (button, fromModal) {
         success: function (data) {
             l.stop();
             inv.payPalId = data.invoiceId;
-            if (rq.paymentType && rq.card.inputType === 'chip') {
+            if (rq.paymentType && rq.card && rq.card.inputType === 'chip') {
                 // Two step auth required, but need to talk to the device first.
                 self._emvModal = fromModal;
                 self.emit('emvContinuation', {result: data, event: self.authPending});
