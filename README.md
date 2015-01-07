@@ -8,7 +8,7 @@ pretty much anywhere.
 For improved performance, these modules should be installed globally to ensure native modules where appropriate:
 
 * [mongoose](http://mongoosejs.com/) ^3.8.15
-* connect-mongo ^0.4.0
+* connect-mongo ^0.5.3
 * [lwip](https://github.com/EyalAr/lwip)
 * [pm2](https://github.com/unitech/pm2)
 * socket.io ^1.1.0
