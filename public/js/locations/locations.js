@@ -45,8 +45,9 @@ var LocationDataSource = function (options) {
             if (item.address && item.address.line1) {
                 nameadd.push(item.address.line1);
             }
-            if (item.address && item.address.city);
-            nameadd.push(item.address.city + ", " + (item.address.state || ""));
+            if (item.address && item.address.city) {
+                nameadd.push(item.address.city + ", " + (item.address.state || ""));
+            }
             item.nameAndAddr = nameadd.join("<br/>");
             item.map = "<img src=\"" +
                 "https://maps.googleapis.com/maps/api/staticmap?size=160x80&zoom=14&center=" +
