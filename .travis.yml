@@ -2,7 +2,7 @@ language: node_js
 node_js:
   - 0.10
 before_install:
-  - npm install -g mongoose connect-mongo lwip socket.io mubsub
+  - npm install mongoose connect-mongo lwip socket.io mubsub
 services:
   - mongodb
 branches:
