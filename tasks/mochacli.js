@@ -11,6 +11,8 @@ module.exports = function mochacli(grunt) {
         options: {
             timeout: 6000,
             'check-leaks': true,
+            // No idea where these come from, but not us.
+            'globals': ['cptable','channel'],
             ui: 'bdd',
             reporter: 'spec'
         }

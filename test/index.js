@@ -2,40 +2,36 @@
 
 'use strict';
 
-
 var kraken = require('kraken-js'),
     express = require('express'),
-    request = require('supertest');
-
+    request = require('supertest'),
+    App = require('../index');
 
 describe('/', function () {
 
-    var app, mock;
+    var app;
 
+    this.timeout(10000);
 
-    beforeEach(function (done) {
-        app = express();
-        app.on('start', done);
-        app.use(kraken({
-            basedir: process.cwd()
-        }));
-
-        mock = app.listen(1337);
-
+    before(function (done) {
+        app = new App();
+        app.once('ready', function () {
+            app.listen(1337, done);
+        });
     });
 
 
-    afterEach(function (done) {
-        mock.close(done);
+    after(function (done) {
+        app.close(done);
     });
 
 
-    it('should say "hello"', function (done) {
-        request(mock)
+    it('should serve the home page and still be open source', function (done) {
+        request(app.express)
             .get('/')
             .expect(200)
             .expect('Content-Type', /html/)
-            .expect(/Hello, /)
+            .expect(/Fork me on GitHub/)
             .end(function (err, res) {
                 done(err);
             });

@@ -13,7 +13,9 @@
         "live": {
             "hereapiUrl": "https://api.paypal.com/retail/merchant/v1/",
             "ppaasUrl": "https://api.paypal.com/v1/",
-            "scopes": "openid https://uri.paypal.com/services/paypalhere email https://uri.paypal.com/services/paypalattributes profile https://api.paypal.com/v1/vault/credit-card https://api.paypal.com/v1/vault/credit-card/.*"
+            "scopes": "openid https://uri.paypal.com/services/paypalhere email https://uri.paypal.com/services/paypalattributes profile https://api.paypal.com/v1/vault/credit-card https://api.paypal.com/v1/vault/credit-card/.*",
+            "client_id": "OVERRIDE IN PRODUCTION.JSON",
+            "secret": "OVERRIDE IN PRODUCTION.JSON"
         }
     },
 
