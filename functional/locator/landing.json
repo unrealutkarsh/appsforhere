@@ -1,0 +1,6 @@
+{
+  "page": {
+    "locator": ".jumbotron h1",
+    "type": "css"
+  }
+}
