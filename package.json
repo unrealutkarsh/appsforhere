@@ -5,8 +5,8 @@
   "author": "Max Metral",
   "main": "index.js",
   "scripts": {
-    "test": "grunt test",
-    "start": "node index.js"
+    "test": "NODE_ENV=test grunt test",
+    "start": "node server.js"
   },
   "dependencies": {
     "accounting": "^0.4.1",
