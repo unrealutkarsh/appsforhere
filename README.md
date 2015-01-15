@@ -1,8 +1,14 @@
 # appsforhere
+[![Build Status](https://travis-ci.org/paypal/appsforhere.png)](https://travis-ci.org/paypal/appsforhere)
 
 A [Kraken](http://krakenjs.com/) 1.x based node.js web application to add functionality to PayPal Here and related
 PayPal Retail systems. This application uses external APIs only and thus can be customized and deployed
 pretty much anywhere.
+
+This is a very "green" project - there are undoubtedly loads of bugs and room for improvement. But that's why you're
+here. File issues and make pull requests!
+
+You can [try it out on our server](https://appsforhere.ebayc3.com) with a PayPal account.
 
 ** PLEASE NOTE **
 For improved performance, these modules should be installed globally to ensure native modules where appropriate:
