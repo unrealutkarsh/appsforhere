@@ -52,5 +52,4 @@ module.exports = function(grunt) {
     'native-deps'
   ]);
   grunt.registerTask('auto', ['loopmocha:local']);
-  grunt.registerTask('auto:mobile', ['loopmocha:sauce']);
 };

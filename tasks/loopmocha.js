@@ -34,31 +34,5 @@ module.exports = function loopmocha(grunt) {
     "local": {
       "src": "<%=loopmocha.src%>"
     }
-    
-    ,"sauce": {
-      "src": "<%=loopmocha.src%>",
-      "options": {
-        "nemoData": {
-          
-          "targetServer": "http://djMax:feebd66e-7780-4c04-87e5-3e18aa345089@ondemand.saucelabs.com:80/wd/hub",
-          "serverCaps": {
-            "username": "djMax",
-            "accessKey": "feebd66e-7780-4c04-87e5-3e18aa345089"
-          }
-        },
-        "iterations": [{
-          "description": "iphone",
-          "nemoData": {
-            "targetBrowser": "iphone"
-          }
-        }, {
-          "description": "android",
-          "nemoData": {
-            "targetBrowser": "android"
-          }
-        }]
-      }
-    }
-    
   };
 };
