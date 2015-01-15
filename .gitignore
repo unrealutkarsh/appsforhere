@@ -1,6 +1,9 @@
+**/.DS_Store
 .build/**
+.heroku/**
 node_modules/**
 .idea/**
 start.sh
 public/components/**
 .package
+config/local.json
