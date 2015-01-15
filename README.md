@@ -1,5 +1,8 @@
 # appsforhere
 [![Build Status](https://travis-ci.org/paypal/appsforhere.png)](https://travis-ci.org/paypal/appsforhere)
+[![Dependency Status](https://gemnasium.com/paypal/appsforhere.png)](https://gemnasium.com/paypal/appsforhere)
+[![Code Climate](https://codeclimate.com/github/paypal/appsforhere.png)](https://codeclimate.com/github/paypal/appsforhere)
+[![Coverage Status](https://coveralls.io/repos/paypal/appsforhere/badge.svg)](https://coveralls.io/r/paypal/appsforhere)
 
 A [Kraken](http://krakenjs.com/) 1.x based node.js web application to add functionality to PayPal Here and related
 PayPal Retail systems. This application uses external APIs only and thus can be customized and deployed
