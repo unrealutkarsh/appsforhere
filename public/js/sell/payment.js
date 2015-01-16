@@ -336,7 +336,7 @@ Payment.prototype.checkinPayment = function () {
         // Deep freeze the invoice.
         invoice: this.invoiceManager.deepFreeze()
     };
-    this.confirm('to ' + selectedTab.customerName + ' using PayPal');
+    this.confirm('to ' + this.checkinManager.selectedTab.customerName + ' using PayPal');
 };
 
 Payment.prototype.confirm = function (summary) {
